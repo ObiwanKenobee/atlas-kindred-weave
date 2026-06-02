@@ -13,7 +13,9 @@ import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as TreasuryRouteImport } from './routes/treasury'
 import { Route as RiskRouteImport } from './routes/risk'
 import { Route as RegenerativeRouteImport } from './routes/regenerative'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OrchestratorRouteImport } from './routes/orchestrator'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as ImpactRouteImport } from './routes/impact'
 import { Route as IdentityRouteImport } from './routes/identity'
 import { Route as GrowthRouteImport } from './routes/growth'
@@ -43,9 +45,19 @@ const RegenerativeRoute = RegenerativeRouteImport.update({
   path: '/regenerative',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OrchestratorRoute = OrchestratorRouteImport.update({
   id: '/orchestrator',
   path: '/orchestrator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ImpactRoute = ImpactRouteImport.update({
@@ -97,7 +109,9 @@ export interface FileRoutesByFullPath {
   '/growth': typeof GrowthRoute
   '/identity': typeof IdentityRoute
   '/impact': typeof ImpactRoute
+  '/login': typeof LoginRoute
   '/orchestrator': typeof OrchestratorRoute
+  '/profile': typeof ProfileRoute
   '/regenerative': typeof RegenerativeRoute
   '/risk': typeof RiskRoute
   '/treasury': typeof TreasuryRoute
@@ -112,7 +126,9 @@ export interface FileRoutesByTo {
   '/growth': typeof GrowthRoute
   '/identity': typeof IdentityRoute
   '/impact': typeof ImpactRoute
+  '/login': typeof LoginRoute
   '/orchestrator': typeof OrchestratorRoute
+  '/profile': typeof ProfileRoute
   '/regenerative': typeof RegenerativeRoute
   '/risk': typeof RiskRoute
   '/treasury': typeof TreasuryRoute
@@ -128,7 +144,9 @@ export interface FileRoutesById {
   '/growth': typeof GrowthRoute
   '/identity': typeof IdentityRoute
   '/impact': typeof ImpactRoute
+  '/login': typeof LoginRoute
   '/orchestrator': typeof OrchestratorRoute
+  '/profile': typeof ProfileRoute
   '/regenerative': typeof RegenerativeRoute
   '/risk': typeof RiskRoute
   '/treasury': typeof TreasuryRoute
@@ -145,7 +163,9 @@ export interface FileRouteTypes {
     | '/growth'
     | '/identity'
     | '/impact'
+    | '/login'
     | '/orchestrator'
+    | '/profile'
     | '/regenerative'
     | '/risk'
     | '/treasury'
@@ -160,7 +180,9 @@ export interface FileRouteTypes {
     | '/growth'
     | '/identity'
     | '/impact'
+    | '/login'
     | '/orchestrator'
+    | '/profile'
     | '/regenerative'
     | '/risk'
     | '/treasury'
@@ -175,7 +197,9 @@ export interface FileRouteTypes {
     | '/growth'
     | '/identity'
     | '/impact'
+    | '/login'
     | '/orchestrator'
+    | '/profile'
     | '/regenerative'
     | '/risk'
     | '/treasury'
@@ -191,7 +215,9 @@ export interface RootRouteChildren {
   GrowthRoute: typeof GrowthRoute
   IdentityRoute: typeof IdentityRoute
   ImpactRoute: typeof ImpactRoute
+  LoginRoute: typeof LoginRoute
   OrchestratorRoute: typeof OrchestratorRoute
+  ProfileRoute: typeof ProfileRoute
   RegenerativeRoute: typeof RegenerativeRoute
   RiskRoute: typeof RiskRoute
   TreasuryRoute: typeof TreasuryRoute
@@ -229,11 +255,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegenerativeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/orchestrator': {
       id: '/orchestrator'
       path: '/orchestrator'
       fullPath: '/orchestrator'
       preLoaderRoute: typeof OrchestratorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/impact': {
@@ -303,7 +343,9 @@ const rootRouteChildren: RootRouteChildren = {
   GrowthRoute: GrowthRoute,
   IdentityRoute: IdentityRoute,
   ImpactRoute: ImpactRoute,
+  LoginRoute: LoginRoute,
   OrchestratorRoute: OrchestratorRoute,
+  ProfileRoute: ProfileRoute,
   RegenerativeRoute: RegenerativeRoute,
   RiskRoute: RiskRoute,
   TreasuryRoute: TreasuryRoute,
@@ -313,3 +355,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
