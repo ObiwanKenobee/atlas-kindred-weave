@@ -86,7 +86,7 @@ function FundingPage() {
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
-    setRequests((data as FundingReq[]) ?? []);
+    setRequests((data as unknown as FundingReq[]) ?? []);
   }
   useEffect(() => { refresh(); /* eslint-disable-next-line */ }, [user]);
 
