@@ -9,38 +9,275 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerificationRouteImport } from './routes/verification'
+import { Route as TreasuryRouteImport } from './routes/treasury'
+import { Route as RiskRouteImport } from './routes/risk'
+import { Route as RegenerativeRouteImport } from './routes/regenerative'
+import { Route as OrchestratorRouteImport } from './routes/orchestrator'
+import { Route as ImpactRouteImport } from './routes/impact'
+import { Route as IdentityRouteImport } from './routes/identity'
+import { Route as GrowthRouteImport } from './routes/growth'
+import { Route as FundingRouteImport } from './routes/funding'
+import { Route as EconomicGraphRouteImport } from './routes/economic-graph'
+import { Route as BusinessOsRouteImport } from './routes/business-os'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 
+const VerificationRoute = VerificationRouteImport.update({
+  id: '/verification',
+  path: '/verification',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TreasuryRoute = TreasuryRouteImport.update({
+  id: '/treasury',
+  path: '/treasury',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RiskRoute = RiskRouteImport.update({
+  id: '/risk',
+  path: '/risk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegenerativeRoute = RegenerativeRouteImport.update({
+  id: '/regenerative',
+  path: '/regenerative',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrchestratorRoute = OrchestratorRouteImport.update({
+  id: '/orchestrator',
+  path: '/orchestrator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImpactRoute = ImpactRouteImport.update({
+  id: '/impact',
+  path: '/impact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdentityRoute = IdentityRouteImport.update({
+  id: '/identity',
+  path: '/identity',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GrowthRoute = GrowthRouteImport.update({
+  id: '/growth',
+  path: '/growth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FundingRoute = FundingRouteImport.update({
+  id: '/funding',
+  path: '/funding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EconomicGraphRoute = EconomicGraphRouteImport.update({
+  id: '/economic-graph',
+  path: '/economic-graph',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BusinessOsRoute = BusinessOsRouteImport.update({
+  id: '/business-os',
+  path: '/business-os',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/business-os': typeof BusinessOsRoute
+  '/economic-graph': typeof EconomicGraphRoute
+  '/funding': typeof FundingRoute
+  '/growth': typeof GrowthRoute
+  '/identity': typeof IdentityRoute
+  '/impact': typeof ImpactRoute
+  '/orchestrator': typeof OrchestratorRoute
+  '/regenerative': typeof RegenerativeRoute
+  '/risk': typeof RiskRoute
+  '/treasury': typeof TreasuryRoute
+  '/verification': typeof VerificationRoute
+  '/api/chat': typeof ApiChatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/business-os': typeof BusinessOsRoute
+  '/economic-graph': typeof EconomicGraphRoute
+  '/funding': typeof FundingRoute
+  '/growth': typeof GrowthRoute
+  '/identity': typeof IdentityRoute
+  '/impact': typeof ImpactRoute
+  '/orchestrator': typeof OrchestratorRoute
+  '/regenerative': typeof RegenerativeRoute
+  '/risk': typeof RiskRoute
+  '/treasury': typeof TreasuryRoute
+  '/verification': typeof VerificationRoute
+  '/api/chat': typeof ApiChatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/business-os': typeof BusinessOsRoute
+  '/economic-graph': typeof EconomicGraphRoute
+  '/funding': typeof FundingRoute
+  '/growth': typeof GrowthRoute
+  '/identity': typeof IdentityRoute
+  '/impact': typeof ImpactRoute
+  '/orchestrator': typeof OrchestratorRoute
+  '/regenerative': typeof RegenerativeRoute
+  '/risk': typeof RiskRoute
+  '/treasury': typeof TreasuryRoute
+  '/verification': typeof VerificationRoute
+  '/api/chat': typeof ApiChatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/business-os'
+    | '/economic-graph'
+    | '/funding'
+    | '/growth'
+    | '/identity'
+    | '/impact'
+    | '/orchestrator'
+    | '/regenerative'
+    | '/risk'
+    | '/treasury'
+    | '/verification'
+    | '/api/chat'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/business-os'
+    | '/economic-graph'
+    | '/funding'
+    | '/growth'
+    | '/identity'
+    | '/impact'
+    | '/orchestrator'
+    | '/regenerative'
+    | '/risk'
+    | '/treasury'
+    | '/verification'
+    | '/api/chat'
+  id:
+    | '__root__'
+    | '/'
+    | '/business-os'
+    | '/economic-graph'
+    | '/funding'
+    | '/growth'
+    | '/identity'
+    | '/impact'
+    | '/orchestrator'
+    | '/regenerative'
+    | '/risk'
+    | '/treasury'
+    | '/verification'
+    | '/api/chat'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BusinessOsRoute: typeof BusinessOsRoute
+  EconomicGraphRoute: typeof EconomicGraphRoute
+  FundingRoute: typeof FundingRoute
+  GrowthRoute: typeof GrowthRoute
+  IdentityRoute: typeof IdentityRoute
+  ImpactRoute: typeof ImpactRoute
+  OrchestratorRoute: typeof OrchestratorRoute
+  RegenerativeRoute: typeof RegenerativeRoute
+  RiskRoute: typeof RiskRoute
+  TreasuryRoute: typeof TreasuryRoute
+  VerificationRoute: typeof VerificationRoute
+  ApiChatRoute: typeof ApiChatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verification': {
+      id: '/verification'
+      path: '/verification'
+      fullPath: '/verification'
+      preLoaderRoute: typeof VerificationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/treasury': {
+      id: '/treasury'
+      path: '/treasury'
+      fullPath: '/treasury'
+      preLoaderRoute: typeof TreasuryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/risk': {
+      id: '/risk'
+      path: '/risk'
+      fullPath: '/risk'
+      preLoaderRoute: typeof RiskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/regenerative': {
+      id: '/regenerative'
+      path: '/regenerative'
+      fullPath: '/regenerative'
+      preLoaderRoute: typeof RegenerativeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orchestrator': {
+      id: '/orchestrator'
+      path: '/orchestrator'
+      fullPath: '/orchestrator'
+      preLoaderRoute: typeof OrchestratorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/impact': {
+      id: '/impact'
+      path: '/impact'
+      fullPath: '/impact'
+      preLoaderRoute: typeof ImpactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/identity': {
+      id: '/identity'
+      path: '/identity'
+      fullPath: '/identity'
+      preLoaderRoute: typeof IdentityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/growth': {
+      id: '/growth'
+      path: '/growth'
+      fullPath: '/growth'
+      preLoaderRoute: typeof GrowthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/funding': {
+      id: '/funding'
+      path: '/funding'
+      fullPath: '/funding'
+      preLoaderRoute: typeof FundingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/economic-graph': {
+      id: '/economic-graph'
+      path: '/economic-graph'
+      fullPath: '/economic-graph'
+      preLoaderRoute: typeof EconomicGraphRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/business-os': {
+      id: '/business-os'
+      path: '/business-os'
+      fullPath: '/business-os'
+      preLoaderRoute: typeof BusinessOsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,12 +285,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BusinessOsRoute: BusinessOsRoute,
+  EconomicGraphRoute: EconomicGraphRoute,
+  FundingRoute: FundingRoute,
+  GrowthRoute: GrowthRoute,
+  IdentityRoute: IdentityRoute,
+  ImpactRoute: ImpactRoute,
+  OrchestratorRoute: OrchestratorRoute,
+  RegenerativeRoute: RegenerativeRoute,
+  RiskRoute: RiskRoute,
+  TreasuryRoute: TreasuryRoute,
+  VerificationRoute: VerificationRoute,
+  ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
