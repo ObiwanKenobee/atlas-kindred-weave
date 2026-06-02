@@ -14,7 +14,263 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chat_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          parts: Json | null
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          parts?: Json | null
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          parts?: Json | null
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      economic_edges: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json
+          relationship: string
+          source_id: string
+          target_id: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          relationship: string
+          source_id: string
+          target_id: string
+          weight?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          relationship?: string
+          source_id?: string
+          target_id?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "economic_edges_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "economic_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "economic_edges_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "economic_nodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      economic_nodes: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          kind: Database["public"]["Enums"]["node_type"]
+          metadata: Json
+          name: string
+          owner_user_id: string | null
+          region: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["node_type"]
+          metadata?: Json
+          name: string
+          owner_user_id?: string | null
+          region?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["node_type"]
+          metadata?: Json
+          name?: string
+          owner_user_id?: string | null
+          region?: string | null
+        }
+        Relationships: []
+      }
+      funding_requests: {
+        Row: {
+          amount_requested: number
+          attachments: Json
+          created_at: string
+          currency: string
+          decision_report: Json | null
+          id: string
+          pitch: string
+          region: string | null
+          sector: string | null
+          status: Database["public"]["Enums"]["funding_status"]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_requested?: number
+          attachments?: Json
+          created_at?: string
+          currency?: string
+          decision_report?: Json | null
+          id?: string
+          pitch: string
+          region?: string | null
+          sector?: string | null
+          status?: Database["public"]["Enums"]["funding_status"]
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_requested?: number
+          attachments?: Json
+          created_at?: string
+          currency?: string
+          decision_report?: Json | null
+          id?: string
+          pitch?: string
+          region?: string | null
+          sector?: string | null
+          status?: Database["public"]["Enums"]["funding_status"]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          region: string | null
+          trust_score: number
+          updated_at: string
+          user_id: string
+          verified: boolean
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          region?: string | null
+          trust_score?: number
+          updated_at?: string
+          user_id: string
+          verified?: boolean
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          region?: string | null
+          trust_score?: number
+          updated_at?: string
+          user_id?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
+      verification_events: {
+        Row: {
+          created_at: string
+          evidence_url: string | null
+          id: string
+          kind: string
+          notes: string | null
+          status: Database["public"]["Enums"]["verification_status"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          evidence_url?: string | null
+          id?: string
+          kind: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["verification_status"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          evidence_url?: string | null
+          id?: string
+          kind?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["verification_status"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +279,20 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      funding_status:
+        | "draft"
+        | "submitted"
+        | "under_review"
+        | "approved"
+        | "declined"
+        | "withdrawn"
+      node_type:
+        | "business"
+        | "investor"
+        | "supplier"
+        | "community"
+        | "partnership"
+      verification_status: "pending" | "verified" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +419,23 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      funding_status: [
+        "draft",
+        "submitted",
+        "under_review",
+        "approved",
+        "declined",
+        "withdrawn",
+      ],
+      node_type: [
+        "business",
+        "investor",
+        "supplier",
+        "community",
+        "partnership",
+      ],
+      verification_status: ["pending", "verified", "rejected"],
+    },
   },
 } as const
