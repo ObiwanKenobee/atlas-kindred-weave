@@ -128,7 +128,7 @@ function FundingPage() {
       const res = await generateDecision({ data: { requestId: ins.id } });
       toast.success("Funding Decision Report ready.");
       await refresh();
-      setSelected({ ...(ins as FundingReq), decision_report: res.decision, status: "under_review" });
+      setSelected({ ...(ins as unknown as FundingReq), decision_report: res.decision, status: "under_review" });
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Submission failed");
     } finally {
