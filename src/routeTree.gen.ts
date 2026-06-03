@@ -15,6 +15,7 @@ import { Route as RiskRouteImport } from './routes/risk'
 import { Route as RegenerativeRouteImport } from './routes/regenerative'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OrchestratorRouteImport } from './routes/orchestrator'
+import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ImpactRouteImport } from './routes/impact'
 import { Route as IdentityRouteImport } from './routes/identity'
@@ -22,6 +23,7 @@ import { Route as GrowthRouteImport } from './routes/growth'
 import { Route as FundingRouteImport } from './routes/funding'
 import { Route as EconomicGraphRouteImport } from './routes/economic-graph'
 import { Route as BusinessOsRouteImport } from './routes/business-os'
+import { Route as AuditRouteImport } from './routes/audit'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 
@@ -53,6 +55,11 @@ const ProfileRoute = ProfileRouteImport.update({
 const OrchestratorRoute = OrchestratorRouteImport.update({
   id: '/orchestrator',
   path: '/orchestrator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -90,6 +97,11 @@ const BusinessOsRoute = BusinessOsRouteImport.update({
   path: '/business-os',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuditRoute = AuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -103,6 +115,7 @@ const ApiChatRoute = ApiChatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
   '/economic-graph': typeof EconomicGraphRoute
   '/funding': typeof FundingRoute
@@ -110,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/identity': typeof IdentityRoute
   '/impact': typeof ImpactRoute
   '/login': typeof LoginRoute
+  '/notifications': typeof NotificationsRoute
   '/orchestrator': typeof OrchestratorRoute
   '/profile': typeof ProfileRoute
   '/regenerative': typeof RegenerativeRoute
@@ -120,6 +134,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
   '/economic-graph': typeof EconomicGraphRoute
   '/funding': typeof FundingRoute
@@ -127,6 +142,7 @@ export interface FileRoutesByTo {
   '/identity': typeof IdentityRoute
   '/impact': typeof ImpactRoute
   '/login': typeof LoginRoute
+  '/notifications': typeof NotificationsRoute
   '/orchestrator': typeof OrchestratorRoute
   '/profile': typeof ProfileRoute
   '/regenerative': typeof RegenerativeRoute
@@ -138,6 +154,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
   '/economic-graph': typeof EconomicGraphRoute
   '/funding': typeof FundingRoute
@@ -145,6 +162,7 @@ export interface FileRoutesById {
   '/identity': typeof IdentityRoute
   '/impact': typeof ImpactRoute
   '/login': typeof LoginRoute
+  '/notifications': typeof NotificationsRoute
   '/orchestrator': typeof OrchestratorRoute
   '/profile': typeof ProfileRoute
   '/regenerative': typeof RegenerativeRoute
@@ -157,6 +175,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/audit'
     | '/business-os'
     | '/economic-graph'
     | '/funding'
@@ -164,6 +183,7 @@ export interface FileRouteTypes {
     | '/identity'
     | '/impact'
     | '/login'
+    | '/notifications'
     | '/orchestrator'
     | '/profile'
     | '/regenerative'
@@ -174,6 +194,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/audit'
     | '/business-os'
     | '/economic-graph'
     | '/funding'
@@ -181,6 +202,7 @@ export interface FileRouteTypes {
     | '/identity'
     | '/impact'
     | '/login'
+    | '/notifications'
     | '/orchestrator'
     | '/profile'
     | '/regenerative'
@@ -191,6 +213,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/audit'
     | '/business-os'
     | '/economic-graph'
     | '/funding'
@@ -198,6 +221,7 @@ export interface FileRouteTypes {
     | '/identity'
     | '/impact'
     | '/login'
+    | '/notifications'
     | '/orchestrator'
     | '/profile'
     | '/regenerative'
@@ -209,6 +233,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuditRoute: typeof AuditRoute
   BusinessOsRoute: typeof BusinessOsRoute
   EconomicGraphRoute: typeof EconomicGraphRoute
   FundingRoute: typeof FundingRoute
@@ -216,6 +241,7 @@ export interface RootRouteChildren {
   IdentityRoute: typeof IdentityRoute
   ImpactRoute: typeof ImpactRoute
   LoginRoute: typeof LoginRoute
+  NotificationsRoute: typeof NotificationsRoute
   OrchestratorRoute: typeof OrchestratorRoute
   ProfileRoute: typeof ProfileRoute
   RegenerativeRoute: typeof RegenerativeRoute
@@ -269,6 +295,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrchestratorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -318,6 +351,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BusinessOsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/audit': {
+      id: '/audit'
+      path: '/audit'
+      fullPath: '/audit'
+      preLoaderRoute: typeof AuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -337,6 +377,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuditRoute: AuditRoute,
   BusinessOsRoute: BusinessOsRoute,
   EconomicGraphRoute: EconomicGraphRoute,
   FundingRoute: FundingRoute,
@@ -344,6 +385,7 @@ const rootRouteChildren: RootRouteChildren = {
   IdentityRoute: IdentityRoute,
   ImpactRoute: ImpactRoute,
   LoginRoute: LoginRoute,
+  NotificationsRoute: NotificationsRoute,
   OrchestratorRoute: OrchestratorRoute,
   ProfileRoute: ProfileRoute,
   RegenerativeRoute: RegenerativeRoute,
@@ -355,3 +397,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
