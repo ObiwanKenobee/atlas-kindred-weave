@@ -161,6 +161,10 @@ export type Database = {
           created_at: string
           currency: string
           decision_report: Json | null
+          human_approval: string
+          human_decided_at: string | null
+          human_decided_by: string | null
+          human_decision_notes: string | null
           id: string
           pitch: string
           region: string | null
@@ -176,6 +180,10 @@ export type Database = {
           created_at?: string
           currency?: string
           decision_report?: Json | null
+          human_approval?: string
+          human_decided_at?: string | null
+          human_decided_by?: string | null
+          human_decision_notes?: string | null
           id?: string
           pitch: string
           region?: string | null
@@ -191,6 +199,10 @@ export type Database = {
           created_at?: string
           currency?: string
           decision_report?: Json | null
+          human_approval?: string
+          human_decided_at?: string | null
+          human_decided_by?: string | null
+          human_decision_notes?: string | null
           id?: string
           pitch?: string
           region?: string | null
@@ -276,7 +288,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      recalc_trust_score: { Args: { _user_id: string }; Returns: undefined }
     }
     Enums: {
       funding_status:

@@ -49,16 +49,24 @@ function EconomicGraphPage() {
   const [hover, setHover] = useState<string | null>(null);
   const [selected, setSelected] = useState<Node | null>(null);
 
+  async function load() {
+    const [{ data: n }, { data: e }] = await Promise.all([
+      supabase.from("economic_nodes").select("id,kind,name,description,region").order("created_at", { ascending: true }),
+      supabase.from("economic_edges").select("id,source_id,target_id,relationship,weight"),
+    ]);
+    setNodes((n as Node[]) ?? []);
+    setEdges((e as Edge[]) ?? []);
+    setLoading(false);
+  }
+
   useEffect(() => {
-    (async () => {
-      const [{ data: n }, { data: e }] = await Promise.all([
-        supabase.from("economic_nodes").select("id,kind,name,description,region"),
-        supabase.from("economic_edges").select("id,source_id,target_id,relationship,weight"),
-      ]);
-      setNodes((n as Node[]) ?? []);
-      setEdges((e as Edge[]) ?? []);
-      setLoading(false);
-    })();
+    load();
+    const channel = supabase
+      .channel("economic-graph")
+      .on("postgres_changes", { event: "*", schema: "public", table: "economic_nodes" }, () => load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "economic_edges" }, () => load())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   // Cluster layout: each kind on its own ring spoke, nodes distributed along radial arcs
@@ -104,9 +112,11 @@ function EconomicGraphPage() {
         <div className="text-xs uppercase tracking-[0.3em] text-gold/80">Engine IX · Economic Graph</div>
         <h1 className="mt-3 font-display text-4xl">Economic Opportunity Map</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          Businesses, investors, suppliers, communities, and AI-recommended partnerships — the living
-          geometry of opportunity. Hover or tap a node to reveal its relationships.
+          A live mirror of the Sanctum's real entities. Verified profiles become business nodes,
+          submitted funding requests become partnerships, and relationships are streamed in as they
+          are recorded. Hover or tap a node to reveal its connections.
         </p>
+        <p className="mt-2 text-[10px] uppercase tracking-widest text-sage">● Live · streaming from your database</p>
       </div>
 
       <div className="mt-6 flex flex-wrap gap-3">
