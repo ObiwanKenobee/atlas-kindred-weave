@@ -49,16 +49,24 @@ function EconomicGraphPage() {
   const [hover, setHover] = useState<string | null>(null);
   const [selected, setSelected] = useState<Node | null>(null);
 
+  async function load() {
+    const [{ data: n }, { data: e }] = await Promise.all([
+      supabase.from("economic_nodes").select("id,kind,name,description,region").order("created_at", { ascending: true }),
+      supabase.from("economic_edges").select("id,source_id,target_id,relationship,weight"),
+    ]);
+    setNodes((n as Node[]) ?? []);
+    setEdges((e as Edge[]) ?? []);
+    setLoading(false);
+  }
+
   useEffect(() => {
-    (async () => {
-      const [{ data: n }, { data: e }] = await Promise.all([
-        supabase.from("economic_nodes").select("id,kind,name,description,region"),
-        supabase.from("economic_edges").select("id,source_id,target_id,relationship,weight"),
-      ]);
-      setNodes((n as Node[]) ?? []);
-      setEdges((e as Edge[]) ?? []);
-      setLoading(false);
-    })();
+    load();
+    const channel = supabase
+      .channel("economic-graph")
+      .on("postgres_changes", { event: "*", schema: "public", table: "economic_nodes" }, () => load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "economic_edges" }, () => load())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   // Cluster layout: each kind on its own ring spoke, nodes distributed along radial arcs
