@@ -10,8 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Sparkles, Paperclip, X, FileText } from "lucide-react";
+import { Loader2, Sparkles, Paperclip, X, FileText, Download, Check, RotateCcw, Ban, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+import { downloadDecisionPdf } from "@/lib/decision-pdf";
 
 const m = SANCTUM_MODULES.find((x) => x.slug === "funding")!;
 
