@@ -62,6 +62,9 @@ type FundingReq = {
   attachments: { name: string; path: string; size: number }[];
   decision_report: DecisionReport | null;
   created_at: string;
+  human_approval: "pending" | "approved" | "declined" | "revision_requested";
+  human_decision_notes: string | null;
+  human_decided_at: string | null;
 };
 
 function FundingPage() {
