@@ -323,7 +323,7 @@ function DecisionPanel({
   const [saving, setSaving] = useState(false);
   const pending = req.human_approval === "pending" || req.human_approval === "revision_requested";
 
-  async function decide(approval: FundingReq["human_approval"], nextStatus: string) {
+  async function decide(approval: FundingReq["human_approval"], nextStatus: "approved" | "declined" | "under_review") {
     if (!user) return;
     setSaving(true);
     const { error } = await supabase
