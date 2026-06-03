@@ -241,9 +241,12 @@ function FundingPage() {
                 <StatusBadge status={r.status} />
               </div>
               {r.decision_report && (
-                <div className="mt-3 text-xs text-sage">
-                  ✦ {recommendationLabel(r.decision_report.recommendation)} ·{" "}
-                  {r.decision_report.recommended_amount.toLocaleString()} {r.decision_report.recommended_currency}
+                <div className="mt-3 flex items-center gap-2 text-xs">
+                  <span className="text-sage">
+                    ✦ {recommendationLabel(r.decision_report.recommendation)} ·{" "}
+                    {r.decision_report.recommended_amount.toLocaleString()} {r.decision_report.recommended_currency}
+                  </span>
+                  <HumanBadge approval={r.human_approval} />
                 </div>
               )}
             </Card>
@@ -252,7 +255,15 @@ function FundingPage() {
       </div>
 
       {selected?.decision_report && (
-        <DecisionPanel req={selected} onClose={() => setSelected(null)} />
+        <DecisionPanel
+          req={selected}
+          onClose={() => setSelected(null)}
+          onUpdated={async () => {
+            await refresh();
+            const fresh = await supabase.from("funding_requests").select("*").eq("id", selected.id).single();
+            if (fresh.data) setSelected(fresh.data as unknown as FundingReq);
+          }}
+        />
       )}
     </div>
   );
