@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_name: string | null
+          created_at: string
+          details: Json
+          entity_id: string | null
+          entity_type: string
+          id: string
+          subject_user_id: string | null
+          summary: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string
+          details?: Json
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          subject_user_id?: string | null
+          summary: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string
+          details?: Json
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          subject_user_id?: string | null
+          summary?: string
+        }
+        Relationships: []
+      }
       chat_conversations: {
         Row: {
           created_at: string
@@ -72,6 +111,53 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      decision_report_versions: {
+        Row: {
+          funding_request_id: string
+          generated_at: string
+          human_approval: string
+          human_decided_at: string | null
+          human_decided_by: string | null
+          human_decided_by_name: string | null
+          human_decision_notes: string | null
+          id: string
+          report: Json
+          version: number
+        }
+        Insert: {
+          funding_request_id: string
+          generated_at?: string
+          human_approval?: string
+          human_decided_at?: string | null
+          human_decided_by?: string | null
+          human_decided_by_name?: string | null
+          human_decision_notes?: string | null
+          id?: string
+          report: Json
+          version: number
+        }
+        Update: {
+          funding_request_id?: string
+          generated_at?: string
+          human_approval?: string
+          human_decided_at?: string | null
+          human_decided_by?: string | null
+          human_decided_by_name?: string | null
+          human_decision_notes?: string | null
+          id?: string
+          report?: Json
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_report_versions_funding_request_id_fkey"
+            columns: ["funding_request_id"]
+            isOneToOne: false
+            referencedRelation: "funding_requests"
             referencedColumns: ["id"]
           },
         ]
@@ -160,7 +246,9 @@ export type Database = {
           attachments: Json
           created_at: string
           currency: string
+          current_version: number
           decision_report: Json | null
+          final_version_id: string | null
           human_approval: string
           human_decided_at: string | null
           human_decided_by: string | null
@@ -179,7 +267,9 @@ export type Database = {
           attachments?: Json
           created_at?: string
           currency?: string
+          current_version?: number
           decision_report?: Json | null
+          final_version_id?: string | null
           human_approval?: string
           human_decided_at?: string | null
           human_decided_by?: string | null
@@ -198,7 +288,9 @@ export type Database = {
           attachments?: Json
           created_at?: string
           currency?: string
+          current_version?: number
           decision_report?: Json | null
+          final_version_id?: string | null
           human_approval?: string
           human_decided_at?: string | null
           human_decided_by?: string | null
@@ -210,6 +302,50 @@ export type Database = {
           status?: Database["public"]["Enums"]["funding_status"]
           title?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "funding_requests_final_version_id_fkey"
+            columns: ["final_version_id"]
+            isOneToOne: false
+            referencedRelation: "decision_report_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          kind: string
+          link: string | null
+          metadata: Json
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          link?: string | null
+          metadata?: Json
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          link?: string | null
+          metadata?: Json
+          read_at?: string | null
+          title?: string
           user_id?: string
         }
         Relationships: []
@@ -253,6 +389,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          granted_at: string
+          granted_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       verification_events: {
         Row: {
           created_at: string
@@ -288,9 +448,41 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_reviewer: { Args: { _user_id: string }; Returns: boolean }
+      log_audit: {
+        Args: {
+          _action: string
+          _actor: string
+          _details: Json
+          _entity_id: string
+          _entity_type: string
+          _subject: string
+          _summary: string
+        }
+        Returns: undefined
+      }
+      notify_user: {
+        Args: {
+          _body: string
+          _kind: string
+          _link: string
+          _metadata: Json
+          _title: string
+          _user: string
+        }
+        Returns: undefined
+      }
       recalc_trust_score: { Args: { _user_id: string }; Returns: undefined }
     }
     Enums: {
+      app_role: "admin" | "reviewer" | "member"
       funding_status:
         | "draft"
         | "submitted"
@@ -432,6 +624,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "reviewer", "member"],
       funding_status: [
         "draft",
         "submitted",

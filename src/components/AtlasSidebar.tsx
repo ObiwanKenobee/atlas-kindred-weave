@@ -1,10 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
+import { Bell, ScrollText } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton,
   SidebarMenuItem, useSidebar,
 } from "@/components/ui/sidebar";
 import { SANCTUM_MODULES, ORCHESTRATOR, HOME } from "@/lib/modules";
+import { useNotifications } from "@/lib/notifications";
 
 export function AtlasSidebar() {
   const { state } = useSidebar();
@@ -48,6 +50,15 @@ export function AtlasSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <NotificationsMenuItem collapsed={collapsed} isActive={isActive("/notifications")} />
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/audit")}>
+                  <Link to="/audit">
+                    <ScrollText className="h-4 w-4" />
+                    {!collapsed && <span>Audit trail</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -76,5 +87,24 @@ export function AtlasSidebar() {
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
+  );
+}
+
+function NotificationsMenuItem({ collapsed, isActive }: { collapsed: boolean; isActive: boolean }) {
+  const { unread } = useNotifications();
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton asChild isActive={isActive}>
+        <Link to="/notifications" className="relative">
+          <Bell className="h-4 w-4" />
+          {!collapsed && <span>Notifications</span>}
+          {unread > 0 && (
+            <span className="ml-auto inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-gradient-gold px-1 text-[10px] font-bold text-gold-foreground shadow-glow">
+              {unread > 9 ? "9+" : unread}
+            </span>
+          )}
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
   );
 }
