@@ -3,14 +3,17 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { generateFundingDecision } from "@/lib/funding.functions";
+import { generateFundingDecision, reviewFundingDecision } from "@/lib/funding.functions";
+import { useIsReviewer } from "@/lib/notifications";
 import { SANCTUM_MODULES } from "@/lib/modules";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Sparkles, Paperclip, X, FileText, Download, Check, RotateCcw, Ban, ShieldCheck } from "lucide-react";
+import {
+  Loader2, Sparkles, Paperclip, X, FileText, Download, Check, RotateCcw, Ban, ShieldCheck, History, Lock,
+} from "lucide-react";
 import { toast } from "sonner";
 import { downloadDecisionPdf } from "@/lib/decision-pdf";
 
@@ -50,6 +53,18 @@ type DecisionReport = {
   safeguards: string[];
 };
 
+type Version = {
+  id: string;
+  funding_request_id: string;
+  version: number;
+  report: DecisionReport;
+  generated_at: string;
+  human_approval: "pending" | "approved" | "declined" | "revision_requested";
+  human_decision_notes: string | null;
+  human_decided_by_name: string | null;
+  human_decided_at: string | null;
+};
+
 type FundingReq = {
   id: string;
   title: string;
@@ -61,7 +76,10 @@ type FundingReq = {
   status: string;
   attachments: { name: string; path: string; size: number }[];
   decision_report: DecisionReport | null;
+  current_version: number;
+  final_version_id: string | null;
   created_at: string;
+  user_id: string;
   human_approval: "pending" | "approved" | "declined" | "revision_requested";
   human_decision_notes: string | null;
   human_decided_at: string | null;
@@ -69,6 +87,7 @@ type FundingReq = {
 
 function FundingPage() {
   const { user } = useAuth();
+  const isReviewer = useIsReviewer();
   const [requests, setRequests] = useState<FundingReq[]>([]);
   const [busy, setBusy] = useState(false);
   const [selected, setSelected] = useState<FundingReq | null>(null);
@@ -85,10 +104,10 @@ function FundingPage() {
 
   async function refresh() {
     if (!user) return;
+    // Reviewers see all; everyone else sees their own (RLS already enforces this server-side)
     const { data } = await supabase
       .from("funding_requests")
       .select("*")
-      .eq("user_id", user.id)
       .order("created_at", { ascending: false });
     setRequests((data as unknown as FundingReq[]) ?? []);
   }
@@ -124,15 +143,14 @@ function FundingPage() {
       if (insErr) throw insErr;
       toast.success("Request submitted. The Funding Council is deliberating…");
 
-      // Reset form
       setTitle(""); setPitch(""); setAmount(""); setRegion(""); setSector(""); setFiles([]);
       await refresh();
 
-      // Generate AI decision
-      const res = await generateDecision({ data: { requestId: ins.id } });
+      await generateDecision({ data: { requestId: ins.id } });
       toast.success("Funding Decision Report ready.");
       await refresh();
-      setSelected({ ...(ins as unknown as FundingReq), decision_report: res.decision, status: "under_review" });
+      const { data: fresh } = await supabase.from("funding_requests").select("*").eq("id", ins.id).single();
+      if (fresh) setSelected(fresh as unknown as FundingReq);
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Submission failed");
     } finally {
@@ -155,7 +173,14 @@ function FundingPage() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
       <div className="border-b border-border/60 pb-6">
-        <div className="text-xs uppercase tracking-[0.3em] text-gold/80">Engine II · Funding</div>
+        <div className="flex items-center justify-between">
+          <div className="text-xs uppercase tracking-[0.3em] text-gold/80">Engine II · Funding</div>
+          {isReviewer && (
+            <Badge variant="outline" className="border-gold/60 text-gold">
+              <ShieldCheck className="mr-1 h-3 w-3" /> Reviewer privileges
+            </Badge>
+          )}
+        </div>
         <h1 className="mt-3 font-display text-4xl">{m.name}</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">{m.tagline}</p>
       </div>
@@ -166,39 +191,21 @@ function FundingPage() {
           <form onSubmit={submit} className="mt-4 space-y-3">
             <Input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
             <div className="grid grid-cols-3 gap-2">
-              <Input
-                type="number"
-                min="0"
-                step="100"
-                placeholder="Amount"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                required
-                className="col-span-2"
-              />
+              <Input type="number" min="0" step="100" placeholder="Amount" value={amount}
+                onChange={(e) => setAmount(e.target.value)} required className="col-span-2" />
               <Input value={currency} onChange={(e) => setCurrency(e.target.value.toUpperCase())} maxLength={4} />
             </div>
             <div className="grid grid-cols-2 gap-2">
               <Input placeholder="Region" value={region} onChange={(e) => setRegion(e.target.value)} />
               <Input placeholder="Sector" value={sector} onChange={(e) => setSector(e.target.value)} />
             </div>
-            <Textarea
-              placeholder="Pitch — what will you build, who benefits, what evidence supports it?"
-              value={pitch}
-              onChange={(e) => setPitch(e.target.value)}
-              rows={6}
-              required
-              minLength={40}
-            />
+            <Textarea placeholder="Pitch — what will you build, who benefits, what evidence supports it?"
+              value={pitch} onChange={(e) => setPitch(e.target.value)} rows={6} required minLength={40} />
             <label className="glyph-border flex cursor-pointer items-center justify-center gap-2 rounded-md p-3 text-sm text-muted-foreground hover:text-gold">
               <Paperclip className="h-4 w-4" />
               {files.length ? `${files.length} file(s) attached` : "Attach evidence"}
-              <input
-                type="file"
-                multiple
-                className="hidden"
-                onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
-              />
+              <input type="file" multiple className="hidden"
+                onChange={(e) => setFiles(Array.from(e.target.files ?? []))} />
             </label>
             {files.length > 0 && (
               <ul className="space-y-1 text-xs text-muted-foreground">
@@ -219,18 +226,17 @@ function FundingPage() {
         </Card>
 
         <div className="space-y-3 lg:col-span-3">
-          <div className="text-xs uppercase tracking-widest text-gold">Your funding requests</div>
+          <div className="text-xs uppercase tracking-widest text-gold">
+            {isReviewer ? "Review queue" : "Your funding requests"}
+          </div>
           {requests.length === 0 && (
-            <p className="text-sm text-muted-foreground">No requests yet. Submit your first pitch.</p>
+            <p className="text-sm text-muted-foreground">No requests yet.</p>
           )}
           {requests.map((r) => (
-            <Card
-              key={r.id}
-              onClick={() => setSelected(r)}
+            <Card key={r.id} onClick={() => setSelected(r)}
               className={`glyph-border cursor-pointer p-4 transition hover:border-gold/60 ${
                 selected?.id === r.id ? "border-gold/80 shadow-glow" : ""
-              }`}
-            >
+              }`}>
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="font-display text-lg">{r.title}</div>
@@ -241,9 +247,9 @@ function FundingPage() {
                 <StatusBadge status={r.status} />
               </div>
               {r.decision_report && (
-                <div className="mt-3 flex items-center gap-2 text-xs">
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
                   <span className="text-sage">
-                    ✦ {recommendationLabel(r.decision_report.recommendation)} ·{" "}
+                    ✦ v{r.current_version} · {recommendationLabel(r.decision_report.recommendation)} ·{" "}
                     {r.decision_report.recommended_amount.toLocaleString()} {r.decision_report.recommended_currency}
                   </span>
                   <HumanBadge approval={r.human_approval} />
@@ -257,6 +263,7 @@ function FundingPage() {
       {selected?.decision_report && (
         <DecisionPanel
           req={selected}
+          isReviewer={isReviewer}
           onClose={() => setSelected(null)}
           onUpdated={async () => {
             await refresh();
@@ -309,37 +316,47 @@ function HumanBadge({ approval }: { approval: FundingReq["human_approval"] }) {
 }
 
 function DecisionPanel({
-  req,
-  onClose,
-  onUpdated,
+  req, isReviewer, onClose, onUpdated,
 }: {
   req: FundingReq;
+  isReviewer: boolean;
   onClose: () => void;
   onUpdated: () => Promise<void> | void;
 }) {
   const d = req.decision_report!;
-  const { user } = useAuth();
   const [notes, setNotes] = useState(req.human_decision_notes ?? "");
   const [saving, setSaving] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [versions, setVersions] = useState<Version[]>([]);
+  const review = useServerFn(reviewFundingDecision);
   const pending = req.human_approval === "pending" || req.human_approval === "revision_requested";
 
-  async function decide(approval: FundingReq["human_approval"], nextStatus: "approved" | "declined" | "under_review") {
-    if (!user) return;
+  useEffect(() => {
+    supabase
+      .from("decision_report_versions")
+      .select("*")
+      .eq("funding_request_id", req.id)
+      .order("version", { ascending: false })
+      .then(({ data }) => setVersions((data as unknown as Version[]) ?? []));
+  }, [req.id, req.current_version, req.human_approval]);
+
+  async function decide(approval: "approved" | "declined" | "revision_requested") {
     setSaving(true);
-    const { error } = await supabase
-      .from("funding_requests")
-      .update({
-        human_approval: approval,
-        human_decision_notes: notes || null,
-        human_decided_at: new Date().toISOString(),
-        human_decided_by: user.id,
-        status: nextStatus,
-      })
-      .eq("id", req.id);
-    setSaving(false);
-    if (error) return toast.error(error.message);
-    toast.success(`Decision recorded: ${approval.replace("_", " ")}`);
-    await onUpdated();
+    try {
+      await review({ data: { requestId: req.id, approval, notes: notes || undefined } });
+      toast.success(`Decision recorded: ${approval.replace("_", " ")}`);
+      await onUpdated();
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Failed to record decision";
+      toast.error(msg);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function exportPdf() {
+    setExporting(true);
+    try { await downloadDecisionPdf(req); } finally { setExporting(false); }
   }
 
   return (
@@ -348,11 +365,14 @@ function DecisionPanel({
         <div>
           <div className="text-xs uppercase tracking-[0.3em] text-gold/80">Funding Decision Report</div>
           <h2 className="mt-2 font-display text-2xl">{req.title}</h2>
-          <div className="mt-2"><HumanBadge approval={req.human_approval} /></div>
+          <div className="mt-2 flex items-center gap-2">
+            <HumanBadge approval={req.human_approval} />
+            <Badge variant="outline" className="border-gold/40 text-gold">v{req.current_version}</Badge>
+          </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => downloadDecisionPdf(req)}>
-            <Download className="h-4 w-4" /> Export PDF
+          <Button variant="outline" size="sm" onClick={exportPdf} disabled={exporting}>
+            {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Download className="h-4 w-4" /> Export PDF</>}
           </Button>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
         </div>
@@ -411,49 +431,77 @@ function DecisionPanel({
         </Section>
       )}
 
+      <Section title={<><History className="mr-2 inline h-4 w-4" /> Version history</> as unknown as string}>
+        <div className="space-y-2">
+          {versions.length === 0 && <p className="text-xs text-muted-foreground">No versions recorded yet.</p>}
+          {versions.map((v) => (
+            <div key={v.id} className="flex items-start justify-between gap-3 rounded border border-border/40 bg-secondary/20 px-3 py-2 text-xs">
+              <div>
+                <div className="font-display text-sm">
+                  v{v.version} · {recommendationLabel(v.report.recommendation)}
+                  {v.human_approval !== "pending" && <Lock className="ml-2 inline h-3 w-3 text-gold" />}
+                </div>
+                <div className="text-muted-foreground">
+                  Generated {new Date(v.generated_at).toLocaleString()}
+                </div>
+                {v.human_approval !== "pending" ? (
+                  <div className="mt-1 text-sage">
+                    {v.human_approval.replace("_", " ")} by {v.human_decided_by_name ?? "reviewer"} ·{" "}
+                    {v.human_decided_at ? new Date(v.human_decided_at).toLocaleString() : ""}
+                  </div>
+                ) : (
+                  <div className="mt-1 text-gold">Awaiting reviewer</div>
+                )}
+                {v.human_decision_notes && (
+                  <div className="mt-1 text-muted-foreground italic">“{v.human_decision_notes}”</div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
       <Section title="Human-in-the-loop review">
+        {!isReviewer && (
+          <div className="mb-3 flex items-start gap-2 rounded border border-gold/40 bg-secondary/30 p-3 text-xs">
+            <Lock className="mt-0.5 h-3.5 w-3.5 text-gold" />
+            <span>
+              Approval is restricted to users with the <strong>reviewer</strong> or <strong>admin</strong> role.
+              The server enforces this regardless of UI state — your account currently does not have these privileges.
+            </span>
+          </div>
+        )}
         <p className="text-xs text-muted-foreground">
-          No AI recommendation is final until a human steward approves. Record your reasoning before
-          finalizing — it becomes part of the audit trail exported in the PDF.
+          No AI recommendation is final until a reviewer with the required role approves. Each
+          decision permanently stamps the active report version; further changes require a new
+          version (re-generate the report).
         </p>
         <Textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          placeholder="Reviewer notes — what tipped the decision, what conditions must be met, what evidence was missing…"
+          placeholder="Reviewer notes — what tipped the decision, what conditions must be met…"
           rows={4}
           className="mt-3"
-          disabled={!pending && !saving}
+          disabled={!isReviewer || (!pending && !saving)}
         />
         {req.human_decided_at && (
           <p className="mt-2 text-[10px] uppercase tracking-widest text-muted-foreground">
-            Last decision: {req.human_approval.replace("_", " ")} · {new Date(req.human_decided_at).toLocaleString()}
+            Latest decision: {req.human_approval.replace("_", " ")} · {new Date(req.human_decided_at).toLocaleString()}
           </p>
         )}
         <div className="mt-4 flex flex-wrap gap-2">
-          <Button
-            size="sm"
-            onClick={() => decide("approved", "approved")}
-            disabled={saving || req.human_approval === "approved"}
-            className="bg-gradient-gold text-gold-foreground shadow-glow"
-          >
+          <Button size="sm" onClick={() => decide("approved")}
+            disabled={!isReviewer || saving || !pending}
+            className="bg-gradient-gold text-gold-foreground shadow-glow">
             <Check className="h-4 w-4" /> Approve & finalize
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => decide("revision_requested", "under_review")}
-            disabled={saving}
-            className="border-gold/40"
-          >
+          <Button size="sm" variant="outline" onClick={() => decide("revision_requested")}
+            disabled={!isReviewer || saving || !pending} className="border-gold/40">
             <RotateCcw className="h-4 w-4" /> Request revision
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => decide("declined", "declined")}
-            disabled={saving || req.human_approval === "declined"}
-            className="border-destructive/60 text-destructive"
-          >
+          <Button size="sm" variant="outline" onClick={() => decide("declined")}
+            disabled={!isReviewer || saving || !pending}
+            className="border-destructive/60 text-destructive">
             <Ban className="h-4 w-4" /> Decline
           </Button>
         </div>
@@ -461,7 +509,6 @@ function DecisionPanel({
     </div>
   );
 }
-
 
 function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
@@ -472,7 +519,7 @@ function Stat({ label, value, accent }: { label: string; value: string; accent?:
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children }: { title: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="mt-6">
       <div className="text-xs uppercase tracking-widest text-gold">{title}</div>
