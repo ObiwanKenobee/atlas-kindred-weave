@@ -288,20 +288,78 @@ function recommendationLabel(r: DecisionReport["recommendation"]) {
   }[r];
 }
 
-function DecisionPanel({ req, onClose }: { req: FundingReq; onClose: () => void }) {
+function HumanBadge({ approval }: { approval: FundingReq["human_approval"] }) {
+  const map: Record<FundingReq["human_approval"], string> = {
+    pending: "border-gold/60 text-gold",
+    approved: "border-sage/80 text-sage",
+    declined: "border-destructive/60 text-destructive",
+    revision_requested: "border-gold/60 text-gold",
+  };
+  const text: Record<FundingReq["human_approval"], string> = {
+    pending: "Awaiting human review",
+    approved: "Human approved",
+    declined: "Human declined",
+    revision_requested: "Revision requested",
+  };
+  return (
+    <Badge variant="outline" className={map[approval]}>
+      <ShieldCheck className="mr-1 h-3 w-3" /> {text[approval]}
+    </Badge>
+  );
+}
+
+function DecisionPanel({
+  req,
+  onClose,
+  onUpdated,
+}: {
+  req: FundingReq;
+  onClose: () => void;
+  onUpdated: () => Promise<void> | void;
+}) {
   const d = req.decision_report!;
+  const { user } = useAuth();
+  const [notes, setNotes] = useState(req.human_decision_notes ?? "");
+  const [saving, setSaving] = useState(false);
+  const pending = req.human_approval === "pending" || req.human_approval === "revision_requested";
+
+  async function decide(approval: FundingReq["human_approval"], nextStatus: string) {
+    if (!user) return;
+    setSaving(true);
+    const { error } = await supabase
+      .from("funding_requests")
+      .update({
+        human_approval: approval,
+        human_decision_notes: notes || null,
+        human_decided_at: new Date().toISOString(),
+        human_decided_by: user.id,
+        status: nextStatus,
+      })
+      .eq("id", req.id);
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    toast.success(`Decision recorded: ${approval.replace("_", " ")}`);
+    await onUpdated();
+  }
+
   return (
     <div className="mt-10 rounded-xl glyph-border p-8 shadow-sanctum">
       <div className="flex items-start justify-between border-b border-border/60 pb-4">
         <div>
           <div className="text-xs uppercase tracking-[0.3em] text-gold/80">Funding Decision Report</div>
           <h2 className="mt-2 font-display text-2xl">{req.title}</h2>
+          <div className="mt-2"><HumanBadge approval={req.human_approval} /></div>
         </div>
-        <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => downloadDecisionPdf(req)}>
+            <Download className="h-4 w-4" /> Export PDF
+          </Button>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
+        </div>
       </div>
 
       <div className="mt-6 grid gap-4 md:grid-cols-3">
-        <Stat label="Recommendation" value={recommendationLabel(d.recommendation)} accent />
+        <Stat label="AI Recommendation" value={recommendationLabel(d.recommendation)} accent />
         <Stat label="Recommended" value={`${d.recommended_amount.toLocaleString()} ${d.recommended_currency}`} />
         <Stat label="Instrument" value={`${d.recommended_terms.instrument} · ${d.recommended_terms.duration_months}mo`} />
         <Stat label="Trust" value={`${d.trust_assessment.score}/100`} />
@@ -312,9 +370,9 @@ function DecisionPanel({ req, onClose }: { req: FundingReq; onClose: () => void 
       <Section title="Summary"><p className="text-sm text-foreground/90">{d.summary}</p></Section>
       <Section title="Milestones">
         <ul className="space-y-2">
-          {d.recommended_terms.milestones.map((m, i) => (
+          {d.recommended_terms.milestones.map((mi, i) => (
             <li key={i} className="flex gap-3 text-sm">
-              <span className="font-display text-gold">{String(i + 1).padStart(2, "0")}</span> {m}
+              <span className="font-display text-gold">{String(i + 1).padStart(2, "0")}</span> {mi}
             </li>
           ))}
         </ul>
@@ -352,9 +410,58 @@ function DecisionPanel({ req, onClose }: { req: FundingReq; onClose: () => void 
           </ul>
         </Section>
       )}
+
+      <Section title="Human-in-the-loop review">
+        <p className="text-xs text-muted-foreground">
+          No AI recommendation is final until a human steward approves. Record your reasoning before
+          finalizing — it becomes part of the audit trail exported in the PDF.
+        </p>
+        <Textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Reviewer notes — what tipped the decision, what conditions must be met, what evidence was missing…"
+          rows={4}
+          className="mt-3"
+          disabled={!pending && !saving}
+        />
+        {req.human_decided_at && (
+          <p className="mt-2 text-[10px] uppercase tracking-widest text-muted-foreground">
+            Last decision: {req.human_approval.replace("_", " ")} · {new Date(req.human_decided_at).toLocaleString()}
+          </p>
+        )}
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            onClick={() => decide("approved", "approved")}
+            disabled={saving || req.human_approval === "approved"}
+            className="bg-gradient-gold text-gold-foreground shadow-glow"
+          >
+            <Check className="h-4 w-4" /> Approve & finalize
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => decide("revision_requested", "under_review")}
+            disabled={saving}
+            className="border-gold/40"
+          >
+            <RotateCcw className="h-4 w-4" /> Request revision
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => decide("declined", "declined")}
+            disabled={saving || req.human_approval === "declined"}
+            className="border-destructive/60 text-destructive"
+          >
+            <Ban className="h-4 w-4" /> Decline
+          </Button>
+        </div>
+      </Section>
     </div>
   );
 }
+
 
 function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
