@@ -112,9 +112,11 @@ function EconomicGraphPage() {
         <div className="text-xs uppercase tracking-[0.3em] text-gold/80">Engine IX · Economic Graph</div>
         <h1 className="mt-3 font-display text-4xl">Economic Opportunity Map</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          Businesses, investors, suppliers, communities, and AI-recommended partnerships — the living
-          geometry of opportunity. Hover or tap a node to reveal its relationships.
+          A live mirror of the Sanctum's real entities. Verified profiles become business nodes,
+          submitted funding requests become partnerships, and relationships are streamed in as they
+          are recorded. Hover or tap a node to reveal its connections.
         </p>
+        <p className="mt-2 text-[10px] uppercase tracking-widest text-sage">● Live · streaming from your database</p>
       </div>
 
       <div className="mt-6 flex flex-wrap gap-3">
