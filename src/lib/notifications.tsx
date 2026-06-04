@@ -139,3 +139,19 @@ export function useIsReviewer() {
   }, [user]);
   return isReviewer;
 }
+
+export function useIsAdmin() {
+  const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .then(({ data }) => {
+        setIsAdmin((data ?? []).some((r) => r.role === "admin"));
+      });
+  }, [user]);
+  return isAdmin;
+}
