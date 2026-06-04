@@ -60,6 +60,24 @@ export function AtlasSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/settings/notifications")}>
+                  <Link to="/settings/notifications">
+                    <Settings className="h-4 w-4" />
+                    {!collapsed && <span>Notification settings</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isActive("/admin/roles")}>
+                    <Link to="/admin/roles">
+                      <ShieldCheck className="h-4 w-4 text-gold" />
+                      {!collapsed && <span>Roles (admin)</span>}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
