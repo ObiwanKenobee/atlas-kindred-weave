@@ -1,12 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, ScrollText } from "lucide-react";
+import { Bell, ScrollText, Settings, ShieldCheck } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton,
   SidebarMenuItem, useSidebar,
 } from "@/components/ui/sidebar";
 import { SANCTUM_MODULES, ORCHESTRATOR, HOME } from "@/lib/modules";
-import { useNotifications } from "@/lib/notifications";
+import { useNotifications, useIsAdmin } from "@/lib/notifications";
 
 export function AtlasSidebar() {
   const { state } = useSidebar();
