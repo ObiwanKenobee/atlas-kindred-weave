@@ -314,6 +314,42 @@ export type Database = {
           },
         ]
       }
+      notification_preferences: {
+        Row: {
+          created_at: string
+          email_decision: boolean
+          email_review_needed: boolean
+          email_submission: boolean
+          inapp_decision: boolean
+          inapp_review_needed: boolean
+          inapp_submission: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_decision?: boolean
+          email_review_needed?: boolean
+          email_submission?: boolean
+          inapp_decision?: boolean
+          inapp_review_needed?: boolean
+          inapp_submission?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_decision?: boolean
+          email_review_needed?: boolean
+          email_submission?: boolean
+          inapp_decision?: boolean
+          inapp_review_needed?: boolean
+          inapp_submission?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body: string | null
@@ -448,6 +484,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_notif_pref: {
+        Args: { _channel: string; _event: string; _user: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -475,6 +515,17 @@ export type Database = {
           _link: string
           _metadata: Json
           _title: string
+          _user: string
+        }
+        Returns: undefined
+      }
+      queue_sanctum_email: {
+        Args: {
+          _body: string
+          _heading: string
+          _link: string
+          _subject: string
+          _template: string
           _user: string
         }
         Returns: undefined
