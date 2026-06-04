@@ -5,6 +5,25 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 
+async function getRiskContext(userId: string): Promise<string> {
+  const [{ data: profile }, { data: verEvents }, { data: pastFunding }] = await Promise.all([
+    supabaseAdmin.from("profiles").select("trust_score, verified, region").eq("user_id", userId).single(),
+    supabaseAdmin.from("verification_events").select("status, kind").eq("user_id", userId),
+    supabaseAdmin.from("funding_requests").select("human_approval, amount_requested").eq("user_id", userId),
+  ]);
+  const verified = (verEvents ?? []).filter((e) => e.status === "verified").length;
+  const rejected = (verEvents ?? []).filter((e) => e.status === "rejected").length;
+  const approvals = (pastFunding ?? []).filter((r) => r.human_approval === "approved").length;
+  const totalFunded = (pastFunding ?? [])
+    .filter((r) => r.human_approval === "approved")
+    .reduce((s, r) => s + Number(r.amount_requested), 0);
+  return `Applicant Risk Context:
+- Trust score: ${profile?.trust_score ?? 50}/100
+- Verified: ${profile?.verified ?? false}
+- Verified proofs: ${verified} | Rejected proofs: ${rejected}
+- Past approvals: ${approvals} | Total capital previously approved: $${totalFunded.toLocaleString()}`;
+}
+
 const GenInput = z.object({ requestId: z.string().uuid() });
 
 const DecisionSchema = z.object({
@@ -48,6 +67,8 @@ export const generateFundingDecision = createServerFn({ method: "POST" })
     if (!key) throw new Error("LOVABLE_API_KEY not configured");
     const gateway = createLovableAiGatewayProvider(key);
 
+    const riskContext = await getRiskContext(req.user_id);
+
     const prompt = `You are the Atlas Funding Council, coordinating the Deal Agent, Risk Agent, Treasury Agent, and Impact Agent.
 
 A funding request has been submitted:
@@ -57,12 +78,14 @@ Region: ${req.region ?? "unspecified"}
 Amount requested: ${req.amount_requested} ${req.currency}
 Attachments: ${(req.attachments as Array<{ name: string }>).map((a) => a.name).join(", ") || "none"}
 
+${riskContext}
+
 Pitch:
 """
 ${req.pitch}
 """
 
-Generate a Funding Decision Report that maximizes prosperity, trust, and opportunity while preserving human agency. Be concrete. If the pitch is thin, set recommendation to "needs_more_info". Milestones must be measurable.`;
+Generate a Funding Decision Report that maximizes prosperity, trust, and opportunity while preserving human agency. Incorporate the applicant's trust score and verification history when calibrating the recommended amount, terms, and risk flags. Be concrete. If the pitch is thin, set recommendation to "needs_more_info". Milestones must be measurable.`;
 
     const { object } = await generateObject({
       model: gateway("google/gemini-2.5-flash"),
