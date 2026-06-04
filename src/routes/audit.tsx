@@ -124,8 +124,29 @@ function AuditPage() {
         </Select>
       </div>
 
-      <div className="mt-6 space-y-2">
-        {loading && <p className="text-sm text-muted-foreground">Loading the ledger…</p>}
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="text-xs text-muted-foreground">
+          {loading ? "Loading the ledger…" : `${filtered.length} record${filtered.length === 1 ? "" : "s"} match${filtered.length === 1 ? "es" : ""} the current filters.`}
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline" size="sm"
+            disabled={filtered.length === 0}
+            onClick={() => downloadCsv(filtered, query)}
+          >
+            <Download className="mr-2 h-4 w-4" /> CSV
+          </Button>
+          <Button
+            variant="outline" size="sm"
+            disabled={filtered.length === 0}
+            onClick={() => downloadJson(filtered, query)}
+          >
+            <FileJson className="mr-2 h-4 w-4" /> JSON
+          </Button>
+        </div>
+      </div>
+
+      <div className="mt-4 space-y-2">
         {!loading && filtered.length === 0 && (
           <p className="text-sm text-muted-foreground">No records match your filters.</p>
         )}
