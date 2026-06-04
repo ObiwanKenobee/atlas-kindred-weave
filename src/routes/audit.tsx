@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
 } from "@/components/ui/select";
-import { Search, ScrollText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, ScrollText, Download, FileJson } from "lucide-react";
 
 export const Route = createFileRoute("/audit")({
   head: () => ({ meta: [{ title: "Audit Trail — Atlas Sanctum" }] }),
@@ -123,8 +124,29 @@ function AuditPage() {
         </Select>
       </div>
 
-      <div className="mt-6 space-y-2">
-        {loading && <p className="text-sm text-muted-foreground">Loading the ledger…</p>}
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="text-xs text-muted-foreground">
+          {loading ? "Loading the ledger…" : `${filtered.length} record${filtered.length === 1 ? "" : "s"} match${filtered.length === 1 ? "es" : ""} the current filters.`}
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline" size="sm"
+            disabled={filtered.length === 0}
+            onClick={() => downloadCsv(filtered, query)}
+          >
+            <Download className="mr-2 h-4 w-4" /> CSV
+          </Button>
+          <Button
+            variant="outline" size="sm"
+            disabled={filtered.length === 0}
+            onClick={() => downloadJson(filtered, query)}
+          >
+            <FileJson className="mr-2 h-4 w-4" /> JSON
+          </Button>
+        </div>
+      </div>
+
+      <div className="mt-4 space-y-2">
         {!loading && filtered.length === 0 && (
           <p className="text-sm text-muted-foreground">No records match your filters.</p>
         )}
@@ -159,5 +181,71 @@ function AuditPage() {
         ))}
       </div>
     </div>
+  );
+}
+
+function highlightMatches(needle: string, hay: string): string[] {
+  const q = needle.trim().toLowerCase();
+  if (!q) return [];
+  const out: string[] = [];
+  const text = hay.toLowerCase();
+  let idx = 0;
+  while ((idx = text.indexOf(q, idx)) !== -1) {
+    const start = Math.max(0, idx - 30);
+    const end = Math.min(hay.length, idx + q.length + 30);
+    out.push((start > 0 ? "…" : "") + hay.slice(start, end) + (end < hay.length ? "…" : ""));
+    idx = idx + q.length;
+    if (out.length >= 5) break;
+  }
+  return out;
+}
+
+function csvCell(v: unknown): string {
+  const s = v == null ? "" : typeof v === "string" ? v : JSON.stringify(v);
+  return `"${s.replace(/"/g, '""').replace(/\r?\n/g, " ")}"`;
+}
+
+function triggerDownload(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function stamp() {
+  return new Date().toISOString().replace(/[:.]/g, "-");
+}
+
+function downloadCsv(rows: AuditRow[], query: string) {
+  const headers = ["created_at","action","entity_type","entity_id","actor_id","actor_name","subject_user_id","summary","details","matches"];
+  const lines = [headers.join(",")];
+  for (const r of rows) {
+    const blob = [r.summary, r.action, r.entity_type, r.actor_name ?? "", JSON.stringify(r.details ?? {})].join(" ");
+    const matches = highlightMatches(query, blob).join(" | ");
+    lines.push([
+      r.created_at, r.action, r.entity_type, r.entity_id ?? "", r.actor_id ?? "",
+      r.actor_name ?? "", r.subject_user_id ?? "", r.summary, r.details ?? {}, matches,
+    ].map(csvCell).join(","));
+  }
+  triggerDownload(new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" }), `atlas-audit-${stamp()}.csv`);
+}
+
+function downloadJson(rows: AuditRow[], query: string) {
+  const payload = {
+    exported_at: new Date().toISOString(),
+    query,
+    count: rows.length,
+    rows: rows.map((r) => ({
+      ...r,
+      matches: highlightMatches(
+        query,
+        [r.summary, r.action, r.entity_type, r.actor_name ?? "", JSON.stringify(r.details ?? {})].join(" "),
+      ),
+    })),
+  };
+  triggerDownload(
+    new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }),
+    `atlas-audit-${stamp()}.json`,
   );
 }

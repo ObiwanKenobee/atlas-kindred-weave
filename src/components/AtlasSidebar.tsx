@@ -1,18 +1,19 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, ScrollText } from "lucide-react";
+import { Bell, ScrollText, Settings, ShieldCheck } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton,
   SidebarMenuItem, useSidebar,
 } from "@/components/ui/sidebar";
 import { SANCTUM_MODULES, ORCHESTRATOR, HOME } from "@/lib/modules";
-import { useNotifications } from "@/lib/notifications";
+import { useNotifications, useIsAdmin } from "@/lib/notifications";
 
 export function AtlasSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   const isActive = (p: string) => pathname === p;
+  const isAdmin = useIsAdmin();
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
@@ -59,6 +60,24 @@ export function AtlasSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/settings/notifications")}>
+                  <Link to="/settings/notifications">
+                    <Settings className="h-4 w-4" />
+                    {!collapsed && <span>Notification settings</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isActive("/admin/roles")}>
+                    <Link to="/admin/roles">
+                      <ShieldCheck className="h-4 w-4 text-gold" />
+                      {!collapsed && <span>Roles (admin)</span>}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

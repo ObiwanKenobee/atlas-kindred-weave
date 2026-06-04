@@ -25,7 +25,9 @@ import { Route as EconomicGraphRouteImport } from './routes/economic-graph'
 import { Route as BusinessOsRouteImport } from './routes/business-os'
 import { Route as AuditRouteImport } from './routes/audit'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SettingsNotificationsRouteImport } from './routes/settings.notifications'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AdminRolesRouteImport } from './routes/admin.roles'
 
 const VerificationRoute = VerificationRouteImport.update({
   id: '/verification',
@@ -107,9 +109,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
+  id: '/settings/notifications',
+  path: '/settings/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRolesRoute = AdminRolesRouteImport.update({
+  id: '/admin/roles',
+  path: '/admin/roles',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -130,7 +142,9 @@ export interface FileRoutesByFullPath {
   '/risk': typeof RiskRoute
   '/treasury': typeof TreasuryRoute
   '/verification': typeof VerificationRoute
+  '/admin/roles': typeof AdminRolesRoute
   '/api/chat': typeof ApiChatRoute
+  '/settings/notifications': typeof SettingsNotificationsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -149,7 +163,9 @@ export interface FileRoutesByTo {
   '/risk': typeof RiskRoute
   '/treasury': typeof TreasuryRoute
   '/verification': typeof VerificationRoute
+  '/admin/roles': typeof AdminRolesRoute
   '/api/chat': typeof ApiChatRoute
+  '/settings/notifications': typeof SettingsNotificationsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -169,7 +185,9 @@ export interface FileRoutesById {
   '/risk': typeof RiskRoute
   '/treasury': typeof TreasuryRoute
   '/verification': typeof VerificationRoute
+  '/admin/roles': typeof AdminRolesRoute
   '/api/chat': typeof ApiChatRoute
+  '/settings/notifications': typeof SettingsNotificationsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -190,7 +208,9 @@ export interface FileRouteTypes {
     | '/risk'
     | '/treasury'
     | '/verification'
+    | '/admin/roles'
     | '/api/chat'
+    | '/settings/notifications'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -209,7 +229,9 @@ export interface FileRouteTypes {
     | '/risk'
     | '/treasury'
     | '/verification'
+    | '/admin/roles'
     | '/api/chat'
+    | '/settings/notifications'
   id:
     | '__root__'
     | '/'
@@ -228,7 +250,9 @@ export interface FileRouteTypes {
     | '/risk'
     | '/treasury'
     | '/verification'
+    | '/admin/roles'
     | '/api/chat'
+    | '/settings/notifications'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -248,7 +272,9 @@ export interface RootRouteChildren {
   RiskRoute: typeof RiskRoute
   TreasuryRoute: typeof TreasuryRoute
   VerificationRoute: typeof VerificationRoute
+  AdminRolesRoute: typeof AdminRolesRoute
   ApiChatRoute: typeof ApiChatRoute
+  SettingsNotificationsRoute: typeof SettingsNotificationsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -365,11 +391,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/notifications': {
+      id: '/settings/notifications'
+      path: '/settings/notifications'
+      fullPath: '/settings/notifications'
+      preLoaderRoute: typeof SettingsNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
       fullPath: '/api/chat'
       preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/roles': {
+      id: '/admin/roles'
+      path: '/admin/roles'
+      fullPath: '/admin/roles'
+      preLoaderRoute: typeof AdminRolesRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -392,7 +432,9 @@ const rootRouteChildren: RootRouteChildren = {
   RiskRoute: RiskRoute,
   TreasuryRoute: TreasuryRoute,
   VerificationRoute: VerificationRoute,
+  AdminRolesRoute: AdminRolesRoute,
   ApiChatRoute: ApiChatRoute,
+  SettingsNotificationsRoute: SettingsNotificationsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
