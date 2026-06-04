@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
 } from "@/components/ui/select";
-import { Search, ScrollText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, ScrollText, Download, FileJson } from "lucide-react";
 
 export const Route = createFileRoute("/audit")({
   head: () => ({ meta: [{ title: "Audit Trail — Atlas Sanctum" }] }),
