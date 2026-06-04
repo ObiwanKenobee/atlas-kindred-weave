@@ -13,6 +13,7 @@ export function AtlasSidebar() {
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   const isActive = (p: string) => pathname === p;
+  const isAdmin = useIsAdmin();
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
