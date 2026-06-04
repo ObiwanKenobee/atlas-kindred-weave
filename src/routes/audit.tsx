@@ -183,3 +183,69 @@ function AuditPage() {
     </div>
   );
 }
+
+function highlightMatches(needle: string, hay: string): string[] {
+  const q = needle.trim().toLowerCase();
+  if (!q) return [];
+  const out: string[] = [];
+  const text = hay.toLowerCase();
+  let idx = 0;
+  while ((idx = text.indexOf(q, idx)) !== -1) {
+    const start = Math.max(0, idx - 30);
+    const end = Math.min(hay.length, idx + q.length + 30);
+    out.push((start > 0 ? "…" : "") + hay.slice(start, end) + (end < hay.length ? "…" : ""));
+    idx = idx + q.length;
+    if (out.length >= 5) break;
+  }
+  return out;
+}
+
+function csvCell(v: unknown): string {
+  const s = v == null ? "" : typeof v === "string" ? v : JSON.stringify(v);
+  return `"${s.replace(/"/g, '""').replace(/\r?\n/g, " ")}"`;
+}
+
+function triggerDownload(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function stamp() {
+  return new Date().toISOString().replace(/[:.]/g, "-");
+}
+
+function downloadCsv(rows: AuditRow[], query: string) {
+  const headers = ["created_at","action","entity_type","entity_id","actor_id","actor_name","subject_user_id","summary","details","matches"];
+  const lines = [headers.join(",")];
+  for (const r of rows) {
+    const blob = [r.summary, r.action, r.entity_type, r.actor_name ?? "", JSON.stringify(r.details ?? {})].join(" ");
+    const matches = highlightMatches(query, blob).join(" | ");
+    lines.push([
+      r.created_at, r.action, r.entity_type, r.entity_id ?? "", r.actor_id ?? "",
+      r.actor_name ?? "", r.subject_user_id ?? "", r.summary, r.details ?? {}, matches,
+    ].map(csvCell).join(","));
+  }
+  triggerDownload(new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" }), `atlas-audit-${stamp()}.csv`);
+}
+
+function downloadJson(rows: AuditRow[], query: string) {
+  const payload = {
+    exported_at: new Date().toISOString(),
+    query,
+    count: rows.length,
+    rows: rows.map((r) => ({
+      ...r,
+      matches: highlightMatches(
+        query,
+        [r.summary, r.action, r.entity_type, r.actor_name ?? "", JSON.stringify(r.details ?? {})].join(" "),
+      ),
+    })),
+  };
+  triggerDownload(
+    new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }),
+    `atlas-audit-${stamp()}.json`,
+  );
+}
