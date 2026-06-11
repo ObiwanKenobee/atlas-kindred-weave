@@ -27,6 +27,7 @@ import { Route as AuditRouteImport } from './routes/audit'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings.notifications'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AnalyticsFundingRouteImport } from './routes/analytics.funding'
 import { Route as AdminRolesRouteImport } from './routes/admin.roles'
 
 const VerificationRoute = VerificationRouteImport.update({
@@ -119,6 +120,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnalyticsFundingRoute = AnalyticsFundingRouteImport.update({
+  id: '/analytics/funding',
+  path: '/analytics/funding',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRolesRoute = AdminRolesRouteImport.update({
   id: '/admin/roles',
   path: '/admin/roles',
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/treasury': typeof TreasuryRoute
   '/verification': typeof VerificationRoute
   '/admin/roles': typeof AdminRolesRoute
+  '/analytics/funding': typeof AnalyticsFundingRoute
   '/api/chat': typeof ApiChatRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
 }
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/treasury': typeof TreasuryRoute
   '/verification': typeof VerificationRoute
   '/admin/roles': typeof AdminRolesRoute
+  '/analytics/funding': typeof AnalyticsFundingRoute
   '/api/chat': typeof ApiChatRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
 }
@@ -186,6 +194,7 @@ export interface FileRoutesById {
   '/treasury': typeof TreasuryRoute
   '/verification': typeof VerificationRoute
   '/admin/roles': typeof AdminRolesRoute
+  '/analytics/funding': typeof AnalyticsFundingRoute
   '/api/chat': typeof ApiChatRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
 }
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/treasury'
     | '/verification'
     | '/admin/roles'
+    | '/analytics/funding'
     | '/api/chat'
     | '/settings/notifications'
   fileRoutesByTo: FileRoutesByTo
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/treasury'
     | '/verification'
     | '/admin/roles'
+    | '/analytics/funding'
     | '/api/chat'
     | '/settings/notifications'
   id:
@@ -251,6 +262,7 @@ export interface FileRouteTypes {
     | '/treasury'
     | '/verification'
     | '/admin/roles'
+    | '/analytics/funding'
     | '/api/chat'
     | '/settings/notifications'
   fileRoutesById: FileRoutesById
@@ -273,6 +285,7 @@ export interface RootRouteChildren {
   TreasuryRoute: typeof TreasuryRoute
   VerificationRoute: typeof VerificationRoute
   AdminRolesRoute: typeof AdminRolesRoute
+  AnalyticsFundingRoute: typeof AnalyticsFundingRoute
   ApiChatRoute: typeof ApiChatRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
 }
@@ -405,6 +418,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/analytics/funding': {
+      id: '/analytics/funding'
+      path: '/analytics/funding'
+      fullPath: '/analytics/funding'
+      preLoaderRoute: typeof AnalyticsFundingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/roles': {
       id: '/admin/roles'
       path: '/admin/roles'
@@ -433,19 +453,10 @@ const rootRouteChildren: RootRouteChildren = {
   TreasuryRoute: TreasuryRoute,
   VerificationRoute: VerificationRoute,
   AdminRolesRoute: AdminRolesRoute,
+  AnalyticsFundingRoute: AnalyticsFundingRoute,
   ApiChatRoute: ApiChatRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

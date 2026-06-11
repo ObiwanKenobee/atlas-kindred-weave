@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, ScrollText, Settings, ShieldCheck } from "lucide-react";
+import { Bell, ScrollText, Settings, ShieldCheck, BarChart3 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton,
@@ -52,6 +52,14 @@ export function AtlasSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <NotificationsMenuItem collapsed={collapsed} isActive={isActive("/notifications")} />
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/analytics/funding")}>
+                  <Link to="/analytics/funding">
+                    <BarChart3 className="h-4 w-4 text-gold" />
+                    {!collapsed && <span>Funding analytics</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive("/audit")}>
                   <Link to="/audit">
