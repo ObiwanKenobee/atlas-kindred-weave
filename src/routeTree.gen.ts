@@ -14,6 +14,7 @@ import { Route as TreasuryRouteImport } from './routes/treasury'
 import { Route as RiskRouteImport } from './routes/risk'
 import { Route as RegenerativeRouteImport } from './routes/regenerative'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as OrchestratorRouteImport } from './routes/orchestrator'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as LoginRouteImport } from './routes/login'
@@ -53,6 +54,11 @@ const RegenerativeRoute = RegenerativeRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrchestratorRoute = OrchestratorRouteImport.update({
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/orchestrator': typeof OrchestratorRoute
+  '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
   '/regenerative': typeof RegenerativeRoute
   '/risk': typeof RiskRoute
@@ -165,6 +172,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/orchestrator': typeof OrchestratorRoute
+  '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
   '/regenerative': typeof RegenerativeRoute
   '/risk': typeof RiskRoute
@@ -188,6 +196,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/orchestrator': typeof OrchestratorRoute
+  '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
   '/regenerative': typeof RegenerativeRoute
   '/risk': typeof RiskRoute
@@ -212,6 +221,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/notifications'
     | '/orchestrator'
+    | '/pricing'
     | '/profile'
     | '/regenerative'
     | '/risk'
@@ -234,6 +244,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/notifications'
     | '/orchestrator'
+    | '/pricing'
     | '/profile'
     | '/regenerative'
     | '/risk'
@@ -256,6 +267,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/notifications'
     | '/orchestrator'
+    | '/pricing'
     | '/profile'
     | '/regenerative'
     | '/risk'
@@ -279,6 +291,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   NotificationsRoute: typeof NotificationsRoute
   OrchestratorRoute: typeof OrchestratorRoute
+  PricingRoute: typeof PricingRoute
   ProfileRoute: typeof ProfileRoute
   RegenerativeRoute: typeof RegenerativeRoute
   RiskRoute: typeof RiskRoute
@@ -325,6 +338,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/orchestrator': {
@@ -447,6 +467,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   NotificationsRoute: NotificationsRoute,
   OrchestratorRoute: OrchestratorRoute,
+  PricingRoute: PricingRoute,
   ProfileRoute: ProfileRoute,
   RegenerativeRoute: RegenerativeRoute,
   RiskRoute: RiskRoute,
