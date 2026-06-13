@@ -69,6 +69,14 @@ export function AtlasSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/pricing")}>
+                  <Link to="/pricing">
+                    <Sparkles className="h-4 w-4 text-gold" />
+                    {!collapsed && <span>Pricing</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive("/settings/notifications")}>
                   <Link to="/settings/notifications">
                     <Settings className="h-4 w-4" />
