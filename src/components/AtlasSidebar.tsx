@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, ScrollText, Settings, ShieldCheck, BarChart3 } from "lucide-react";
+import { Bell, ScrollText, Settings, ShieldCheck, BarChart3, Sparkles } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton,
