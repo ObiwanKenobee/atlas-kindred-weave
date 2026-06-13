@@ -1,12 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useChat } from "@ai-sdk/react";
+import { useServerFn } from "@tanstack/react-start";
 import { DefaultChatTransport } from "ai";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Sparkles, Send, Loader2, Plus, MessageSquare } from "lucide-react";
+import { Sparkles, Send, Loader2, Plus, MessageSquare, GitBranch, CheckCircle2, Circle, AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { runOrchestratorWorkflow, type OrchestratorResult, type WorkflowStep } from "@/lib/orchestrator.functions";
 
 export const Route = createFileRoute("/orchestrator")({
   head: () => ({
@@ -27,6 +32,95 @@ const SUGGESTIONS = [
 
 type Conv = { id: string; title: string; updated_at: string };
 type Msg = { id: string; role: "user" | "assistant" | "system"; content: string };
+
+function WorkflowStepRow({ step }: { step: WorkflowStep }) {
+  const Icon = step.status === "complete" ? CheckCircle2 : step.status === "error" ? AlertCircle : Circle;
+  const cls = step.status === "complete" ? "text-sage" : step.status === "error" ? "text-destructive" : "text-gold";
+  return (
+    <div className="flex items-start gap-3 text-sm">
+      <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${cls} ${step.status === "running" ? "animate-pulse" : ""}`} />
+      <div>
+        <span className="font-medium">{step.engine}</span>
+        {step.result && <span className="ml-2 text-xs text-muted-foreground">{step.result}</span>}
+      </div>
+    </div>
+  );
+}
+
+function WorkflowPanel() {
+  const { user } = useAuth();
+  const runWorkflow = useServerFn(runOrchestratorWorkflow);
+  const [requestId, setRequestId] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<OrchestratorResult | null>(null);
+
+  async function run(e: React.FormEvent) {
+    e.preventDefault();
+    if (!user) { toast.error("Sign in to run the orchestrator."); return; }
+    const id = requestId.trim();
+    if (!id) return;
+    setBusy(true);
+    setResult(null);
+    try {
+      const res = await runWorkflow({ data: { requestId: id } });
+      setResult(res);
+      toast.success("Orchestrator workflow complete.");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Workflow failed.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card className="glyph-border p-5 mb-6">
+      <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-gold mb-3">
+        <GitBranch className="h-3.5 w-3.5" /> Workflow Runner
+      </div>
+      <p className="text-xs text-muted-foreground mb-3">
+        Trigger the full orchestrated pipeline on a funding request: Underwriting → Risk → Trust → Treasury → Notification.
+      </p>
+      <form onSubmit={run} className="flex gap-2">
+        <Input
+          value={requestId}
+          onChange={(e) => setRequestId(e.target.value)}
+          placeholder="Funding request UUID"
+          className="flex-1 font-mono text-xs"
+          disabled={busy}
+        />
+        <Button type="submit" disabled={busy || !requestId.trim()} size="sm" className="bg-gradient-gold text-gold-foreground shadow-glow">
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Run"}
+        </Button>
+      </form>
+
+      {(busy || result) && (
+        <div className="mt-4 space-y-2">
+          <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Pipeline status</div>
+          {result?.steps.map((step, i) => <WorkflowStepRow key={i} step={step} />)}
+          {busy && !result && <WorkflowStepRow step={{ engine: "Initializing…", status: "running" }} />}
+        </div>
+      )}
+
+      {result && (
+        <div className="mt-4 space-y-2">
+          <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Decision</div>
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="outline" className="border-gold/40 text-gold capitalize">
+              {result.decision.recommendation.replace(/_/g, " ")}
+            </Badge>
+            <Badge variant="outline" className="border-sage/60 text-sage">
+              Trust {result.trustScore}/100
+            </Badge>
+            <Badge variant="outline">
+              v{result.version}
+            </Badge>
+          </div>
+          <p className="text-xs text-foreground/80 mt-2">{result.decision.summary}</p>
+        </div>
+      )}
+    </Card>
+  );
+}
 
 function OrchestratorPage() {
   const { user } = useAuth();
@@ -175,6 +269,7 @@ function OrchestratorPage() {
         </header>
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto py-4">
+          <WorkflowPanel />
           {messages.length === 0 ? (
             <div className="grid gap-3 sm:grid-cols-2">
               {SUGGESTIONS.map((s) => (

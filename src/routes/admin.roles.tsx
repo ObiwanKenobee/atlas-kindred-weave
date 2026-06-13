@@ -1,14 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useIsAdmin } from "@/lib/notifications";
+import { getAdminMetrics, type AdminMetrics } from "@/lib/admin.functions";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { ShieldCheck, UserPlus, Trash2, Search, Loader2 } from "lucide-react";
+import { ShieldCheck, UserPlus, Trash2, Search, Loader2, RefreshCw, Users, Coins, BadgeCheck, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/roles")({
@@ -26,6 +28,145 @@ type Profile = {
 };
 
 type RoleRow = { id: string; user_id: string; role: Role };
+
+function fmt(n: number) {
+  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
+  if (n >= 1_000) return `$${(n / 1_000).toFixed(1)}K`;
+  return `$${n.toFixed(0)}`;
+}
+
+function MetricCard({ label, value, sub, icon }: { label: string; value: string; sub?: string; icon: React.ReactNode }) {
+  return (
+    <Card className="glyph-border p-4">
+      <div className="flex items-start justify-between">
+        <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
+        {icon}
+      </div>
+      <div className="mt-1 font-display text-2xl">{value}</div>
+      {sub && <div className="mt-0.5 text-xs text-muted-foreground">{sub}</div>}
+    </Card>
+  );
+}
+
+function AdminMetricsPanel() {
+  const fetchMetrics = useServerFn(getAdminMetrics);
+  const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await fetchMetrics({});
+      setMetrics(data);
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Failed to load metrics.");
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchMetrics]);
+
+  useEffect(() => { load(); }, [load]);
+
+  if (loading && !metrics) return (
+    <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
+      <Loader2 className="h-4 w-4 animate-spin" /> Loading metrics…
+    </div>
+  );
+  if (!metrics) return null;
+
+  return (
+    <div className="space-y-4 mb-8">
+      <div className="flex items-center justify-between">
+        <div className="text-xs uppercase tracking-widest text-gold">Command Center</div>
+        <Button variant="outline" size="sm" onClick={load} disabled={loading}>
+          {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+        </Button>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <MetricCard
+          label="Total users"
+          value={metrics.users.total.toLocaleString()}
+          sub={`+${metrics.users.newLast30Days} this month`}
+          icon={<Users className="h-4 w-4 text-gold" />}
+        />
+        <MetricCard
+          label="Capital deployed"
+          value={fmt(metrics.funding.capitalDeployed)}
+          sub={`${metrics.funding.approved} approved deals`}
+          icon={<Coins className="h-4 w-4 text-sage" />}
+        />
+        <MetricCard
+          label="Verifications"
+          value={metrics.verification.verified.toLocaleString()}
+          sub={`${(metrics.verification.successRate * 100).toFixed(0)}% success rate`}
+          icon={<BadgeCheck className="h-4 w-4 text-gold" />}
+        />
+        <MetricCard
+          label="Approval rate"
+          value={`${(metrics.funding.approvalRate * 100).toFixed(0)}%`}
+          sub={`${metrics.funding.pending} pending review`}
+          icon={<TrendingUp className="h-4 w-4 text-sage" />}
+        />
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <MetricCard
+          label="Avg trust score"
+          value={`${metrics.users.avgTrustScore}/100`}
+          sub={`${metrics.users.verified} verified users`}
+          icon={<ShieldCheck className="h-4 w-4 text-gold" />}
+        />
+        <MetricCard
+          label="Verifications (7d)"
+          value={metrics.verification.newLast7Days.toLocaleString()}
+          sub={`${metrics.verification.rejected} rejected total`}
+          icon={<BadgeCheck className="h-4 w-4 text-muted-foreground" />}
+        />
+        <MetricCard
+          label="Funding requests"
+          value={metrics.funding.totalRequests.toLocaleString()}
+          sub={`${fmt(metrics.funding.capitalRequested)} total requested`}
+          icon={<Coins className="h-4 w-4 text-muted-foreground" />}
+        />
+      </div>
+
+      {metrics.topSectors.length > 0 && (
+        <Card className="glyph-border p-4">
+          <div className="text-[10px] uppercase tracking-widest text-gold mb-3">Top sectors by approved deals</div>
+          <div className="flex flex-wrap gap-2">
+            {metrics.topSectors.map(({ sector, count }) => (
+              <Badge key={sector} variant="outline" className="border-gold/40 text-gold">
+                {sector} · {count}
+              </Badge>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {metrics.trustDistribution.length > 0 && (
+        <Card className="glyph-border p-4">
+          <div className="text-[10px] uppercase tracking-widest text-gold mb-3">Trust score distribution</div>
+          <div className="flex items-end gap-2 h-16">
+            {metrics.trustDistribution.map(({ range, count }) => {
+              const max = Math.max(...metrics.trustDistribution.map((b) => b.count), 1);
+              return (
+                <div key={range} className="flex flex-1 flex-col items-center gap-1">
+                  <div
+                    className="w-full rounded-t bg-gradient-gold opacity-80"
+                    style={{ height: `${Math.max((count / max) * 48, count > 0 ? 4 : 0)}px` }}
+                  />
+                  <div className="text-[9px] text-muted-foreground">{range}</div>
+                  <div className="text-[9px] text-gold">{count}</div>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      )}
+    </div>
+  );
+}
 
 function AdminRolesPage() {
   const { user } = useAuth();
@@ -50,12 +191,8 @@ function AdminRolesPage() {
 
   useEffect(() => { if (isAdmin) refresh(); }, [isAdmin, refresh]);
 
-  if (!user) {
-    return <Gate title="Admin · Roles" body="Sign in with an admin account to manage permissions." />;
-  }
-  if (!isAdmin) {
-    return <Gate title="Admin only" body="This sanctum is reserved for stewards bearing the admin glyph." />;
-  }
+  if (!user) return <Gate title="Admin · Roles" body="Sign in with an admin account to manage permissions." />;
+  if (!isAdmin) return <Gate title="Admin only" body="This sanctum is reserved for stewards bearing the admin glyph." />;
 
   const filtered = profiles.filter((p) => {
     const q = query.trim().toLowerCase();
@@ -96,6 +233,12 @@ function AdminRolesPage() {
           Grant or revoke <code>reviewer</code> and <code>admin</code> roles. All actions are
           recorded in the audit ledger and the subject is notified.
         </p>
+      </div>
+
+      <AdminMetricsPanel />
+
+      <div className="border-b border-border/60 pb-4 mb-6">
+        <div className="text-xs uppercase tracking-widest text-gold">Role Management</div>
       </div>
 
       <div className="mt-6 relative">
