@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, ScrollText, Settings, ShieldCheck, BarChart3, Sparkles, PhoneCall, BookOpen, Activity, Search } from "lucide-react";
+import { Bell, ScrollText, Settings, ShieldCheck, BarChart3, Sparkles, PhoneCall, BookOpen, Activity, Search, Users, UserCircle } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton,
@@ -105,6 +105,22 @@ export function AtlasSidebar() {
                   <Link to="/pricing">
                     <Sparkles className="h-4 w-4 text-gold" />
                     {!collapsed && <span>Pricing</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/community")}>
+                  <Link to="/community">
+                    <Users className="h-4 w-4 text-gold" />
+                    {!collapsed && <span>Community</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/profile")}>
+                  <Link to="/profile">
+                    <UserCircle className="h-4 w-4" />
+                    {!collapsed && <span>Profile</span>}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
