@@ -1,6 +1,6 @@
 import {
   Shield, Coins, BadgeCheck, Vault, AlertTriangle, Sprout,
-  Leaf, Brain, Network, Recycle, Sparkles, Home,
+  Leaf, Brain, Network, Recycle, Sparkles, Home, BookOpen, PhoneCall, Search,
 } from "lucide-react";
 
 export type ModuleDef = {
@@ -143,6 +143,54 @@ export const SANCTUM_MODULES: ModuleDef[] = [
       { label: "Businesses Operated", value: "2,108" },
       { label: "Avg MoM Growth", value: "+7.3%" },
       { label: "AI Decisions / day", value: "184,000" },
+    ],
+  },
+  {
+    slug: "opportunities",
+    path: "/opportunities",
+    name: "Opportunity Hub",
+    glyph: "✦",
+    tagline: "AI-matched grants, investors, and programs.",
+    purpose: "Research Agent finds grants, loans, accelerators, and government programs matched to your region, sector, and trust score.",
+    icon: Search,
+    agents: ["Research Agent", "Treasury Agent"],
+    outputs: ["Opportunity Matches", "Fit Scores", "Treasury Report"],
+    metrics: [
+      { label: "Opportunities Found", value: "—" },
+      { label: "Avg Fit Score", value: "—" },
+      { label: "Reports Generated", value: "—" },
+    ],
+  },
+  {
+    slug: "cfo",
+    path: "/cfo",
+    name: "Atlas CFO",
+    glyph: "✦",
+    tagline: "Talk to your AI Chief Financial Officer.",
+    purpose: "Voice-first AI CFO that retrieves your business records, calculates funding readiness, and submits applications via conversation.",
+    icon: PhoneCall,
+    agents: ["CFO Agent", "Deal Agent", "Risk Agent", "Treasury Agent"],
+    outputs: ["Funding Applications", "Trust Score Retrieval", "Treasury Insights", "Business Coaching"],
+    metrics: [
+      { label: "Conversations", value: "—" },
+      { label: "Actions Taken", value: "—" },
+      { label: "Requests Filed", value: "—" },
+    ],
+  },
+  {
+    slug: "vault",
+    path: "/vault",
+    name: "Knowledge Vault",
+    glyph: "✦",
+    tagline: "Every document. One intelligence layer.",
+    purpose: "Upload business documents, receipts, and transcripts. Atlas Memory indexes everything and answers funding questions grounded in your evidence.",
+    icon: BookOpen,
+    agents: ["Knowledge Agent", "Research Agent", "Verification Agent"],
+    outputs: ["Grounded Q&A", "Evidence Citations", "Semantic Search"],
+    metrics: [
+      { label: "Documents Indexed", value: "—" },
+      { label: "Queries Answered", value: "—" },
+      { label: "Avg Confidence", value: "—" },
     ],
   },
   {

@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, ScrollText, Settings, ShieldCheck, BarChart3, Sparkles } from "lucide-react";
+import { Bell, ScrollText, Settings, ShieldCheck, BarChart3, Sparkles, PhoneCall, BookOpen, Activity, Search } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton,
@@ -44,6 +44,30 @@ export function AtlasSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/opportunities")}>
+                  <Link to="/opportunities">
+                    <Search className="h-4 w-4 text-gold" />
+                    {!collapsed && <span>Opportunity Hub</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/cfo")}>
+                  <Link to="/cfo">
+                    <PhoneCall className="h-4 w-4 text-gold" />
+                    {!collapsed && <span>Atlas CFO</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/vault")}>
+                  <Link to="/vault">
+                    <BookOpen className="h-4 w-4 text-gold" />
+                    {!collapsed && <span>Knowledge Vault</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive(ORCHESTRATOR.path)}>
                   <Link to={ORCHESTRATOR.path}>
                     <ORCHESTRATOR.icon className="h-4 w-4 text-gold" />
@@ -52,6 +76,14 @@ export function AtlasSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <NotificationsMenuItem collapsed={collapsed} isActive={isActive("/notifications")} />
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/observability")}>
+                  <Link to="/observability">
+                    <Activity className="h-4 w-4 text-gold" />
+                    {!collapsed && <span>Observability</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive("/analytics/funding")}>
                   <Link to="/analytics/funding">

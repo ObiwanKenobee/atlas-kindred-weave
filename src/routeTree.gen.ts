@@ -16,6 +16,7 @@ import { Route as RegenerativeRouteImport } from './routes/regenerative'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as OrchestratorRouteImport } from './routes/orchestrator'
+import { Route as ObservabilityRouteImport } from './routes/observability'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ImpactRouteImport } from './routes/impact'
@@ -27,9 +28,14 @@ import { Route as BusinessOsRouteImport } from './routes/business-os'
 import { Route as AuditRouteImport } from './routes/audit'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings.notifications'
+import { Route as ApiSessionRouteImport } from './routes/api/session'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiEmbedRouteImport } from './routes/api/embed'
+import { Route as ApiCfoToolsRouteImport } from './routes/api/cfo-tools'
 import { Route as AnalyticsFundingRouteImport } from './routes/analytics.funding'
 import { Route as AdminRolesRouteImport } from './routes/admin.roles'
+import { Route as VaultRouteImport } from './routes/vault'
+import { Route as CfoRouteImport } from './routes/cfo'
 
 const VerificationRoute = VerificationRouteImport.update({
   id: '/verification',
@@ -64,6 +70,11 @@ const PricingRoute = PricingRouteImport.update({
 const OrchestratorRoute = OrchestratorRouteImport.update({
   id: '/orchestrator',
   path: '/orchestrator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ObservabilityRoute = ObservabilityRouteImport.update({
+  id: '/observability',
+  path: '/observability',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NotificationsRoute = NotificationsRouteImport.update({
@@ -121,9 +132,24 @@ const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
   path: '/settings/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSessionRoute = ApiSessionRouteImport.update({
+  id: '/api/session',
+  path: '/api/session',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEmbedRoute = ApiEmbedRouteImport.update({
+  id: '/api/embed',
+  path: '/api/embed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCfoToolsRoute = ApiCfoToolsRouteImport.update({
+  id: '/api/cfo-tools',
+  path: '/api/cfo-tools',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnalyticsFundingRoute = AnalyticsFundingRouteImport.update({
@@ -136,11 +162,22 @@ const AdminRolesRoute = AdminRolesRouteImport.update({
   path: '/admin/roles',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VaultRoute = VaultRouteImport.update({
+  id: '/vault',
+  path: '/vault',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CfoRoute = CfoRouteImport.update({
+  id: '/cfo',
+  path: '/cfo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
+  '/cfo': typeof CfoRoute
   '/economic-graph': typeof EconomicGraphRoute
   '/funding': typeof FundingRoute
   '/growth': typeof GrowthRoute
@@ -148,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/impact': typeof ImpactRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
+  '/observability': typeof ObservabilityRoute
   '/orchestrator': typeof OrchestratorRoute
   '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
@@ -155,15 +193,20 @@ export interface FileRoutesByFullPath {
   '/risk': typeof RiskRoute
   '/treasury': typeof TreasuryRoute
   '/verification': typeof VerificationRoute
+  '/vault': typeof VaultRoute
   '/admin/roles': typeof AdminRolesRoute
   '/analytics/funding': typeof AnalyticsFundingRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/cfo-tools': typeof ApiCfoToolsRoute
+  '/api/embed': typeof ApiEmbedRoute
+  '/api/session': typeof ApiSessionRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
+  '/cfo': typeof CfoRoute
   '/economic-graph': typeof EconomicGraphRoute
   '/funding': typeof FundingRoute
   '/growth': typeof GrowthRoute
@@ -171,6 +214,7 @@ export interface FileRoutesByTo {
   '/impact': typeof ImpactRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
+  '/observability': typeof ObservabilityRoute
   '/orchestrator': typeof OrchestratorRoute
   '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
@@ -178,9 +222,13 @@ export interface FileRoutesByTo {
   '/risk': typeof RiskRoute
   '/treasury': typeof TreasuryRoute
   '/verification': typeof VerificationRoute
+  '/vault': typeof VaultRoute
   '/admin/roles': typeof AdminRolesRoute
   '/analytics/funding': typeof AnalyticsFundingRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/cfo-tools': typeof ApiCfoToolsRoute
+  '/api/embed': typeof ApiEmbedRoute
+  '/api/session': typeof ApiSessionRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
 }
 export interface FileRoutesById {
@@ -188,6 +236,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
+  '/cfo': typeof CfoRoute
   '/economic-graph': typeof EconomicGraphRoute
   '/funding': typeof FundingRoute
   '/growth': typeof GrowthRoute
@@ -195,6 +244,7 @@ export interface FileRoutesById {
   '/impact': typeof ImpactRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
+  '/observability': typeof ObservabilityRoute
   '/orchestrator': typeof OrchestratorRoute
   '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
@@ -202,9 +252,13 @@ export interface FileRoutesById {
   '/risk': typeof RiskRoute
   '/treasury': typeof TreasuryRoute
   '/verification': typeof VerificationRoute
+  '/vault': typeof VaultRoute
   '/admin/roles': typeof AdminRolesRoute
   '/analytics/funding': typeof AnalyticsFundingRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/cfo-tools': typeof ApiCfoToolsRoute
+  '/api/embed': typeof ApiEmbedRoute
+  '/api/session': typeof ApiSessionRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
 }
 export interface FileRouteTypes {
@@ -213,6 +267,7 @@ export interface FileRouteTypes {
     | '/'
     | '/audit'
     | '/business-os'
+    | '/cfo'
     | '/economic-graph'
     | '/funding'
     | '/growth'
@@ -220,6 +275,7 @@ export interface FileRouteTypes {
     | '/impact'
     | '/login'
     | '/notifications'
+    | '/observability'
     | '/orchestrator'
     | '/pricing'
     | '/profile'
@@ -227,15 +283,20 @@ export interface FileRouteTypes {
     | '/risk'
     | '/treasury'
     | '/verification'
+    | '/vault'
     | '/admin/roles'
     | '/analytics/funding'
     | '/api/chat'
+    | '/api/cfo-tools'
+    | '/api/embed'
+    | '/api/session'
     | '/settings/notifications'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/audit'
     | '/business-os'
+    | '/cfo'
     | '/economic-graph'
     | '/funding'
     | '/growth'
@@ -243,6 +304,7 @@ export interface FileRouteTypes {
     | '/impact'
     | '/login'
     | '/notifications'
+    | '/observability'
     | '/orchestrator'
     | '/pricing'
     | '/profile'
@@ -250,15 +312,20 @@ export interface FileRouteTypes {
     | '/risk'
     | '/treasury'
     | '/verification'
+    | '/vault'
     | '/admin/roles'
     | '/analytics/funding'
     | '/api/chat'
+    | '/api/cfo-tools'
+    | '/api/embed'
+    | '/api/session'
     | '/settings/notifications'
   id:
     | '__root__'
     | '/'
     | '/audit'
     | '/business-os'
+    | '/cfo'
     | '/economic-graph'
     | '/funding'
     | '/growth'
@@ -266,6 +333,7 @@ export interface FileRouteTypes {
     | '/impact'
     | '/login'
     | '/notifications'
+    | '/observability'
     | '/orchestrator'
     | '/pricing'
     | '/profile'
@@ -273,9 +341,13 @@ export interface FileRouteTypes {
     | '/risk'
     | '/treasury'
     | '/verification'
+    | '/vault'
     | '/admin/roles'
     | '/analytics/funding'
     | '/api/chat'
+    | '/api/cfo-tools'
+    | '/api/embed'
+    | '/api/session'
     | '/settings/notifications'
   fileRoutesById: FileRoutesById
 }
@@ -283,6 +355,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuditRoute: typeof AuditRoute
   BusinessOsRoute: typeof BusinessOsRoute
+  CfoRoute: typeof CfoRoute
   EconomicGraphRoute: typeof EconomicGraphRoute
   FundingRoute: typeof FundingRoute
   GrowthRoute: typeof GrowthRoute
@@ -290,6 +363,7 @@ export interface RootRouteChildren {
   ImpactRoute: typeof ImpactRoute
   LoginRoute: typeof LoginRoute
   NotificationsRoute: typeof NotificationsRoute
+  ObservabilityRoute: typeof ObservabilityRoute
   OrchestratorRoute: typeof OrchestratorRoute
   PricingRoute: typeof PricingRoute
   ProfileRoute: typeof ProfileRoute
@@ -297,9 +371,13 @@ export interface RootRouteChildren {
   RiskRoute: typeof RiskRoute
   TreasuryRoute: typeof TreasuryRoute
   VerificationRoute: typeof VerificationRoute
+  VaultRoute: typeof VaultRoute
   AdminRolesRoute: typeof AdminRolesRoute
   AnalyticsFundingRoute: typeof AnalyticsFundingRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiCfoToolsRoute: typeof ApiCfoToolsRoute
+  ApiEmbedRoute: typeof ApiEmbedRoute
+  ApiSessionRoute: typeof ApiSessionRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
 }
 
@@ -352,6 +430,13 @@ declare module '@tanstack/react-router' {
       path: '/orchestrator'
       fullPath: '/orchestrator'
       preLoaderRoute: typeof OrchestratorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/observability': {
+      id: '/observability'
+      path: '/observability'
+      fullPath: '/observability'
+      preLoaderRoute: typeof ObservabilityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/notifications': {
@@ -431,11 +516,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/session': {
+      id: '/api/session'
+      path: '/api/session'
+      fullPath: '/api/session'
+      preLoaderRoute: typeof ApiSessionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
       fullPath: '/api/chat'
       preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/embed': {
+      id: '/api/embed'
+      path: '/api/embed'
+      fullPath: '/api/embed'
+      preLoaderRoute: typeof ApiEmbedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cfo-tools': {
+      id: '/api/cfo-tools'
+      path: '/api/cfo-tools'
+      fullPath: '/api/cfo-tools'
+      preLoaderRoute: typeof ApiCfoToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/analytics/funding': {
@@ -452,6 +558,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRolesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/vault': {
+      id: '/vault'
+      path: '/vault'
+      fullPath: '/vault'
+      preLoaderRoute: typeof VaultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cfo': {
+      id: '/cfo'
+      path: '/cfo'
+      fullPath: '/cfo'
+      preLoaderRoute: typeof CfoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -459,6 +579,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuditRoute: AuditRoute,
   BusinessOsRoute: BusinessOsRoute,
+  CfoRoute: CfoRoute,
   EconomicGraphRoute: EconomicGraphRoute,
   FundingRoute: FundingRoute,
   GrowthRoute: GrowthRoute,
@@ -466,6 +587,7 @@ const rootRouteChildren: RootRouteChildren = {
   ImpactRoute: ImpactRoute,
   LoginRoute: LoginRoute,
   NotificationsRoute: NotificationsRoute,
+  ObservabilityRoute: ObservabilityRoute,
   OrchestratorRoute: OrchestratorRoute,
   PricingRoute: PricingRoute,
   ProfileRoute: ProfileRoute,
@@ -473,9 +595,13 @@ const rootRouteChildren: RootRouteChildren = {
   RiskRoute: RiskRoute,
   TreasuryRoute: TreasuryRoute,
   VerificationRoute: VerificationRoute,
+  VaultRoute: VaultRoute,
   AdminRolesRoute: AdminRolesRoute,
   AnalyticsFundingRoute: AnalyticsFundingRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiCfoToolsRoute: ApiCfoToolsRoute,
+  ApiEmbedRoute: ApiEmbedRoute,
+  ApiSessionRoute: ApiSessionRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
 }
 export const routeTree = rootRouteImport

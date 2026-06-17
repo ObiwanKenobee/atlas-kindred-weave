@@ -1,13 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SANCTUM_MODULES, ORCHESTRATOR } from "@/lib/modules";
 import { Card } from "@/components/ui/card";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight, PhoneCall, BookOpen, Search } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Atlas Sanctum — Sanctum Overview" },
-      { name: "description", content: "Ten engines and an orchestrator AI coordinating capital, trust, and opportunity." },
+      { title: "Atlas Sanctum — AI-Operated Regenerative Finance" },
+      { name: "description", content: "An AI-operated financial intelligence system that grounds every funding decision in multimodal evidence." },
     ],
   }),
   component: Index,
@@ -24,6 +24,10 @@ const PRINCIPLES = [
   "Preserve Human Agency",
 ];
 
+const WORKFLOW = [
+  "Observe", "Understand", "Verify", "Reason", "Act", "Record", "Learn",
+];
+
 function Index() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-12">
@@ -31,35 +35,62 @@ function Index() {
       <section className="relative overflow-hidden rounded-xl glyph-border p-10 shadow-sanctum">
         <div className="absolute inset-0 bg-gradient-moss opacity-60" aria-hidden />
         <div className="relative">
-          <div className="text-xs uppercase tracking-[0.4em] text-gold/80">A Regenerative Finance OS</div>
+          <div className="text-xs uppercase tracking-[0.4em] text-gold/80">AI-Operated Regenerative Finance OS</div>
           <h1 className="mt-4 font-display text-5xl leading-tight text-foreground md:text-6xl">
             Atlas <span className="text-gold">Sanctum</span>
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            An AI-operated economic civilization. Capital flows toward measurable outcomes,
-            trust is earned through verified action, and every transaction grows the
-            intelligence of the whole.
+          <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
+            An AI financial intelligence system that grounds every funding decision in multimodal evidence — voice, documents, images, and business records.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              to={ORCHESTRATOR.path}
+              to="/cfo"
               className="inline-flex items-center gap-2 rounded-md bg-gradient-gold px-5 py-2.5 text-sm font-medium text-gold-foreground shadow-glow"
             >
-              <Sparkles className="h-4 w-4" />
-              Convene the Orchestrator
+              <PhoneCall className="h-4 w-4" />
+              Talk to Atlas CFO
             </Link>
             <Link
               to="/funding"
               className="inline-flex items-center gap-2 rounded-md border border-gold/40 px-5 py-2.5 text-sm text-foreground hover:bg-secondary/40"
             >
-              Enter the Funding Engine <ArrowRight className="h-4 w-4" />
+              <Sparkles className="h-4 w-4" /> Apply for Funding
+            </Link>
+            <Link
+              to="/vault"
+              className="inline-flex items-center gap-2 rounded-md border border-border/40 px-5 py-2.5 text-sm text-muted-foreground hover:bg-secondary/40"
+            >
+              <BookOpen className="h-4 w-4" /> Knowledge Vault
+            </Link>
+            <Link
+              to="/opportunities"
+              className="inline-flex items-center gap-2 rounded-md border border-border/40 px-5 py-2.5 text-sm text-muted-foreground hover:bg-secondary/40"
+            >
+              <Search className="h-4 w-4" /> Find Opportunities
             </Link>
           </div>
         </div>
       </section>
 
+      {/* Observe → Learn workflow */}
+      <section className="mt-10">
+        <div className="text-xs uppercase tracking-[0.3em] text-gold/80 mb-4">How Atlas Reasons</div>
+        <div className="flex flex-wrap items-center gap-2">
+          {WORKFLOW.map((step, i) => (
+            <div key={step} className="flex items-center gap-2">
+              <div className="rounded-full border border-gold/30 bg-secondary/40 px-3 py-1 text-xs font-medium text-foreground/80">
+                {step}
+              </div>
+              {i < WORKFLOW.length - 1 && (
+                <ArrowRight className="h-3 w-3 text-gold/40 shrink-0" />
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Principles */}
-      <section className="mt-12">
+      <section className="mt-10">
         <div className="text-xs uppercase tracking-[0.3em] text-gold/80">Founding Principles</div>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {PRINCIPLES.map((p, i) => (
@@ -75,7 +106,7 @@ function Index() {
       <section className="mt-14">
         <div className="flex items-end justify-between">
           <div>
-            <div className="text-xs uppercase tracking-[0.3em] text-gold/80">The Ten Engines</div>
+            <div className="text-xs uppercase tracking-[0.3em] text-gold/80">The Engines</div>
             <h2 className="mt-2 font-display text-3xl">An Operating Pantheon</h2>
           </div>
           <Link to={ORCHESTRATOR.path} className="hidden text-sm text-muted-foreground hover:text-gold md:inline">

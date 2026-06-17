@@ -4,6 +4,7 @@ import { generateObject } from "ai";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
+import { recordAgentEvent } from "@/lib/observability.server";
 
 const VerifyInput = z.object({
   storagePath: z.string().min(1),
@@ -53,10 +54,22 @@ Determine:
 
 Be strict. Real-world finance depends on your accuracy. If you cannot view the image clearly, set verdict to needs_review.`;
 
-    const { object } = await generateObject({
+    const t0 = Date.now();
+    const { object, usage } = await generateObject({
       model: gateway("google/gemini-2.5-flash"),
       schema: VerifyOutputSchema,
       prompt,
+    });
+    void recordAgentEvent({
+      userId,
+      agent: "Verification Agent",
+      action: "proof_analysis",
+      latencyMs: Date.now() - t0,
+      inputTokens: usage?.promptTokens,
+      outputTokens: usage?.completionTokens,
+      confidence: object.confidence,
+      outcome: object.verdict,
+      metadata: { kind: data.kind, fundingRequestId: data.fundingRequestId ?? null },
     });
 
     // Insert into verification_events — DB trigger auto-recalculates trust_score

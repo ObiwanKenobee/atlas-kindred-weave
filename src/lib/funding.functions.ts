@@ -4,6 +4,7 @@ import { generateObject } from "ai";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
+import { recordAgentEvent } from "@/lib/observability.server";
 
 async function getRiskContext(userId: string): Promise<string> {
   const [{ data: profile }, { data: verEvents }, { data: pastFunding }] = await Promise.all([
@@ -87,10 +88,22 @@ ${req.pitch}
 
 Generate a Funding Decision Report that maximizes prosperity, trust, and opportunity while preserving human agency. Incorporate the applicant's trust score and verification history when calibrating the recommended amount, terms, and risk flags. Be concrete. If the pitch is thin, set recommendation to "needs_more_info". Milestones must be measurable.`;
 
-    const { object } = await generateObject({
+    const t0 = Date.now();
+    const { object, usage } = await generateObject({
       model: gateway("google/gemini-2.5-flash"),
       schema: DecisionSchema,
       prompt,
+    });
+    void recordAgentEvent({
+      userId: req.user_id,
+      agent: "Funding Agent",
+      action: "funding_decision",
+      latencyMs: Date.now() - t0,
+      inputTokens: usage?.promptTokens,
+      outputTokens: usage?.completionTokens,
+      confidence: object.trust_assessment.score / 100,
+      outcome: object.recommendation,
+      metadata: { requestId: req.id },
     });
 
     // Compute next version & insert immutable version row via service role
