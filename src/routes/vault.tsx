@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { ingestDocument, searchVault, queryVault, deleteFromVault } from "@/lib/vault.functions";
+import { ingestDocument, searchVault, queryVault, deleteFromVault, extractDocumentContent, getVaultFileUrl } from "@/lib/vault.functions";
 import type { SearchResult } from "@/lib/vault.functions";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -50,6 +50,7 @@ function VaultPage() {
   const [activeTab, setActiveTab] = useState<"upload" | "search" | "ask">("upload");
 
   // upload form state
+  const [extracting, setExtracting] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [docKind, setDocKind] = useState<DocKind>("general");
   const [extractedText, setExtractedText] = useState("");
@@ -59,6 +60,20 @@ function VaultPage() {
   const search = useServerFn(searchVault);
   const query = useServerFn(queryVault);
   const del = useServerFn(deleteFromVault);
+  const extract = useServerFn(extractDocumentContent);
+  const getFileUrl = useServerFn(getVaultFileUrl);
+
+  async function fileToBase64(f: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        resolve(result.split(",")[1] ?? "");
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(f);
+    });
+  }
 
   async function loadDocs() {
     if (!user) return;
@@ -76,14 +91,8 @@ function VaultPage() {
   // When user selects a text file, auto-populate extracted text
   async function handleFileChange(f: File) {
     setFile(f);
-    if (f.type === "text/plain") {
-      setExtractedText(await f.text());
-    } else {
-      // For PDFs / images / audio: user must paste extracted text or transcript.
-      // In a production deploy you'd call a Cloud Function with Document AI / Vision here.
-      setExtractedText("");
-    }
-    // Auto-detect doc kind from file name
+    setExtractedText("");
+
     const name = f.name.toLowerCase();
     if (name.includes("receipt")) setDocKind("receipt");
     else if (name.includes("invoice")) setDocKind("invoice");
@@ -93,6 +102,25 @@ function VaultPage() {
     else if (name.includes("fund") || name.includes("loan")) setDocKind("funding");
     else if (name.includes("transcript") || name.includes("audio")) setDocKind("audio_transcript");
     else setDocKind("general");
+
+    if (f.type === "text/plain") {
+      setExtractedText(await f.text());
+      return;
+    }
+
+    setExtracting(true);
+    try {
+      const base64 = await fileToBase64(f);
+      const { content } = await extract({
+        data: { base64, mimeType: f.type || "application/octet-stream", fileName: f.name, docKind },
+      });
+      setExtractedText(content);
+      toast.success("Document extracted — review before indexing.");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Auto-extraction failed — paste text manually.");
+    } finally {
+      setExtracting(false);
+    }
   }
 
   async function handleUpload(e: React.FormEvent) {
@@ -156,6 +184,15 @@ function VaultPage() {
       toast.error(err instanceof Error ? err.message : "Query failed");
     } finally {
       setAsking(false);
+    }
+  }
+
+  async function handleViewFile(storagePath: string) {
+    try {
+      const { url } = await getFileUrl({ data: { storagePath } });
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Could not open file.");
     }
   }
 
@@ -245,17 +282,17 @@ function VaultPage() {
                 <Textarea
                   value={extractedText}
                   onChange={(e) => setExtractedText(e.target.value)}
-                  placeholder="Paste the document text, OCR result, or audio transcript here. This is what Atlas Memory will index and reason over."
+                  placeholder={extracting ? "Extracting document content with Gemini Vision…" : "Extracted text appears here. Edit before indexing."}
                   rows={8}
                   required
                 />
 
                 <Button
                   type="submit"
-                  disabled={uploadBusy || !file || !extractedText.trim()}
+                  disabled={uploadBusy || extracting || !file || !extractedText.trim()}
                   className="w-full bg-gradient-gold text-gold-foreground shadow-glow"
                 >
-                  {uploadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Sparkles className="h-4 w-4" /> Index into Vault</>}
+                  {uploadBusy || extracting ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Sparkles className="h-4 w-4" /> Index into Vault</>}
                 </Button>
               </form>
             </Card>
@@ -370,15 +407,13 @@ function VaultPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <a
-                        href={`/api/vault-file?path=${encodeURIComponent(doc.storage_path)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        onClick={() => handleViewFile(doc.storage_path)}
                         className="text-muted-foreground hover:text-gold"
                         title="View file"
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
-                      </a>
+                      </button>
                       <button
                         onClick={() => handleDelete(doc.storage_path, doc.file_name)}
                         className="text-muted-foreground hover:text-destructive"

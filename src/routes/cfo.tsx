@@ -85,6 +85,11 @@ const TOOL_ICONS: Record<string, typeof Mic> = {
   get_funding_status: Coins,
   create_funding_request: Coins,
   get_treasury_metrics: BarChart3,
+  update_trust_score: ShieldCheck,
+  create_verification_record: ShieldCheck,
+  find_funding_opportunities: Coins,
+  generate_treasury_report: BarChart3,
+  send_notification: Zap,
 };
 
 type TranscriptLine = { id: number; source: "user" | "ai"; text: string; sentiment?: ReturnType<typeof detectSentiment> };

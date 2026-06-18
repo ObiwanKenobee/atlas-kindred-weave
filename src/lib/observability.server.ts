@@ -45,6 +45,29 @@ export async function recordAgentEvent(params: {
   }
 }
 
+// ─── recordInteractionStep ────────────────────────────────────────────────────
+// Persists observable workflow steps for auditability (Interactions API pattern).
+
+export async function recordInteractionStep(params: {
+  userId: string | null;
+  workflowId: string;
+  step: string;
+  status?: "running" | "complete" | "error";
+  metadata?: Record<string, unknown>;
+}) {
+  try {
+    await supabaseAdmin.from("interaction_steps").insert({
+      user_id: params.userId,
+      workflow_id: params.workflowId,
+      step: params.step,
+      status: params.status ?? "complete",
+      metadata: params.metadata ?? {},
+    });
+  } catch {
+    // Non-blocking
+  }
+}
+
 // ─── getObservabilityMetrics ──────────────────────────────────────────────────
 
 export const getObservabilityMetrics = createServerFn({ method: "POST" })

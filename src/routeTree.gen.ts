@@ -10,12 +10,14 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerificationRouteImport } from './routes/verification'
+import { Route as VaultRouteImport } from './routes/vault'
 import { Route as TreasuryRouteImport } from './routes/treasury'
 import { Route as RiskRouteImport } from './routes/risk'
 import { Route as RegenerativeRouteImport } from './routes/regenerative'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as OrchestratorRouteImport } from './routes/orchestrator'
+import { Route as OpportunitiesRouteImport } from './routes/opportunities'
 import { Route as ObservabilityRouteImport } from './routes/observability'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as LoginRouteImport } from './routes/login'
@@ -24,22 +26,28 @@ import { Route as IdentityRouteImport } from './routes/identity'
 import { Route as GrowthRouteImport } from './routes/growth'
 import { Route as FundingRouteImport } from './routes/funding'
 import { Route as EconomicGraphRouteImport } from './routes/economic-graph'
+import { Route as CommunityRouteImport } from './routes/community'
+import { Route as CfoRouteImport } from './routes/cfo'
 import { Route as BusinessOsRouteImport } from './routes/business-os'
 import { Route as AuditRouteImport } from './routes/audit'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings.notifications'
+import { Route as ApiVaultFileRouteImport } from './routes/api/vault-file'
 import { Route as ApiSessionRouteImport } from './routes/api/session'
-import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiEmbedRouteImport } from './routes/api/embed'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiCfoToolsRouteImport } from './routes/api/cfo-tools'
 import { Route as AnalyticsFundingRouteImport } from './routes/analytics.funding'
 import { Route as AdminRolesRouteImport } from './routes/admin.roles'
-import { Route as VaultRouteImport } from './routes/vault'
-import { Route as CfoRouteImport } from './routes/cfo'
 
 const VerificationRoute = VerificationRouteImport.update({
   id: '/verification',
   path: '/verification',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VaultRoute = VaultRouteImport.update({
+  id: '/vault',
+  path: '/vault',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TreasuryRoute = TreasuryRouteImport.update({
@@ -70,6 +78,11 @@ const PricingRoute = PricingRouteImport.update({
 const OrchestratorRoute = OrchestratorRouteImport.update({
   id: '/orchestrator',
   path: '/orchestrator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpportunitiesRoute = OpportunitiesRouteImport.update({
+  id: '/opportunities',
+  path: '/opportunities',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ObservabilityRoute = ObservabilityRouteImport.update({
@@ -112,6 +125,16 @@ const EconomicGraphRoute = EconomicGraphRouteImport.update({
   path: '/economic-graph',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CfoRoute = CfoRouteImport.update({
+  id: '/cfo',
+  path: '/cfo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BusinessOsRoute = BusinessOsRouteImport.update({
   id: '/business-os',
   path: '/business-os',
@@ -132,19 +155,24 @@ const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
   path: '/settings/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiVaultFileRoute = ApiVaultFileRouteImport.update({
+  id: '/api/vault-file',
+  path: '/api/vault-file',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSessionRoute = ApiSessionRouteImport.update({
   id: '/api/session',
   path: '/api/session',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiChatRoute = ApiChatRouteImport.update({
-  id: '/api/chat',
-  path: '/api/chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiEmbedRoute = ApiEmbedRouteImport.update({
   id: '/api/embed',
   path: '/api/embed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiCfoToolsRoute = ApiCfoToolsRouteImport.update({
@@ -162,22 +190,13 @@ const AdminRolesRoute = AdminRolesRouteImport.update({
   path: '/admin/roles',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VaultRoute = VaultRouteImport.update({
-  id: '/vault',
-  path: '/vault',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CfoRoute = CfoRouteImport.update({
-  id: '/cfo',
-  path: '/cfo',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
   '/cfo': typeof CfoRoute
+  '/community': typeof CommunityRoute
   '/economic-graph': typeof EconomicGraphRoute
   '/funding': typeof FundingRoute
   '/growth': typeof GrowthRoute
@@ -186,20 +205,22 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/observability': typeof ObservabilityRoute
+  '/opportunities': typeof OpportunitiesRoute
   '/orchestrator': typeof OrchestratorRoute
   '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
   '/regenerative': typeof RegenerativeRoute
   '/risk': typeof RiskRoute
   '/treasury': typeof TreasuryRoute
-  '/verification': typeof VerificationRoute
   '/vault': typeof VaultRoute
+  '/verification': typeof VerificationRoute
   '/admin/roles': typeof AdminRolesRoute
   '/analytics/funding': typeof AnalyticsFundingRoute
-  '/api/chat': typeof ApiChatRoute
   '/api/cfo-tools': typeof ApiCfoToolsRoute
+  '/api/chat': typeof ApiChatRoute
   '/api/embed': typeof ApiEmbedRoute
   '/api/session': typeof ApiSessionRoute
+  '/api/vault-file': typeof ApiVaultFileRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
 }
 export interface FileRoutesByTo {
@@ -207,6 +228,7 @@ export interface FileRoutesByTo {
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
   '/cfo': typeof CfoRoute
+  '/community': typeof CommunityRoute
   '/economic-graph': typeof EconomicGraphRoute
   '/funding': typeof FundingRoute
   '/growth': typeof GrowthRoute
@@ -215,20 +237,22 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/observability': typeof ObservabilityRoute
+  '/opportunities': typeof OpportunitiesRoute
   '/orchestrator': typeof OrchestratorRoute
   '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
   '/regenerative': typeof RegenerativeRoute
   '/risk': typeof RiskRoute
   '/treasury': typeof TreasuryRoute
-  '/verification': typeof VerificationRoute
   '/vault': typeof VaultRoute
+  '/verification': typeof VerificationRoute
   '/admin/roles': typeof AdminRolesRoute
   '/analytics/funding': typeof AnalyticsFundingRoute
-  '/api/chat': typeof ApiChatRoute
   '/api/cfo-tools': typeof ApiCfoToolsRoute
+  '/api/chat': typeof ApiChatRoute
   '/api/embed': typeof ApiEmbedRoute
   '/api/session': typeof ApiSessionRoute
+  '/api/vault-file': typeof ApiVaultFileRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
 }
 export interface FileRoutesById {
@@ -237,6 +261,7 @@ export interface FileRoutesById {
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
   '/cfo': typeof CfoRoute
+  '/community': typeof CommunityRoute
   '/economic-graph': typeof EconomicGraphRoute
   '/funding': typeof FundingRoute
   '/growth': typeof GrowthRoute
@@ -245,20 +270,22 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/observability': typeof ObservabilityRoute
+  '/opportunities': typeof OpportunitiesRoute
   '/orchestrator': typeof OrchestratorRoute
   '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
   '/regenerative': typeof RegenerativeRoute
   '/risk': typeof RiskRoute
   '/treasury': typeof TreasuryRoute
-  '/verification': typeof VerificationRoute
   '/vault': typeof VaultRoute
+  '/verification': typeof VerificationRoute
   '/admin/roles': typeof AdminRolesRoute
   '/analytics/funding': typeof AnalyticsFundingRoute
-  '/api/chat': typeof ApiChatRoute
   '/api/cfo-tools': typeof ApiCfoToolsRoute
+  '/api/chat': typeof ApiChatRoute
   '/api/embed': typeof ApiEmbedRoute
   '/api/session': typeof ApiSessionRoute
+  '/api/vault-file': typeof ApiVaultFileRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
 }
 export interface FileRouteTypes {
@@ -268,6 +295,7 @@ export interface FileRouteTypes {
     | '/audit'
     | '/business-os'
     | '/cfo'
+    | '/community'
     | '/economic-graph'
     | '/funding'
     | '/growth'
@@ -276,20 +304,22 @@ export interface FileRouteTypes {
     | '/login'
     | '/notifications'
     | '/observability'
+    | '/opportunities'
     | '/orchestrator'
     | '/pricing'
     | '/profile'
     | '/regenerative'
     | '/risk'
     | '/treasury'
-    | '/verification'
     | '/vault'
+    | '/verification'
     | '/admin/roles'
     | '/analytics/funding'
-    | '/api/chat'
     | '/api/cfo-tools'
+    | '/api/chat'
     | '/api/embed'
     | '/api/session'
+    | '/api/vault-file'
     | '/settings/notifications'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -297,6 +327,7 @@ export interface FileRouteTypes {
     | '/audit'
     | '/business-os'
     | '/cfo'
+    | '/community'
     | '/economic-graph'
     | '/funding'
     | '/growth'
@@ -305,20 +336,22 @@ export interface FileRouteTypes {
     | '/login'
     | '/notifications'
     | '/observability'
+    | '/opportunities'
     | '/orchestrator'
     | '/pricing'
     | '/profile'
     | '/regenerative'
     | '/risk'
     | '/treasury'
-    | '/verification'
     | '/vault'
+    | '/verification'
     | '/admin/roles'
     | '/analytics/funding'
-    | '/api/chat'
     | '/api/cfo-tools'
+    | '/api/chat'
     | '/api/embed'
     | '/api/session'
+    | '/api/vault-file'
     | '/settings/notifications'
   id:
     | '__root__'
@@ -326,6 +359,7 @@ export interface FileRouteTypes {
     | '/audit'
     | '/business-os'
     | '/cfo'
+    | '/community'
     | '/economic-graph'
     | '/funding'
     | '/growth'
@@ -334,20 +368,22 @@ export interface FileRouteTypes {
     | '/login'
     | '/notifications'
     | '/observability'
+    | '/opportunities'
     | '/orchestrator'
     | '/pricing'
     | '/profile'
     | '/regenerative'
     | '/risk'
     | '/treasury'
-    | '/verification'
     | '/vault'
+    | '/verification'
     | '/admin/roles'
     | '/analytics/funding'
-    | '/api/chat'
     | '/api/cfo-tools'
+    | '/api/chat'
     | '/api/embed'
     | '/api/session'
+    | '/api/vault-file'
     | '/settings/notifications'
   fileRoutesById: FileRoutesById
 }
@@ -356,6 +392,7 @@ export interface RootRouteChildren {
   AuditRoute: typeof AuditRoute
   BusinessOsRoute: typeof BusinessOsRoute
   CfoRoute: typeof CfoRoute
+  CommunityRoute: typeof CommunityRoute
   EconomicGraphRoute: typeof EconomicGraphRoute
   FundingRoute: typeof FundingRoute
   GrowthRoute: typeof GrowthRoute
@@ -364,20 +401,22 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   NotificationsRoute: typeof NotificationsRoute
   ObservabilityRoute: typeof ObservabilityRoute
+  OpportunitiesRoute: typeof OpportunitiesRoute
   OrchestratorRoute: typeof OrchestratorRoute
   PricingRoute: typeof PricingRoute
   ProfileRoute: typeof ProfileRoute
   RegenerativeRoute: typeof RegenerativeRoute
   RiskRoute: typeof RiskRoute
   TreasuryRoute: typeof TreasuryRoute
-  VerificationRoute: typeof VerificationRoute
   VaultRoute: typeof VaultRoute
+  VerificationRoute: typeof VerificationRoute
   AdminRolesRoute: typeof AdminRolesRoute
   AnalyticsFundingRoute: typeof AnalyticsFundingRoute
-  ApiChatRoute: typeof ApiChatRoute
   ApiCfoToolsRoute: typeof ApiCfoToolsRoute
+  ApiChatRoute: typeof ApiChatRoute
   ApiEmbedRoute: typeof ApiEmbedRoute
   ApiSessionRoute: typeof ApiSessionRoute
+  ApiVaultFileRoute: typeof ApiVaultFileRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
 }
 
@@ -388,6 +427,13 @@ declare module '@tanstack/react-router' {
       path: '/verification'
       fullPath: '/verification'
       preLoaderRoute: typeof VerificationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vault': {
+      id: '/vault'
+      path: '/vault'
+      fullPath: '/vault'
+      preLoaderRoute: typeof VaultRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/treasury': {
@@ -430,6 +476,13 @@ declare module '@tanstack/react-router' {
       path: '/orchestrator'
       fullPath: '/orchestrator'
       preLoaderRoute: typeof OrchestratorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities': {
+      id: '/opportunities'
+      path: '/opportunities'
+      fullPath: '/opportunities'
+      preLoaderRoute: typeof OpportunitiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/observability': {
@@ -488,6 +541,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EconomicGraphRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cfo': {
+      id: '/cfo'
+      path: '/cfo'
+      fullPath: '/cfo'
+      preLoaderRoute: typeof CfoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/business-os': {
       id: '/business-os'
       path: '/business-os'
@@ -516,6 +583,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/vault-file': {
+      id: '/api/vault-file'
+      path: '/api/vault-file'
+      fullPath: '/api/vault-file'
+      preLoaderRoute: typeof ApiVaultFileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/session': {
       id: '/api/session'
       path: '/api/session'
@@ -523,18 +597,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSessionRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/chat': {
-      id: '/api/chat'
-      path: '/api/chat'
-      fullPath: '/api/chat'
-      preLoaderRoute: typeof ApiChatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/embed': {
       id: '/api/embed'
       path: '/api/embed'
       fullPath: '/api/embed'
       preLoaderRoute: typeof ApiEmbedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/cfo-tools': {
@@ -558,20 +632,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRolesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/vault': {
-      id: '/vault'
-      path: '/vault'
-      fullPath: '/vault'
-      preLoaderRoute: typeof VaultRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cfo': {
-      id: '/cfo'
-      path: '/cfo'
-      fullPath: '/cfo'
-      preLoaderRoute: typeof CfoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -580,6 +640,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuditRoute: AuditRoute,
   BusinessOsRoute: BusinessOsRoute,
   CfoRoute: CfoRoute,
+  CommunityRoute: CommunityRoute,
   EconomicGraphRoute: EconomicGraphRoute,
   FundingRoute: FundingRoute,
   GrowthRoute: GrowthRoute,
@@ -588,22 +649,34 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   NotificationsRoute: NotificationsRoute,
   ObservabilityRoute: ObservabilityRoute,
+  OpportunitiesRoute: OpportunitiesRoute,
   OrchestratorRoute: OrchestratorRoute,
   PricingRoute: PricingRoute,
   ProfileRoute: ProfileRoute,
   RegenerativeRoute: RegenerativeRoute,
   RiskRoute: RiskRoute,
   TreasuryRoute: TreasuryRoute,
-  VerificationRoute: VerificationRoute,
   VaultRoute: VaultRoute,
+  VerificationRoute: VerificationRoute,
   AdminRolesRoute: AdminRolesRoute,
   AnalyticsFundingRoute: AnalyticsFundingRoute,
-  ApiChatRoute: ApiChatRoute,
   ApiCfoToolsRoute: ApiCfoToolsRoute,
+  ApiChatRoute: ApiChatRoute,
   ApiEmbedRoute: ApiEmbedRoute,
   ApiSessionRoute: ApiSessionRoute,
+  ApiVaultFileRoute: ApiVaultFileRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

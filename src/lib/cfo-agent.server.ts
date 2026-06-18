@@ -2,6 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { mintEphemeralSession } from "@/lib/ephemeral-session.server";
+import { recordAgentEvent } from "@/lib/observability.server";
 
 // Builds the Atlas CFO system prompt, grounded in live user data
 async function buildCfoPrompt(userId: string): Promise<{ prompt: string; displayName: string; trustScore: number }> {
@@ -44,10 +46,15 @@ Your role:
 5. Coach them on improving their trust score, verification status, and business metrics.
 
 Tools available to you (use them during the conversation):
-- get_trust_score: Retrieve the latest trust score and verification status.
+- get_trust_score: Retrieve the latest Atlas trust score and verification status.
 - get_funding_status: Check recent funding requests and their outcomes.
 - create_funding_request: Submit a new funding application (always confirm amount and purpose before calling).
 - get_treasury_metrics: Retrieve capital approved and financial document summary.
+- update_trust_score: Adjust trust score with a delta and reason (administrative adjustments only).
+- create_verification_record: Log a verification event from voice conversation evidence.
+- find_funding_opportunities: Match grants, loans, and accelerators to the entrepreneur's profile.
+- generate_treasury_report: Produce a treasury health report with recommendations.
+- send_notification: Send an in-app notification to the user.
 
 Conversation rules:
 - Speak clearly, warmly, and concisely. This may be a voice conversation.
@@ -81,6 +88,7 @@ export const createCfoSession = createServerFn({ method: "POST" })
     }
 
     const { prompt, displayName, trustScore } = await buildCfoPrompt(userId);
+    const ephemeral = await mintEphemeralSession(userId, "cfo_voice");
 
     // Mint a signed conversation URL via ElevenLabs Conversational AI API
     // https://elevenlabs.io/docs/conversational-ai/api-reference/conversations/get-signed-url
@@ -96,18 +104,27 @@ export const createCfoSession = createServerFn({ method: "POST" })
 
     const { signed_url } = (await res.json()) as { signed_url: string };
 
+    void recordAgentEvent({
+      userId,
+      agent: "CFO Agent",
+      action: "session.start",
+      outcome: "answered",
+      metadata: { session_id: ephemeral.sessionId },
+    });
+
     return {
       signedUrl: signed_url,
       agentId,
       displayName,
       trustScore,
-      // Pass userId + overridden prompt to the SDK via overrides at call-start time
+      ephemeralToken: ephemeral.token,
+      // Pass userId + ephemeral token to the SDK via dynamic variables for webhook auth
       overrides: {
         agent: {
           prompt: { prompt },
           first_message: `Hello ${displayName}. I'm Atlas CFO, your AI financial officer. Your current trust score is ${trustScore} out of 100. How can I help you today — are you looking for funding, a business health review, or something else?`,
         },
       },
-      dynamicVariables: { user_id: userId },
+      dynamicVariables: { user_id: userId, ephemeral_token: ephemeral.token },
     };
   });

@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/lib/auth";
+import { getSubscription, type SubscriptionPlan } from "@/lib/subscription.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -39,6 +41,13 @@ function ProfilePage() {
   const [newKind, setNewKind] = useState("");
   const [newNotes, setNewNotes] = useState("");
   const [newEvidence, setNewEvidence] = useState("");
+  const [subscription, setSubscription] = useState<{ plan: SubscriptionPlan; priceMonthly: number } | null>(null);
+  const fetchSubscription = useServerFn(getSubscription);
+
+  useEffect(() => {
+    if (!user) return;
+    fetchSubscription({}).then(setSubscription).catch(() => {});
+  }, [user, fetchSubscription]);
 
   useEffect(() => {
     if (profile) {
@@ -129,8 +138,12 @@ function ProfilePage() {
           </div>
         </Card>
         <Card className="glyph-border p-5">
-          <div className="text-xs uppercase tracking-widest text-muted-foreground">Verification Events</div>
-          <div className="mt-2 font-display text-4xl">{events.length}</div>
+          <div className="text-xs uppercase tracking-widest text-muted-foreground">Subscription</div>
+          <div className="mt-2 font-display text-xl capitalize">{subscription?.plan ?? "free"}</div>
+          <div className="mt-1 text-xs text-muted-foreground">
+            {subscription?.priceMonthly ? `$${(subscription.priceMonthly / 100).toFixed(0)}/mo` : "Free tier"}
+          </div>
+          <Link to="/pricing" className="mt-2 inline-block text-xs text-gold hover:underline">Upgrade plan →</Link>
         </Card>
       </div>
 

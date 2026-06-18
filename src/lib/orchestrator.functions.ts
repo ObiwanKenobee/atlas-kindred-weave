@@ -4,6 +4,7 @@ import { generateObject } from "ai";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
+import { recordAgentEvent, recordInteractionStep } from "@/lib/observability.server";
 
 const WorkflowInput = z.object({ requestId: z.string().uuid() });
 
@@ -61,6 +62,7 @@ export const runOrchestratorWorkflow = createServerFn({ method: "POST" })
       .single();
     if (reqErr || !req) throw new Error("Funding request not found or access denied");
     steps.push({ engine: "Funding Engine", status: "complete", result: `Loaded: "${req.title}"` });
+    void recordInteractionStep({ userId, workflowId: data.requestId, step: "Retrieve Financial Records", status: "complete" });
 
     // ── Step 2: Load applicant context ────────────────────────────────────
     const [{ data: profile }, { data: verEvents }, { data: pastFunding }] = await Promise.all([
@@ -76,6 +78,7 @@ export const runOrchestratorWorkflow = createServerFn({ method: "POST" })
       .filter((r) => r.human_approval === "approved")
       .reduce((s, r) => s + Number(r.amount_requested), 0);
     steps.push({ engine: "Identity & Trust Engine", status: "complete", result: `Trust score: ${profile?.trust_score ?? 50}/100 · ${verified} verified proofs` });
+    void recordInteractionStep({ userId, workflowId: data.requestId, step: "Calculate Trust Score", status: "complete", metadata: { trust_score: profile?.trust_score ?? 50 } });
 
     // ── Step 3: AI Underwriting + Risk + Impact (single Gemini call) ──────
     const key = process.env.LOVABLE_API_KEY;
@@ -105,14 +108,17 @@ Applicant Context (from Identity & Trust Engine):
 Workflow: Run Underwriting → Risk Engine → Trust Engine → Impact Forecast in sequence and synthesize a unified decision. Maximise prosperity, trust, and opportunity. Be concrete. If pitch is thin, set recommendation to needs_more_info. Milestones must be measurable.`;
 
     steps.push({ engine: "Underwriting Agent", status: "running" });
+    void recordInteractionStep({ userId, workflowId: data.requestId, step: "Analyze Inventory", status: "running" });
 
-    const { object: decision } = await generateObject({
+    const t0 = Date.now();
+    const { object: decision, usage } = await generateObject({
       model: gateway("google/gemini-2.5-flash"),
       schema: WorkflowDecisionSchema,
       prompt,
     });
 
     steps[steps.length - 1] = { engine: "Underwriting Agent", status: "complete", result: decision.recommendation };
+    void recordInteractionStep({ userId, workflowId: data.requestId, step: "Generate Funding Recommendation", status: "complete", metadata: { recommendation: decision.recommendation } });
     steps.push({ engine: "Risk Engine", status: "complete", result: `Risk score: ${decision.risk_assessment.score}/100 · ${decision.risk_assessment.flags.length} flags` });
     steps.push({ engine: "Impact Engine", status: "complete", result: `${decision.impact_forecast.jobs_created} jobs · ${decision.impact_forecast.households_reached} households` });
 
@@ -171,6 +177,19 @@ Workflow: Run Underwriting → Risk Engine → Trust Engine → Impact Forecast 
     });
 
     steps.push({ engine: "Notification Engine", status: "complete", result: "Applicant notified" });
+    void recordInteractionStep({ userId, workflowId: data.requestId, step: "Create Funding Request", status: "complete", metadata: { version: nextVersion } });
+
+    void recordAgentEvent({
+      userId,
+      agent: "Orchestrator",
+      action: "funding_workflow",
+      latencyMs: Date.now() - t0,
+      inputTokens: usage?.promptTokens,
+      outputTokens: usage?.completionTokens,
+      confidence: decision.trust_assessment.score / 100,
+      outcome: decision.recommendation,
+      metadata: { requestId: req.id, version: nextVersion, agents: decision.agents_invoked },
+    });
 
     return { requestId: req.id, steps, decision, version: nextVersion, trustScore: newTrust };
   });

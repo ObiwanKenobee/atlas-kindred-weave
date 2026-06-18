@@ -1,5 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useAuth } from "@/lib/auth";
+import { changeSubscriptionPlan } from "@/lib/subscription.functions";
+import { toast } from "sonner";
 import {
   Check, Sparkles, Rocket, TrendingUp, Building2, Coins, ShieldCheck,
   Star, Briefcase, Globe2, Smartphone, CreditCard, Banknote, Wifi,
@@ -319,8 +323,25 @@ function CurrencySelector({ value, onChange }: { value: Currency; onChange: (c: 
 }
 
 function TierCard({ tier, currency }: { tier: Tier; currency: Currency }) {
+  const { user } = useAuth();
+  const selectPlan = useServerFn(changeSubscriptionPlan);
+  const [busy, setBusy] = useState(false);
   const Icon = tier.icon;
   const priceStr = tier.priceUSD === 0 ? `${CURRENCY_META[currency].symbol}0` : formatPrice(tier.priceUSD, currency);
+
+  async function handleSelectPlan() {
+    if (!user) return;
+    setBusy(true);
+    try {
+      await selectPlan({ data: { plan: tier.slug as "free" | "launch" | "growth" | "scale" } });
+      toast.success(`Plan updated to ${tier.name}. Payment processing coming soon.`);
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Could not update plan.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <Card className={`relative flex flex-col ${tier.highlight ? "border-gold/60 shadow-glow" : ""}`}>
       {tier.highlight && (
@@ -355,11 +376,17 @@ function TierCard({ tier, currency }: { tier: Tier; currency: Currency }) {
         <Button
           className={tier.highlight ? "bg-gradient-gold text-gold-foreground shadow-glow hover:opacity-90" : ""}
           variant={tier.highlight ? "default" : "outline"}
-          asChild
+          disabled={busy}
+          onClick={user ? handleSelectPlan : undefined}
+          asChild={!user}
         >
-          <Link to={tier.priceUSD === 0 ? "/" : "/funding"}>
-            {tier.priceUSD === 0 ? tier.cta : `${tier.cta} ${priceStr}`}
-          </Link>
+          {user ? (
+            <span>{busy ? "Updating…" : tier.priceUSD === 0 ? tier.cta : `${tier.cta} ${priceStr}`}</span>
+          ) : (
+            <Link to={tier.priceUSD === 0 ? "/" : "/login"}>
+              {tier.priceUSD === 0 ? tier.cta : `${tier.cta} ${priceStr}`}
+            </Link>
+          )}
         </Button>
       </CardContent>
     </Card>
