@@ -5,6 +5,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 import { recordAgentEvent } from "@/lib/observability.server";
 import { verifyEphemeralToken } from "@/lib/ephemeral-session.server";
+import { enforceRateLimit, RateLimitError } from "@/lib/rate-limit.server";
 import { z } from "zod";
 
 type ToolCall = {
@@ -328,6 +329,19 @@ export const Route = createFileRoute("/api/cfo-tools")({
             tool_call_id: body.tool_call.tool_call_id,
             result: JSON.stringify({ error: "Ephemeral token required" }),
           });
+        }
+
+        // Rate limit: 30 tool calls per minute per user
+        try {
+          await enforceRateLimit(userId, "/api/cfo-tools");
+        } catch (e) {
+          if (e instanceof RateLimitError) {
+            return Response.json({
+              type: "tool_result",
+              tool_call_id: body.tool_call.tool_call_id,
+              result: JSON.stringify({ error: e.message }),
+            }, { status: 429 });
+          }
         }
 
         const toolName = normalizeToolName(body.tool_call.tool_name);

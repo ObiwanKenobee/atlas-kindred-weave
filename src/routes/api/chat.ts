@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { enforceRateLimit, RateLimitError } from "@/lib/rate-limit.server";
 
 const SYSTEM = `You are the Atlas Orchestrator — the central intelligence of Atlas Sanctum, an AI-operated regenerative finance civilization.
 
@@ -59,20 +60,33 @@ export const Route = createFileRoute("/api/chat")({
         const body = (await request.json()) as { messages?: UIMessage[]; userId?: string };
         const { messages, userId } = body;
         if (!Array.isArray(messages)) return new Response("Messages required", { status: 400 });
+
         const key = process.env.LOVABLE_API_KEY;
         if (!key) return new Response("LOVABLE_API_KEY not configured", { status: 500 });
 
+        if (userId) {
+          try {
+            await enforceRateLimit(userId, "/api/chat");
+          } catch (e) {
+            if (e instanceof RateLimitError) {
+              return new Response(e.message, { status: 429 });
+            }
+          }
+        }
+
         const gateway = createLovableAiGatewayProvider(key);
 
-        // Retrieve vault context if user is identified
         const lastUserMsg = [...messages].reverse().find((m) => m.role === "user");
-        const vaultContext = userId && lastUserMsg
-          ? await retrieveVaultContext(userId, typeof lastUserMsg.content === "string" ? lastUserMsg.content : "", key)
-          : "";
+        const vaultContext =
+          userId && lastUserMsg
+            ? await retrieveVaultContext(
+                userId,
+                typeof lastUserMsg.content === "string" ? lastUserMsg.content : "",
+                key,
+              )
+            : "";
 
-        const system = vaultContext
-          ? SYSTEM + vaultContext
-          : SYSTEM;
+        const system = vaultContext ? SYSTEM + vaultContext : SYSTEM;
 
         const result = streamText({
           model: gateway("google/gemini-3-flash-preview"),

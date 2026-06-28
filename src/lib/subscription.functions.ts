@@ -13,6 +13,36 @@ export const PLAN_PRICES = {
 
 export type SubscriptionPlan = keyof typeof PLAN_PRICES;
 
+// Plan hierarchy — higher index = higher tier
+const PLAN_RANK: Record<SubscriptionPlan, number> = {
+  free: 0,
+  launch: 1,
+  growth: 2,
+  scale: 3,
+  enterprise: 4,
+};
+
+// Throw if the user's plan is below the required minimum.
+// Usage: await requirePlan(userId, "growth")
+export async function requirePlan(userId: string, minPlan: SubscriptionPlan): Promise<void> {
+  const { data: profile } = await supabaseAdmin
+    .from("profiles")
+    .select("subscription_plan, subscription_status")
+    .eq("user_id", userId)
+    .single();
+
+  const plan = (profile?.subscription_plan ?? "free") as SubscriptionPlan;
+  const status = profile?.subscription_status ?? "active";
+
+  if (status !== "active" && status !== "trialing") {
+    throw new Error(`Subscription is ${status}. Please update your billing to continue.`);
+  }
+
+  if (PLAN_RANK[plan] < PLAN_RANK[minPlan]) {
+    throw new Error(`This feature requires the ${minPlan} plan or higher. You are on the ${plan} plan.`);
+  }
+}
+
 export const getSubscription = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({}).parse(d))
