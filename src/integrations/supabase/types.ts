@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_events: {
+        Row: {
+          action: string
+          agent: string
+          confidence: number | null
+          created_at: string
+          id: string
+          input_tokens: number | null
+          latency_ms: number | null
+          metadata: Json
+          outcome: string | null
+          output_tokens: number | null
+          sources_retrieved: number
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          agent: string
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          input_tokens?: number | null
+          latency_ms?: number | null
+          metadata?: Json
+          outcome?: string | null
+          output_tokens?: number | null
+          sources_retrieved?: number
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          agent?: string
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          input_tokens?: number | null
+          latency_ms?: number | null
+          metadata?: Json
+          outcome?: string | null
+          output_tokens?: number | null
+          sources_retrieved?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       asset_bids: {
         Row: {
           asset_id: string
@@ -362,6 +407,36 @@ export type Database = {
         }
         Relationships: []
       }
+      ephemeral_sessions: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          purpose: string
+          token: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          purpose: string
+          token: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          purpose?: string
+          token?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       funding_requests: {
         Row: {
           amount_requested: number
@@ -510,6 +585,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      interaction_steps: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json
+          status: string
+          step: string
+          user_id: string | null
+          workflow_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          status?: string
+          step: string
+          user_id?: string | null
+          workflow_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          status?: string
+          step?: string
+          user_id?: string | null
+          workflow_id?: string
+        }
+        Relationships: []
       }
       knowledge_documents: {
         Row: {
@@ -809,6 +914,20 @@ export type Database = {
       }
     }
     Views: {
+      agent_performance: {
+        Row: {
+          action: string | null
+          agent: string | null
+          avg_confidence_pct: number | null
+          avg_latency_ms: number | null
+          avg_sources: number | null
+          avg_tokens: number | null
+          error_count: number | null
+          last_call_at: string | null
+          total_calls: number | null
+        }
+        Relationships: []
+      }
       rve_marketplace_stats: {
         Row: {
           asset_types: number | null
@@ -826,6 +945,7 @@ export type Database = {
         Args: { _actor_id: string; _bid_id: string }
         Returns: Json
       }
+      expire_sessions: { Args: never; Returns: undefined }
       get_notif_pref: {
         Args: { _channel: string; _event: string; _user: string }
         Returns: boolean
