@@ -14,6 +14,98 @@ export type Database = {
   }
   public: {
     Tables: {
+      asset_bids: {
+        Row: {
+          asset_id: string
+          bid_amount: number
+          bidder_id: string
+          created_at: string
+          currency: string
+          id: string
+          message: string | null
+          status: string
+        }
+        Insert: {
+          asset_id: string
+          bid_amount: number
+          bidder_id: string
+          created_at?: string
+          currency?: string
+          id?: string
+          message?: string | null
+          status?: string
+        }
+        Update: {
+          asset_id?: string
+          bid_amount?: number
+          bidder_id?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          message?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asset_bids_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "impact_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      asset_transactions: {
+        Row: {
+          amount_usd: number
+          asset_id: string
+          bid_id: string | null
+          buyer_id: string
+          fee_usd: number
+          id: string
+          net_usd: number
+          seller_id: string
+          settled_at: string
+        }
+        Insert: {
+          amount_usd: number
+          asset_id: string
+          bid_id?: string | null
+          buyer_id: string
+          fee_usd?: number
+          id?: string
+          net_usd?: number
+          seller_id: string
+          settled_at?: string
+        }
+        Update: {
+          amount_usd?: number
+          asset_id?: string
+          bid_id?: string | null
+          buyer_id?: string
+          fee_usd?: number
+          id?: string
+          net_usd?: number
+          seller_id?: string
+          settled_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asset_transactions_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "impact_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asset_transactions_bid_id_fkey"
+            columns: ["bid_id"]
+            isOneToOne: false
+            referencedRelation: "asset_bids"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_log: {
         Row: {
           action: string
@@ -114,6 +206,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      community_posts: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          id: string
+          likes: number
+          replies: number
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          content: string
+          created_at?: string
+          id?: string
+          likes?: number
+          replies?: number
+          user_id: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          id?: string
+          likes?: number
+          replies?: number
+          user_id?: string
+        }
+        Relationships: []
       }
       decision_report_versions: {
         Row: {
@@ -314,6 +436,137 @@ export type Database = {
           },
         ]
       }
+      impact_assets: {
+        Row: {
+          ask_price_usd: number | null
+          currency: string
+          description: string | null
+          funding_request_id: string | null
+          id: string
+          kind: string
+          minted_at: string
+          owner_user_id: string
+          quantity: number
+          region: string | null
+          sdg_tags: string[]
+          sector: string | null
+          status: string
+          title: string
+          unit: string
+          verification_event_id: string | null
+          verification_score: number
+        }
+        Insert: {
+          ask_price_usd?: number | null
+          currency?: string
+          description?: string | null
+          funding_request_id?: string | null
+          id?: string
+          kind: string
+          minted_at?: string
+          owner_user_id: string
+          quantity: number
+          region?: string | null
+          sdg_tags?: string[]
+          sector?: string | null
+          status?: string
+          title: string
+          unit: string
+          verification_event_id?: string | null
+          verification_score?: number
+        }
+        Update: {
+          ask_price_usd?: number | null
+          currency?: string
+          description?: string | null
+          funding_request_id?: string | null
+          id?: string
+          kind?: string
+          minted_at?: string
+          owner_user_id?: string
+          quantity?: number
+          region?: string | null
+          sdg_tags?: string[]
+          sector?: string | null
+          status?: string
+          title?: string
+          unit?: string
+          verification_event_id?: string | null
+          verification_score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "impact_assets_funding_request_id_fkey"
+            columns: ["funding_request_id"]
+            isOneToOne: false
+            referencedRelation: "funding_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "impact_assets_verification_event_id_fkey"
+            columns: ["verification_event_id"]
+            isOneToOne: false
+            referencedRelation: "verification_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      knowledge_documents: {
+        Row: {
+          chunk_index: number
+          content: string
+          created_at: string
+          doc_kind: string
+          embedding: string | null
+          file_name: string
+          file_type: string | null
+          funding_request_id: string | null
+          id: string
+          storage_path: string | null
+          tags: string[]
+          total_chunks: number
+          user_id: string
+        }
+        Insert: {
+          chunk_index?: number
+          content: string
+          created_at?: string
+          doc_kind?: string
+          embedding?: string | null
+          file_name: string
+          file_type?: string | null
+          funding_request_id?: string | null
+          id?: string
+          storage_path?: string | null
+          tags?: string[]
+          total_chunks?: number
+          user_id: string
+        }
+        Update: {
+          chunk_index?: number
+          content?: string
+          created_at?: string
+          doc_kind?: string
+          embedding?: string | null
+          file_name?: string
+          file_type?: string | null
+          funding_request_id?: string | null
+          id?: string
+          storage_path?: string | null
+          tags?: string[]
+          total_chunks?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "knowledge_documents_funding_request_id_fkey"
+            columns: ["funding_request_id"]
+            isOneToOne: false
+            referencedRelation: "funding_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_preferences: {
         Row: {
           created_at: string
@@ -394,6 +647,8 @@ export type Database = {
           display_name: string | null
           id: string
           region: string | null
+          subscription_plan: string
+          subscription_status: string
           trust_score: number
           updated_at: string
           user_id: string
@@ -406,6 +661,8 @@ export type Database = {
           display_name?: string | null
           id?: string
           region?: string | null
+          subscription_plan?: string
+          subscription_status?: string
           trust_score?: number
           updated_at?: string
           user_id: string
@@ -418,10 +675,81 @@ export type Database = {
           display_name?: string | null
           id?: string
           region?: string | null
+          subscription_plan?: string
+          subscription_status?: string
           trust_score?: number
           updated_at?: string
           user_id?: string
           verified?: boolean
+        }
+        Relationships: []
+      }
+      risk_scores: {
+        Row: {
+          computed_at: string
+          flags: Json
+          id: string
+          rationale: string | null
+          recommendation: string | null
+          risk_level: string
+          signals: Json
+          trust_score: number
+          user_id: string
+        }
+        Insert: {
+          computed_at?: string
+          flags?: Json
+          id?: string
+          rationale?: string | null
+          recommendation?: string | null
+          risk_level?: string
+          signals?: Json
+          trust_score?: number
+          user_id: string
+        }
+        Update: {
+          computed_at?: string
+          flags?: Json
+          id?: string
+          rationale?: string | null
+          recommendation?: string | null
+          risk_level?: string
+          signals?: Json
+          trust_score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscription_events: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          currency: string
+          event_type: string
+          id: string
+          metadata: Json
+          plan: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents?: number
+          created_at?: string
+          currency?: string
+          event_type: string
+          id?: string
+          metadata?: Json
+          plan: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          currency?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+          plan?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -481,9 +809,23 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      rve_marketplace_stats: {
+        Row: {
+          asset_types: number | null
+          listed: number | null
+          sold: number | null
+          total_assets: number | null
+          total_listed_value: number | null
+          unique_sellers: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      accept_asset_bid: {
+        Args: { _actor_id: string; _bid_id: string }
+        Returns: Json
+      }
       get_notif_pref: {
         Args: { _channel: string; _event: string; _user: string }
         Returns: boolean
@@ -495,6 +837,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_post_likes: { Args: { post_id: string }; Returns: undefined }
       is_reviewer: { Args: { _user_id: string }; Returns: boolean }
       log_audit: {
         Args: {
