@@ -14,6 +14,143 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_events: {
+        Row: {
+          action: string
+          agent: string
+          confidence: number | null
+          created_at: string
+          id: string
+          input_tokens: number | null
+          latency_ms: number | null
+          metadata: Json
+          outcome: string | null
+          output_tokens: number | null
+          sources_retrieved: number
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          agent: string
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          input_tokens?: number | null
+          latency_ms?: number | null
+          metadata?: Json
+          outcome?: string | null
+          output_tokens?: number | null
+          sources_retrieved?: number
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          agent?: string
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          input_tokens?: number | null
+          latency_ms?: number | null
+          metadata?: Json
+          outcome?: string | null
+          output_tokens?: number | null
+          sources_retrieved?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      asset_bids: {
+        Row: {
+          asset_id: string
+          bid_amount: number
+          bidder_id: string
+          created_at: string
+          currency: string
+          id: string
+          message: string | null
+          status: string
+        }
+        Insert: {
+          asset_id: string
+          bid_amount: number
+          bidder_id: string
+          created_at?: string
+          currency?: string
+          id?: string
+          message?: string | null
+          status?: string
+        }
+        Update: {
+          asset_id?: string
+          bid_amount?: number
+          bidder_id?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          message?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asset_bids_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "impact_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      asset_transactions: {
+        Row: {
+          amount_usd: number
+          asset_id: string
+          bid_id: string | null
+          buyer_id: string
+          fee_usd: number
+          id: string
+          net_usd: number
+          seller_id: string
+          settled_at: string
+        }
+        Insert: {
+          amount_usd: number
+          asset_id: string
+          bid_id?: string | null
+          buyer_id: string
+          fee_usd?: number
+          id?: string
+          net_usd?: number
+          seller_id: string
+          settled_at?: string
+        }
+        Update: {
+          amount_usd?: number
+          asset_id?: string
+          bid_id?: string | null
+          buyer_id?: string
+          fee_usd?: number
+          id?: string
+          net_usd?: number
+          seller_id?: string
+          settled_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asset_transactions_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "impact_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asset_transactions_bid_id_fkey"
+            columns: ["bid_id"]
+            isOneToOne: false
+            referencedRelation: "asset_bids"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_log: {
         Row: {
           action: string
@@ -114,6 +251,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      community_posts: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          id: string
+          likes: number
+          replies: number
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          content: string
+          created_at?: string
+          id?: string
+          likes?: number
+          replies?: number
+          user_id: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          id?: string
+          likes?: number
+          replies?: number
+          user_id?: string
+        }
+        Relationships: []
       }
       decision_report_versions: {
         Row: {
@@ -240,6 +407,36 @@ export type Database = {
         }
         Relationships: []
       }
+      ephemeral_sessions: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          purpose: string
+          token: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          purpose: string
+          token: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          purpose?: string
+          token?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       funding_requests: {
         Row: {
           amount_requested: number
@@ -310,6 +507,167 @@ export type Database = {
             columns: ["final_version_id"]
             isOneToOne: false
             referencedRelation: "decision_report_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      impact_assets: {
+        Row: {
+          ask_price_usd: number | null
+          currency: string
+          description: string | null
+          funding_request_id: string | null
+          id: string
+          kind: string
+          minted_at: string
+          owner_user_id: string
+          quantity: number
+          region: string | null
+          sdg_tags: string[]
+          sector: string | null
+          status: string
+          title: string
+          unit: string
+          verification_event_id: string | null
+          verification_score: number
+        }
+        Insert: {
+          ask_price_usd?: number | null
+          currency?: string
+          description?: string | null
+          funding_request_id?: string | null
+          id?: string
+          kind: string
+          minted_at?: string
+          owner_user_id: string
+          quantity: number
+          region?: string | null
+          sdg_tags?: string[]
+          sector?: string | null
+          status?: string
+          title: string
+          unit: string
+          verification_event_id?: string | null
+          verification_score?: number
+        }
+        Update: {
+          ask_price_usd?: number | null
+          currency?: string
+          description?: string | null
+          funding_request_id?: string | null
+          id?: string
+          kind?: string
+          minted_at?: string
+          owner_user_id?: string
+          quantity?: number
+          region?: string | null
+          sdg_tags?: string[]
+          sector?: string | null
+          status?: string
+          title?: string
+          unit?: string
+          verification_event_id?: string | null
+          verification_score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "impact_assets_funding_request_id_fkey"
+            columns: ["funding_request_id"]
+            isOneToOne: false
+            referencedRelation: "funding_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "impact_assets_verification_event_id_fkey"
+            columns: ["verification_event_id"]
+            isOneToOne: false
+            referencedRelation: "verification_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interaction_steps: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json
+          status: string
+          step: string
+          user_id: string | null
+          workflow_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          status?: string
+          step: string
+          user_id?: string | null
+          workflow_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          status?: string
+          step?: string
+          user_id?: string | null
+          workflow_id?: string
+        }
+        Relationships: []
+      }
+      knowledge_documents: {
+        Row: {
+          chunk_index: number
+          content: string
+          created_at: string
+          doc_kind: string
+          embedding: string | null
+          file_name: string
+          file_type: string | null
+          funding_request_id: string | null
+          id: string
+          storage_path: string | null
+          tags: string[]
+          total_chunks: number
+          user_id: string
+        }
+        Insert: {
+          chunk_index?: number
+          content: string
+          created_at?: string
+          doc_kind?: string
+          embedding?: string | null
+          file_name: string
+          file_type?: string | null
+          funding_request_id?: string | null
+          id?: string
+          storage_path?: string | null
+          tags?: string[]
+          total_chunks?: number
+          user_id: string
+        }
+        Update: {
+          chunk_index?: number
+          content?: string
+          created_at?: string
+          doc_kind?: string
+          embedding?: string | null
+          file_name?: string
+          file_type?: string | null
+          funding_request_id?: string | null
+          id?: string
+          storage_path?: string | null
+          tags?: string[]
+          total_chunks?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "knowledge_documents_funding_request_id_fkey"
+            columns: ["funding_request_id"]
+            isOneToOne: false
+            referencedRelation: "funding_requests"
             referencedColumns: ["id"]
           },
         ]
@@ -394,6 +752,8 @@ export type Database = {
           display_name: string | null
           id: string
           region: string | null
+          subscription_plan: string
+          subscription_status: string
           trust_score: number
           updated_at: string
           user_id: string
@@ -406,6 +766,8 @@ export type Database = {
           display_name?: string | null
           id?: string
           region?: string | null
+          subscription_plan?: string
+          subscription_status?: string
           trust_score?: number
           updated_at?: string
           user_id: string
@@ -418,10 +780,81 @@ export type Database = {
           display_name?: string | null
           id?: string
           region?: string | null
+          subscription_plan?: string
+          subscription_status?: string
           trust_score?: number
           updated_at?: string
           user_id?: string
           verified?: boolean
+        }
+        Relationships: []
+      }
+      risk_scores: {
+        Row: {
+          computed_at: string
+          flags: Json
+          id: string
+          rationale: string | null
+          recommendation: string | null
+          risk_level: string
+          signals: Json
+          trust_score: number
+          user_id: string
+        }
+        Insert: {
+          computed_at?: string
+          flags?: Json
+          id?: string
+          rationale?: string | null
+          recommendation?: string | null
+          risk_level?: string
+          signals?: Json
+          trust_score?: number
+          user_id: string
+        }
+        Update: {
+          computed_at?: string
+          flags?: Json
+          id?: string
+          rationale?: string | null
+          recommendation?: string | null
+          risk_level?: string
+          signals?: Json
+          trust_score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscription_events: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          currency: string
+          event_type: string
+          id: string
+          metadata: Json
+          plan: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents?: number
+          created_at?: string
+          currency?: string
+          event_type: string
+          id?: string
+          metadata?: Json
+          plan: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          currency?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+          plan?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -481,9 +914,38 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      agent_performance: {
+        Row: {
+          action: string | null
+          agent: string | null
+          avg_confidence_pct: number | null
+          avg_latency_ms: number | null
+          avg_sources: number | null
+          avg_tokens: number | null
+          error_count: number | null
+          last_call_at: string | null
+          total_calls: number | null
+        }
+        Relationships: []
+      }
+      rve_marketplace_stats: {
+        Row: {
+          asset_types: number | null
+          listed: number | null
+          sold: number | null
+          total_assets: number | null
+          total_listed_value: number | null
+          unique_sellers: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      accept_asset_bid: {
+        Args: { _actor_id: string; _bid_id: string }
+        Returns: Json
+      }
+      expire_sessions: { Args: never; Returns: undefined }
       get_notif_pref: {
         Args: { _channel: string; _event: string; _user: string }
         Returns: boolean
@@ -495,6 +957,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_post_likes: { Args: { post_id: string }; Returns: undefined }
       is_reviewer: { Args: { _user_id: string }; Returns: boolean }
       log_audit: {
         Args: {
