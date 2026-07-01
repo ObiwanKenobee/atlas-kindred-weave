@@ -28,7 +28,7 @@ export type CommunityMember = {
 };
 
 export const getCommunityFeed = createServerFn({ method: "GET" })
-  .validator((d: { category?: string; limit?: number }) => d)
+  .inputValidator((d: { category?: string; limit?: number }) => d)
   .handler(async ({ data }) => {
     const limit = data.limit ?? 20;
 
@@ -69,7 +69,7 @@ export const getCommunityFeed = createServerFn({ method: "GET" })
 
 export const createCommunityPost = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((d: { content: string; category: CommunityPost["category"] }) => d)
+  .inputValidator((d: { content: string; category: CommunityPost["category"] }) => d)
   .handler(async ({ data, context }) => {
     const userId = context.userId;
 
@@ -91,7 +91,7 @@ export const createCommunityPost = createServerFn({ method: "POST" })
 
 export const likeCommunityPost = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((d: { postId: string }) => d)
+  .inputValidator((d: { postId: string }) => d)
   .handler(async ({ data }) => {
 
     // Use rpc to atomically increment
@@ -116,7 +116,7 @@ export const likeCommunityPost = createServerFn({ method: "POST" })
   });
 
 export const getCommunityMembers = createServerFn({ method: "GET" })
-  .validator((d: { limit?: number; region?: string }) => d)
+  .inputValidator((d: { limit?: number; region?: string }) => d)
   .handler(async ({ data }) => {
     const limit = data.limit ?? 12;
 

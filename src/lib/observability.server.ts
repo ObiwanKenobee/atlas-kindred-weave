@@ -29,7 +29,7 @@ export async function recordAgentEvent(params: {
 }) {
   try {
     await supabaseAdmin.from("agent_events").insert({
-      user_id: params.userId,
+      user_id: params.userId ?? undefined,
       agent: params.agent,
       action: params.action,
       latency_ms: params.latencyMs ?? null,
@@ -57,7 +57,7 @@ export async function recordInteractionStep(params: {
 }) {
   try {
     await supabaseAdmin.from("interaction_steps").insert({
-      user_id: params.userId,
+      user_id: params.userId ?? undefined,
       workflow_id: params.workflowId,
       step: params.step,
       status: params.status ?? "complete",
