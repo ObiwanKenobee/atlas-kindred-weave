@@ -42,7 +42,7 @@ async function retrieveVaultContext(userId: string, question: string, key: strin
     _user_id: userId,
     _embedding: JSON.stringify(embedding),
     _match_count: 5,
-    _doc_kind: null,
+    _doc_kind: null as unknown as string,
   });
   if (!data?.length) return "";
 
@@ -77,13 +77,14 @@ export const Route = createFileRoute("/api/chat")({
         const gateway = createLovableAiGatewayProvider(key);
 
         const lastUserMsg = [...messages].reverse().find((m) => m.role === "user");
+        const lastUserText = lastUserMsg
+          ? (lastUserMsg.parts ?? [])
+              .map((p) => (p.type === "text" ? p.text : ""))
+              .join("")
+          : "";
         const vaultContext =
-          userId && lastUserMsg
-            ? await retrieveVaultContext(
-                userId,
-                typeof lastUserMsg.content === "string" ? lastUserMsg.content : "",
-                key,
-              )
+          userId && lastUserText
+            ? await retrieveVaultContext(userId, lastUserText, key)
             : "";
 
         const system = vaultContext ? SYSTEM + vaultContext : SYSTEM;
