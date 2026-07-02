@@ -11,7 +11,7 @@ const WorkflowInput = z.object({ requestId: z.string().uuid() });
 const WorkflowDecisionSchema = z.object({
   recommendation: z.enum(["approve", "approve_with_conditions", "decline", "needs_more_info"]),
   summary: z.string().min(20).max(800),
-  recommended_amount: z.number().nonneg(),
+  recommended_amount: z.number().min(0),
   recommended_currency: z.string().min(3).max(6),
   recommended_terms: z.object({
     instrument: z.string(),
@@ -23,14 +23,16 @@ const WorkflowDecisionSchema = z.object({
   trust_assessment: z.object({ score: z.number().min(0).max(100), rationale: z.string() }),
   risk_assessment: z.object({ score: z.number().min(0).max(100), flags: z.array(z.string()) }),
   impact_forecast: z.object({
-    jobs_created: z.number().int().nonneg(),
-    households_reached: z.number().int().nonneg(),
+    jobs_created: z.number().int().min(0),
+    households_reached: z.number().int().min(0),
     prosperity_index_delta: z.number(),
     notes: z.string(),
   }),
   agents_invoked: z.array(z.string()).min(1),
   safeguards: z.array(z.string()).min(1),
 });
+
+type WorkflowDecision = z.infer<typeof WorkflowDecisionSchema>;
 
 export type WorkflowStep = {
   engine: string;
@@ -111,11 +113,13 @@ Workflow: Run Underwriting → Risk Engine → Trust Engine → Impact Forecast 
     void recordInteractionStep({ userId, workflowId: data.requestId, step: "Analyze Inventory", status: "running" });
 
     const t0 = Date.now();
-    const { object: decision, usage } = await generateObject({
+    const genResult = await generateObject({
       model: gateway("google/gemini-2.5-flash"),
       schema: WorkflowDecisionSchema,
       prompt,
     });
+    const decision = genResult.object as WorkflowDecision;
+    const usage = genResult.usage as { inputTokens?: number; outputTokens?: number } | undefined;
 
     steps[steps.length - 1] = { engine: "Underwriting Agent", status: "complete", result: decision.recommendation };
     void recordInteractionStep({ userId, workflowId: data.requestId, step: "Generate Funding Recommendation", status: "complete", metadata: { recommendation: decision.recommendation } });
@@ -184,8 +188,8 @@ Workflow: Run Underwriting → Risk Engine → Trust Engine → Impact Forecast 
       agent: "Orchestrator",
       action: "funding_workflow",
       latencyMs: Date.now() - t0,
-      inputTokens: usage?.promptTokens,
-      outputTokens: usage?.completionTokens,
+      inputTokens: usage?.inputTokens,
+      outputTokens: usage?.outputTokens,
       confidence: decision.trust_assessment.score / 100,
       outcome: decision.recommendation,
       metadata: { requestId: req.id, version: nextVersion, agents: decision.agents_invoked },

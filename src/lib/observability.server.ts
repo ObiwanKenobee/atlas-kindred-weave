@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import type { Json } from "@/integrations/supabase/types";
 
 // ─── recordAgentEvent ─────────────────────────────────────────────────────────
 // Call this after every AI inference in server functions. Fire-and-forget — wrap
@@ -38,7 +39,7 @@ export async function recordAgentEvent(params: {
       confidence: params.confidence ?? null,
       outcome: params.outcome ?? null,
       sources_retrieved: params.sourcesRetrieved ?? 0,
-      metadata: params.metadata ?? {},
+      metadata: (params.metadata ?? {}) as Json,
     });
   } catch {
     // Never let observability failures break the primary flow
@@ -61,7 +62,7 @@ export async function recordInteractionStep(params: {
       workflow_id: params.workflowId,
       step: params.step,
       status: params.status ?? "complete",
-      metadata: params.metadata ?? {},
+      metadata: (params.metadata ?? {}) as Json,
     });
   } catch {
     // Non-blocking
