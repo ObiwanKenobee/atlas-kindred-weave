@@ -133,7 +133,7 @@ export const getObservabilityMetrics = createServerFn({ method: "POST" })
       agent: string; action: string; latency_ms: number | null;
       input_tokens: number | null; output_tokens: number | null;
       confidence: number | null; outcome: string | null;
-      sources_retrieved: number; created_at: string; metadata: Record<string, unknown>;
+      sources_retrieved: number; created_at: string; metadata: Json;
     }[];
 
     const latencies = events.filter((e) => e.latency_ms != null).map((e) => e.latency_ms!);
