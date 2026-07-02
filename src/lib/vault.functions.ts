@@ -204,7 +204,7 @@ export const searchVault = createServerFn({ method: "POST" })
       _user_id: userId,
       _embedding: JSON.stringify(embedding),
       _match_count: data.topK,
-      _doc_kind: data.docKind ?? null,
+      _doc_kind: (data.docKind ?? null) as unknown as string,
     });
     if (error) throw new Error(error.message);
 
@@ -228,7 +228,7 @@ export const queryVault = createServerFn({ method: "POST" })
       _user_id: userId,
       _embedding: JSON.stringify(embedding),
       _match_count: data.topK,
-      _doc_kind: null,
+      _doc_kind: null as unknown as string,
     });
     if (error) throw new Error(error.message);
 

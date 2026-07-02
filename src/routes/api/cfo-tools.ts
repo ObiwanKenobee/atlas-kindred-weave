@@ -189,14 +189,16 @@ async function dispatch(toolName: string, params: Record<string, unknown>, userI
     case "create_verification_record": {
       const kind = String(params.kind ?? "other");
       const claim = String(params.claim ?? "Submitted via Atlas CFO voice session.");
-      const status = String(params.status ?? "pending");
+      const rawStatus = String(params.status ?? "pending");
+      const status: "verified" | "rejected" | "pending" =
+        rawStatus === "verified" || rawStatus === "rejected" ? rawStatus : "pending";
 
       const { data, error } = await supabaseAdmin
         .from("verification_events")
         .insert({
           user_id: userId,
           kind,
-          status: ["verified", "rejected", "pending"].includes(status) ? status : "pending",
+          status,
           evidence_url: params.evidence_url ? String(params.evidence_url) : null,
           notes: JSON.stringify({ claim, source: "cfo_voice", confidence: params.confidence ?? null }),
         })
