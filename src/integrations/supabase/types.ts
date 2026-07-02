@@ -789,6 +789,27 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          call_count: number
+          endpoint: string
+          user_id: string
+          window_started_at: string
+        }
+        Insert: {
+          call_count?: number
+          endpoint: string
+          user_id: string
+          window_started_at?: string
+        }
+        Update: {
+          call_count?: number
+          endpoint?: string
+          user_id?: string
+          window_started_at?: string
+        }
+        Relationships: []
+      }
       risk_scores: {
         Row: {
           computed_at: string
@@ -958,6 +979,10 @@ export type Database = {
         Returns: boolean
       }
       increment_post_likes: { Args: { post_id: string }; Returns: undefined }
+      increment_rate_limit: {
+        Args: { _endpoint: string; _limit: number; _user_id: string }
+        Returns: number
+      }
       is_reviewer: { Args: { _user_id: string }; Returns: boolean }
       log_audit: {
         Args: {
@@ -970,6 +995,21 @@ export type Database = {
           _summary: string
         }
         Returns: undefined
+      }
+      match_documents: {
+        Args: {
+          _doc_kind: string
+          _embedding: string
+          _match_count: number
+          _user_id: string
+        }
+        Returns: {
+          content: string
+          doc_kind: string
+          file_name: string
+          id: string
+          similarity: number
+        }[]
       }
       notify_user: {
         Args: {

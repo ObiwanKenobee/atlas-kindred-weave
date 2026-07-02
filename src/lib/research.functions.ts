@@ -114,9 +114,9 @@ Identify what they need to close the readiness gap.`;
       agent: "Research Agent",
       action: "find_opportunities",
       latencyMs: Date.now() - t0,
-      inputTokens: usage?.promptTokens,
-      outputTokens: usage?.completionTokens,
-      confidence: object.opportunities[0]?.fit_score ? object.opportunities[0].fit_score / 100 : null ?? undefined,
+      inputTokens: usage?.inputTokens,
+      outputTokens: usage?.outputTokens,
+      confidence: object.opportunities[0]?.fit_score ? object.opportunities[0].fit_score / 100 : undefined,
       outcome: "answered",
       metadata: { region: profile?.region, sectors },
     });
@@ -226,8 +226,8 @@ runway_estimate should reflect ability to sustain business operations based on a
       agent: "Treasury Agent",
       action: "treasury_report",
       latencyMs: Date.now() - t0,
-      inputTokens: usage?.promptTokens,
-      outputTokens: usage?.completionTokens,
+      inputTokens: usage?.inputTokens,
+      outputTokens: usage?.outputTokens,
       outcome: object.health_score,
       metadata: { health_score: object.health_score, total_capital: totalCapital },
     });

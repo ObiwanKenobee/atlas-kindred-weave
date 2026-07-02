@@ -31,7 +31,7 @@ const getImpactMetrics = createServerFn({ method: "GET" }).handler(async () => {
     { data: decisionVersions },
   ] = await Promise.all([
     supabaseAdmin.from("profiles").select("user_id, verified, trust_score, region, created_at"),
-    supabaseAdmin.from("funding_requests").select("id, amount_requested, currency, sector, region, human_approval, decision_report, created_at"),
+    supabaseAdmin.from("funding_requests").select("id, user_id, amount_requested, currency, sector, region, human_approval, decision_report, created_at"),
     supabaseAdmin.from("verification_events").select("id, status, kind, user_id, created_at"),
     supabaseAdmin.from("decision_report_versions").select("report, generated_at").eq("human_approval", "approved"),
   ]);

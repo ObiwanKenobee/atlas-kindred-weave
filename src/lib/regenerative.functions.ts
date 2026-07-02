@@ -140,7 +140,7 @@ const MintInput = z.object({
   description: z.string().max(1000).optional(),
   quantity: z.number().int().min(1).max(100_000),
   unit: z.string().min(1).max(30),
-  ask_price_usd: z.number().nonneg().optional(),
+  ask_price_usd: z.number().min(0).optional(),
   region: z.string().max(80).optional(),
   sector: z.string().max(80).optional(),
   sdg_tags: z.array(z.string()).max(6).default([]),
