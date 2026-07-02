@@ -22,7 +22,7 @@ export const Route = createFileRoute("/observability")({
   component: ObservabilityPage,
 });
 
-type Metrics = Awaited<ReturnType<ReturnType<typeof getObservabilityMetrics>>>;
+type Metrics = Awaited<ReturnType<typeof getObservabilityMetrics>>;
 
 const AGENT_ICONS: Record<string, typeof Activity> = {
   "Funding Agent": Coins,
