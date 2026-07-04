@@ -190,6 +190,24 @@ function FundingAnalytics() {
               {RANGES.map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
             </SelectContent>
           </Select>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline"><Download className="mr-1.5 h-3.5 w-3.5" />Export</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground">Filtered data</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => exportRowsCsv(filtered, range)}>
+                <FileSpreadsheet className="mr-2 h-3.5 w-3.5" />CSV — filtered rows
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => exportTimelineCsv(timeline, range)}>
+                <FileSpreadsheet className="mr-2 h-3.5 w-3.5" />CSV — timeline series
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => exportPdfSnapshot({ stats, byStatus, byRegion, bySector, timeline, range })}>
+                <FileText className="mr-2 h-3.5 w-3.5" />PDF snapshot
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button variant="outline" asChild>
             <Link to="/funding">Open pipeline</Link>
           </Button>
