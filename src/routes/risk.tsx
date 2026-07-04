@@ -80,7 +80,9 @@ function RiskPage() {
   const { user } = useAuth();
   const [result, setResult] = useState<RiskOutput | null>(null);
   const [busy, setBusy] = useState(false);
+  const [reviewBusy, setReviewBusy] = useState(false);
   const score = useServerFn(computeRiskScore);
+  const submit = useServerFn(submitApproval);
 
   async function run() {
     if (!user) return toast.error("Sign in to run the Risk Engine.");
@@ -94,6 +96,27 @@ function RiskPage() {
     } finally {
       setBusy(false);
     }
+  }
+
+  async function requestOverride() {
+    if (!user || !result) return;
+    setReviewBusy(true);
+    try {
+      await submit({ data: {
+        kind: "risk_override",
+        title: `Request risk override — currently ${result.risk_level.replace("_", " ")}`,
+        rationale: `Auto risk score ${result.trust_score}/100. Requesting reviewer to override this classification.`,
+        entity_type: "profile",
+        proposed_change: {
+          current_risk_level: result.risk_level,
+          current_trust_score: result.trust_score,
+          flags: result.flags,
+        },
+      }});
+      toast.success("Sent to the approval queue");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to submit");
+    } finally { setReviewBusy(false); }
   }
 
   return (
