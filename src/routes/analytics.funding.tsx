@@ -358,3 +358,110 @@ const tooltipStyle = {
   borderRadius: 6,
   fontSize: 12,
 };
+
+// -------- Exports --------
+
+function csvEscape(v: unknown): string {
+  if (v === null || v === undefined) return "";
+  const s = String(v);
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+function downloadBlob(name: string, blob: Blob) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
+}
+
+function stamp() { return new Date().toISOString().slice(0, 10); }
+
+function exportRowsCsv(rows: Row[], range: string) {
+  const headers = ["id","created_at","status","human_approval","amount_requested","currency","region","sector","human_decided_at","human_decided_by"];
+  const lines = [headers.join(",")];
+  rows.forEach((r) => lines.push(headers.map((h) => csvEscape((r as unknown as Record<string, unknown>)[h])).join(",")));
+  downloadBlob(`funding-requests-${range}-${stamp()}.csv`, new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" }));
+  toast.success(`Exported ${rows.length} rows`);
+}
+
+function exportTimelineCsv(timeline: { day: string; submitted: number; approved: number }[], range: string) {
+  const lines = ["day,submitted,approved"];
+  timeline.forEach((t) => lines.push([csvEscape(t.day), t.submitted, t.approved].join(",")));
+  downloadBlob(`funding-timeline-${range}-${stamp()}.csv`, new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" }));
+  toast.success(`Exported ${timeline.length} days`);
+}
+
+type PdfInput = {
+  stats: { total: number; approved: number; declined: number; pending: number; revision: number; requested: number; approvedAmt: number; approvalRate: number };
+  byStatus: { name: string; value: number }[];
+  byRegion: { region: string; requested: number; approved: number; count: number }[];
+  bySector: { name: string; value: number }[];
+  timeline: { day: string; submitted: number; approved: number }[];
+  range: string;
+};
+
+function exportPdfSnapshot(d: PdfInput) {
+  const doc = new jsPDF({ unit: "pt", format: "letter" });
+  const w = doc.internal.pageSize.getWidth();
+  let y = 48;
+
+  doc.setFont("helvetica", "bold"); doc.setFontSize(20);
+  doc.text("Funding analytics snapshot", 48, y); y += 8;
+  doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(120);
+  doc.text(`Range: ${d.range === "all" ? "all time" : `last ${d.range} days`}  ·  Generated ${new Date().toLocaleString()}`, 48, y + 12);
+  y += 32;
+
+  doc.setTextColor(0); doc.setFont("helvetica", "bold"); doc.setFontSize(11);
+  doc.text("Summary", 48, y); y += 14;
+  doc.setFont("helvetica", "normal"); doc.setFontSize(10);
+  const summary = [
+    ["Total requests", d.stats.total.toString()],
+    ["Approval rate", `${d.stats.approvalRate}%`],
+    ["Approved", d.stats.approved.toString()],
+    ["Declined", d.stats.declined.toString()],
+    ["Pending", d.stats.pending.toString()],
+    ["Revision requested", d.stats.revision.toString()],
+    ["Capital requested", `$${d.stats.requested.toLocaleString()}`],
+    ["Capital approved", `$${d.stats.approvedAmt.toLocaleString()}`],
+  ];
+  summary.forEach(([k, v]) => { doc.text(`${k}: ${v}`, 60, y); y += 14; });
+
+  function section(title: string) {
+    if (y > 720) { doc.addPage(); y = 48; }
+    y += 12; doc.setFont("helvetica", "bold"); doc.setFontSize(11);
+    doc.text(title, 48, y); y += 14;
+    doc.setFont("helvetica", "normal"); doc.setFontSize(9);
+  }
+
+  section("Pipeline by status");
+  d.byStatus.forEach((s) => { doc.text(`${s.name}: ${s.value}`, 60, y); y += 12; });
+
+  section("Capital by region (top)");
+  d.byRegion.forEach((r) => {
+    doc.text(`${r.region} — requested $${r.requested.toLocaleString()}, approved $${r.approved.toLocaleString()} (${r.count} req)`, 60, y);
+    y += 12;
+    if (y > 740) { doc.addPage(); y = 48; }
+  });
+
+  section("Top sectors");
+  d.bySector.forEach((s) => { doc.text(`${s.name}: ${s.value}`, 60, y); y += 12; });
+
+  section("Daily timeline");
+  const per = 4; const lineH = 10;
+  d.timeline.forEach((t) => {
+    doc.text(`${t.day.padEnd(9, " ")} · submitted ${t.submitted}  approved ${t.approved}`, 60, y);
+    y += lineH;
+    if (y > 740) { doc.addPage(); y = 48; }
+  });
+
+  // Footer
+  const pageCount = (doc.internal as unknown as { getNumberOfPages: () => number }).getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i); doc.setFontSize(8); doc.setTextColor(140);
+    doc.text(`Atlas Sanctum · Page ${i} of ${pageCount}`, w / 2, 780, { align: "center" });
+  }
+
+  doc.save(`funding-snapshot-${d.range}-${stamp()}.pdf`);
+  toast.success("PDF exported");
+  void per;
+}
