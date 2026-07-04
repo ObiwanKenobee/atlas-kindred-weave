@@ -9,7 +9,12 @@ import { Button } from "@/components/ui/button";
 import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
 } from "@/components/ui/select";
-import { Loader2, TrendingUp, Coins, CheckCircle2, XCircle, Clock } from "lucide-react";
+import {
+  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { Loader2, TrendingUp, Coins, CheckCircle2, XCircle, Clock, Download, FileText, FileSpreadsheet } from "lucide-react";
+import jsPDF from "jspdf";
+import { toast } from "sonner";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
   PieChart, Pie, Cell, LineChart, Line, Legend,

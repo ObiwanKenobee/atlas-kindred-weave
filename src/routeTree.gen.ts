@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as VaultRouteImport } from './routes/vault'
 import { Route as TreasuryRouteImport } from './routes/treasury'
+import { Route as SubscriptionRouteImport } from './routes/subscription'
 import { Route as RiskRouteImport } from './routes/risk'
 import { Route as RegenerativeRouteImport } from './routes/regenerative'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -30,6 +31,7 @@ import { Route as CommunityRouteImport } from './routes/community'
 import { Route as CfoRouteImport } from './routes/cfo'
 import { Route as BusinessOsRouteImport } from './routes/business-os'
 import { Route as AuditRouteImport } from './routes/audit'
+import { Route as ApprovalsRouteImport } from './routes/approvals'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings.notifications'
 import { Route as ApiVaultFileRouteImport } from './routes/api/vault-file'
@@ -53,6 +55,11 @@ const VaultRoute = VaultRouteImport.update({
 const TreasuryRoute = TreasuryRouteImport.update({
   id: '/treasury',
   path: '/treasury',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubscriptionRoute = SubscriptionRouteImport.update({
+  id: '/subscription',
+  path: '/subscription',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RiskRoute = RiskRouteImport.update({
@@ -145,6 +152,11 @@ const AuditRoute = AuditRouteImport.update({
   path: '/audit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApprovalsRoute = ApprovalsRouteImport.update({
+  id: '/approvals',
+  path: '/approvals',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -193,6 +205,7 @@ const AdminRolesRoute = AdminRolesRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/approvals': typeof ApprovalsRoute
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
   '/cfo': typeof CfoRoute
@@ -211,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/regenerative': typeof RegenerativeRoute
   '/risk': typeof RiskRoute
+  '/subscription': typeof SubscriptionRoute
   '/treasury': typeof TreasuryRoute
   '/vault': typeof VaultRoute
   '/verification': typeof VerificationRoute
@@ -225,6 +239,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/approvals': typeof ApprovalsRoute
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
   '/cfo': typeof CfoRoute
@@ -243,6 +258,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/regenerative': typeof RegenerativeRoute
   '/risk': typeof RiskRoute
+  '/subscription': typeof SubscriptionRoute
   '/treasury': typeof TreasuryRoute
   '/vault': typeof VaultRoute
   '/verification': typeof VerificationRoute
@@ -258,6 +274,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/approvals': typeof ApprovalsRoute
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
   '/cfo': typeof CfoRoute
@@ -276,6 +293,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/regenerative': typeof RegenerativeRoute
   '/risk': typeof RiskRoute
+  '/subscription': typeof SubscriptionRoute
   '/treasury': typeof TreasuryRoute
   '/vault': typeof VaultRoute
   '/verification': typeof VerificationRoute
@@ -292,6 +310,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/approvals'
     | '/audit'
     | '/business-os'
     | '/cfo'
@@ -310,6 +329,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/regenerative'
     | '/risk'
+    | '/subscription'
     | '/treasury'
     | '/vault'
     | '/verification'
@@ -324,6 +344,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/approvals'
     | '/audit'
     | '/business-os'
     | '/cfo'
@@ -342,6 +363,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/regenerative'
     | '/risk'
+    | '/subscription'
     | '/treasury'
     | '/vault'
     | '/verification'
@@ -356,6 +378,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/approvals'
     | '/audit'
     | '/business-os'
     | '/cfo'
@@ -374,6 +397,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/regenerative'
     | '/risk'
+    | '/subscription'
     | '/treasury'
     | '/vault'
     | '/verification'
@@ -389,6 +413,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApprovalsRoute: typeof ApprovalsRoute
   AuditRoute: typeof AuditRoute
   BusinessOsRoute: typeof BusinessOsRoute
   CfoRoute: typeof CfoRoute
@@ -407,6 +432,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   RegenerativeRoute: typeof RegenerativeRoute
   RiskRoute: typeof RiskRoute
+  SubscriptionRoute: typeof SubscriptionRoute
   TreasuryRoute: typeof TreasuryRoute
   VaultRoute: typeof VaultRoute
   VerificationRoute: typeof VerificationRoute
@@ -441,6 +467,13 @@ declare module '@tanstack/react-router' {
       path: '/treasury'
       fullPath: '/treasury'
       preLoaderRoute: typeof TreasuryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/subscription': {
+      id: '/subscription'
+      path: '/subscription'
+      fullPath: '/subscription'
+      preLoaderRoute: typeof SubscriptionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/risk': {
@@ -569,6 +602,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/approvals': {
+      id: '/approvals'
+      path: '/approvals'
+      fullPath: '/approvals'
+      preLoaderRoute: typeof ApprovalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -637,6 +677,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApprovalsRoute: ApprovalsRoute,
   AuditRoute: AuditRoute,
   BusinessOsRoute: BusinessOsRoute,
   CfoRoute: CfoRoute,
@@ -655,6 +696,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   RegenerativeRoute: RegenerativeRoute,
   RiskRoute: RiskRoute,
+  SubscriptionRoute: SubscriptionRoute,
   TreasuryRoute: TreasuryRoute,
   VaultRoute: VaultRoute,
   VerificationRoute: VerificationRoute,
