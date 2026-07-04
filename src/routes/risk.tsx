@@ -2,12 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { computeRiskScore, type RiskOutput } from "@/lib/risk.functions";
+import { submitApproval } from "@/lib/approvals.functions";
 import { useAuth } from "@/lib/auth";
 import { SANCTUM_MODULES } from "@/lib/modules";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, Loader2, ShieldCheck, Sparkles, TrendingUp } from "lucide-react";
+import { AlertTriangle, Loader2, ShieldCheck, Sparkles, TrendingUp, Gavel } from "lucide-react";
 import { toast } from "sonner";
 
 const m = SANCTUM_MODULES.find((x) => x.slug === "risk")!;
