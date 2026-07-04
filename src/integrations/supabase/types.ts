@@ -59,6 +59,63 @@ export type Database = {
         }
         Relationships: []
       }
+      approval_requests: {
+        Row: {
+          assigned_reviewer_id: string | null
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_notes: string | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          kind: Database["public"]["Enums"]["approval_kind"]
+          proposed_change: Json
+          rationale: string | null
+          requester_id: string
+          status: Database["public"]["Enums"]["approval_status"]
+          subject_user_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_reviewer_id?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_notes?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["approval_kind"]
+          proposed_change?: Json
+          rationale?: string | null
+          requester_id: string
+          status?: Database["public"]["Enums"]["approval_status"]
+          subject_user_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_reviewer_id?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_notes?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["approval_kind"]
+          proposed_change?: Json
+          rationale?: string | null
+          requester_id?: string
+          status?: Database["public"]["Enums"]["approval_status"]
+          subject_user_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       asset_bids: {
         Row: {
           asset_id: string
@@ -1037,6 +1094,8 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "reviewer" | "member"
+      approval_kind: "risk_override" | "vault_release"
+      approval_status: "pending" | "approved" | "rejected" | "cancelled"
       funding_status:
         | "draft"
         | "submitted"
@@ -1179,6 +1238,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "reviewer", "member"],
+      approval_kind: ["risk_override", "vault_release"],
+      approval_status: ["pending", "approved", "rejected", "cancelled"],
       funding_status: [
         "draft",
         "submitted",
