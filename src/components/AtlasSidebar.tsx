@@ -93,6 +93,14 @@ export function AtlasSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/approvals")}>
+                  <Link to="/approvals">
+                    <Gavel className="h-4 w-4 text-gold" />
+                    {!collapsed && <span>Approval queue</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive("/audit")}>
                   <Link to="/audit">
                     <ScrollText className="h-4 w-4" />
@@ -101,7 +109,21 @@ export function AtlasSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/subscription")}>
+                  <Link to="/subscription">
+                    <Crown className="h-4 w-4 text-gold" />
+                    {!collapsed && <span>Subscription</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive("/pricing")}>
+                  <Link to="/pricing">
+                    <Sparkles className="h-4 w-4 text-gold" />
+                    {!collapsed && <span>Pricing</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
                   <Link to="/pricing">
                     <Sparkles className="h-4 w-4 text-gold" />
                     {!collapsed && <span>Pricing</span>}
