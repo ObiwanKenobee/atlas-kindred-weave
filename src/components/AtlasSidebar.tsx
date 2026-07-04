@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, ScrollText, Settings, ShieldCheck, BarChart3, Sparkles, PhoneCall, BookOpen, Activity, Search, Users, UserCircle } from "lucide-react";
+import { Bell, ScrollText, Settings, ShieldCheck, BarChart3, Sparkles, PhoneCall, BookOpen, Activity, Search, Users, UserCircle, Gavel, Crown } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton,
@@ -93,10 +93,26 @@ export function AtlasSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/approvals")}>
+                  <Link to="/approvals">
+                    <Gavel className="h-4 w-4 text-gold" />
+                    {!collapsed && <span>Approval queue</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive("/audit")}>
                   <Link to="/audit">
                     <ScrollText className="h-4 w-4" />
                     {!collapsed && <span>Audit trail</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/subscription")}>
+                  <Link to="/subscription">
+                    <Crown className="h-4 w-4 text-gold" />
+                    {!collapsed && <span>Subscription</span>}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -2,12 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { computeRiskScore, type RiskOutput } from "@/lib/risk.functions";
+import { submitApproval } from "@/lib/approvals.functions";
 import { useAuth } from "@/lib/auth";
 import { SANCTUM_MODULES } from "@/lib/modules";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, Loader2, ShieldCheck, Sparkles, TrendingUp } from "lucide-react";
+import { AlertTriangle, Loader2, ShieldCheck, Sparkles, TrendingUp, Gavel } from "lucide-react";
 import { toast } from "sonner";
 
 const m = SANCTUM_MODULES.find((x) => x.slug === "risk")!;
@@ -79,7 +80,9 @@ function RiskPage() {
   const { user } = useAuth();
   const [result, setResult] = useState<RiskOutput | null>(null);
   const [busy, setBusy] = useState(false);
+  const [reviewBusy, setReviewBusy] = useState(false);
   const score = useServerFn(computeRiskScore);
+  const submit = useServerFn(submitApproval);
 
   async function run() {
     if (!user) return toast.error("Sign in to run the Risk Engine.");
@@ -93,6 +96,27 @@ function RiskPage() {
     } finally {
       setBusy(false);
     }
+  }
+
+  async function requestOverride() {
+    if (!user || !result) return;
+    setReviewBusy(true);
+    try {
+      await submit({ data: {
+        kind: "risk_override",
+        title: `Request risk override — currently ${result.risk_level.replace("_", " ")}`,
+        rationale: `Auto risk score ${result.trust_score}/100. Requesting reviewer to override this classification.`,
+        entity_type: "profile",
+        proposed_change: {
+          current_risk_level: result.risk_level,
+          current_trust_score: result.trust_score,
+          flags: result.flags,
+        },
+      }});
+      toast.success("Sent to the approval queue");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to submit");
+    } finally { setReviewBusy(false); }
   }
 
   return (
@@ -204,7 +228,10 @@ function RiskPage() {
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <TrendingUp className="h-3.5 w-3.5" />
             Trust score written back to your profile. Re-run after submitting new proofs.
-            <Button variant="ghost" size="sm" onClick={run} disabled={busy} className="ml-auto text-xs text-gold">
+            <Button variant="ghost" size="sm" onClick={requestOverride} disabled={reviewBusy} className="ml-auto text-xs">
+              {reviewBusy ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Gavel className="mr-1 h-3 w-3" />Request override</>}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={run} disabled={busy} className="text-xs text-gold">
               {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : "Re-run"}
             </Button>
           </div>
