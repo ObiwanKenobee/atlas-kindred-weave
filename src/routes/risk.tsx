@@ -228,7 +228,10 @@ function RiskPage() {
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <TrendingUp className="h-3.5 w-3.5" />
             Trust score written back to your profile. Re-run after submitting new proofs.
-            <Button variant="ghost" size="sm" onClick={run} disabled={busy} className="ml-auto text-xs text-gold">
+            <Button variant="ghost" size="sm" onClick={requestOverride} disabled={reviewBusy} className="ml-auto text-xs">
+              {reviewBusy ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Gavel className="mr-1 h-3 w-3" />Request override</>}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={run} disabled={busy} className="text-xs text-gold">
               {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : "Re-run"}
             </Button>
           </div>
