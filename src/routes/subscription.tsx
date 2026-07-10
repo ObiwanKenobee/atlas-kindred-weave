@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import {
-  getSubscription, changeSubscriptionPlan, PLAN_PRICES,
+  getSubscription, changeSubscriptionPlan, listBillingEvents, PLAN_PRICES,
   type SubscriptionPlan,
 } from "@/lib/subscription.functions";
 import { Card } from "@/components/ui/card";
@@ -58,13 +58,21 @@ const PLAN_META: Record<SubscriptionPlan, { name: string; tagline: string; featu
 
 const PLAN_ORDER: SubscriptionPlan[] = ["free", "launch", "growth", "scale", "enterprise"];
 
+type Timeline = Awaited<ReturnType<typeof listBillingEvents>>;
+type TimelineRange = "7d" | "30d" | "90d" | "365d" | "all";
+
 function SubscriptionPage() {
   const { user } = useAuth();
   const [sub, setSub] = useState<Sub | null>(null);
   const [busy, setBusy] = useState<SubscriptionPlan | null>(null);
+  const [timeline, setTimeline] = useState<Timeline | null>(null);
+  const [range, setRange] = useState<TimelineRange>("90d");
+  const [typeFilter, setTypeFilter] = useState<string[]>([]);
+  const [tlLoading, setTlLoading] = useState(false);
 
   const fetchSub = useServerFn(getSubscription);
   const changePlan = useServerFn(changeSubscriptionPlan);
+  const fetchTimeline = useServerFn(listBillingEvents);
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -76,7 +84,19 @@ function SubscriptionPage() {
     }
   }, [user, fetchSub]);
 
+  const loadTimeline = useCallback(async () => {
+    if (!user) return;
+    setTlLoading(true);
+    try {
+      const t = await fetchTimeline({ data: { range, types: typeFilter.length ? typeFilter : undefined } });
+      setTimeline(t);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to load timeline");
+    } finally { setTlLoading(false); }
+  }, [user, fetchTimeline, range, typeFilter]);
+
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { loadTimeline(); }, [loadTimeline]);
 
   async function selectPlan(plan: SubscriptionPlan) {
     if (plan === sub?.plan) return;
@@ -85,6 +105,7 @@ function SubscriptionPage() {
       await changePlan({ data: { plan } });
       toast.success(`Switched to ${PLAN_META[plan].name}`);
       load();
+      loadTimeline();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to change plan");
     } finally { setBusy(null); }
@@ -219,35 +240,89 @@ function SubscriptionPage() {
         </div>
       </div>
 
-      {/* Recent events */}
+      {/* Billing event timeline */}
       <div className="mt-8">
-        <div className="text-xs uppercase tracking-widest text-gold/80">Recent billing activity</div>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="text-xs uppercase tracking-widest text-gold/80">Billing event timeline</div>
+          <div className="flex flex-wrap items-center gap-2">
+            {(["7d","30d","90d","365d","all"] as TimelineRange[]).map((r) => (
+              <Button
+                key={r}
+                size="sm"
+                variant={range === r ? "default" : "outline"}
+                onClick={() => setRange(r)}
+              >
+                {r === "all" ? "All time" : r.replace("d"," days")}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        {timeline && timeline.availableTypes.length > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Type:</span>
+            <Button
+              size="sm"
+              variant={typeFilter.length === 0 ? "default" : "outline"}
+              onClick={() => setTypeFilter([])}
+            >All</Button>
+            {timeline.availableTypes.map((t) => {
+              const active = typeFilter.includes(t);
+              return (
+                <Button
+                  key={t}
+                  size="sm"
+                  variant={active ? "default" : "outline"}
+                  onClick={() =>
+                    setTypeFilter((prev) =>
+                      prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t],
+                    )
+                  }
+                >
+                  {t.replace(/_/g, " ")}
+                </Button>
+              );
+            })}
+          </div>
+        )}
+
         <Card className="glyph-border mt-3">
-          {sub.recentEvents.length === 0 ? (
-            <div className="p-6 text-center text-sm text-muted-foreground">No billing events yet.</div>
+          {tlLoading ? (
+            <div className="p-6 flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" /> Loading events…
+            </div>
+          ) : !timeline || timeline.events.length === 0 ? (
+            <div className="p-6 text-center text-sm text-muted-foreground">
+              No billing events in this range.
+            </div>
           ) : (
             <div className="divide-y divide-border/40">
-              {sub.recentEvents.map((e, i) => (
-                <div key={i} className="flex items-center justify-between p-4">
+              {timeline.events.map((e) => (
+                <div key={e.id} className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-3">
                     <CreditCard className="h-4 w-4 text-gold" />
                     <div>
-                      <div className="text-sm font-medium capitalize">{String(e.event_type).replace(/_/g, " ")}</div>
+                      <div className="text-sm font-medium capitalize">{e.eventType.replace(/_/g, " ")}</div>
                       <div className="text-xs text-muted-foreground">
-                        Plan: {String(e.plan)} · {new Date(String(e.created_at)).toLocaleString()}
+                        Plan: {e.plan} · {new Date(e.createdAt).toLocaleString()}
+                        {e.note ? ` · ${e.note}` : ""}
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="font-display text-lg">
-                      {e.amount_cents === 0 ? "—" : `$${(Number(e.amount_cents) / 100).toFixed(2)}`}
+                      {e.amountCents === 0 ? "—" : `$${(e.amountCents / 100).toFixed(2)}`}
                     </div>
+                    <div className="text-[10px] text-muted-foreground">{e.currency}</div>
                   </div>
                 </div>
               ))}
             </div>
           )}
         </Card>
+        <p className="mt-3 text-xs text-muted-foreground">
+          Sourced from internal plan-change events. Real Stripe subscription data and renewal dates activate automatically once Stripe checkout is connected.
+        </p>
       </div>
     </div>
   );

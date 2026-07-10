@@ -15,6 +15,7 @@ import { Route as TreasuryRouteImport } from './routes/treasury'
 import { Route as SubscriptionRouteImport } from './routes/subscription'
 import { Route as RiskRouteImport } from './routes/risk'
 import { Route as RegenerativeRouteImport } from './routes/regenerative'
+import { Route as ReferralsRouteImport } from './routes/referrals'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as OrchestratorRouteImport } from './routes/orchestrator'
@@ -70,6 +71,11 @@ const RiskRoute = RiskRouteImport.update({
 const RegenerativeRoute = RegenerativeRouteImport.update({
   id: '/regenerative',
   path: '/regenerative',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReferralsRoute = ReferralsRouteImport.update({
+  id: '/referrals',
+  path: '/referrals',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -222,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/orchestrator': typeof OrchestratorRoute
   '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
+  '/referrals': typeof ReferralsRoute
   '/regenerative': typeof RegenerativeRoute
   '/risk': typeof RiskRoute
   '/subscription': typeof SubscriptionRoute
@@ -256,6 +263,7 @@ export interface FileRoutesByTo {
   '/orchestrator': typeof OrchestratorRoute
   '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
+  '/referrals': typeof ReferralsRoute
   '/regenerative': typeof RegenerativeRoute
   '/risk': typeof RiskRoute
   '/subscription': typeof SubscriptionRoute
@@ -291,6 +299,7 @@ export interface FileRoutesById {
   '/orchestrator': typeof OrchestratorRoute
   '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
+  '/referrals': typeof ReferralsRoute
   '/regenerative': typeof RegenerativeRoute
   '/risk': typeof RiskRoute
   '/subscription': typeof SubscriptionRoute
@@ -327,6 +336,7 @@ export interface FileRouteTypes {
     | '/orchestrator'
     | '/pricing'
     | '/profile'
+    | '/referrals'
     | '/regenerative'
     | '/risk'
     | '/subscription'
@@ -361,6 +371,7 @@ export interface FileRouteTypes {
     | '/orchestrator'
     | '/pricing'
     | '/profile'
+    | '/referrals'
     | '/regenerative'
     | '/risk'
     | '/subscription'
@@ -395,6 +406,7 @@ export interface FileRouteTypes {
     | '/orchestrator'
     | '/pricing'
     | '/profile'
+    | '/referrals'
     | '/regenerative'
     | '/risk'
     | '/subscription'
@@ -430,6 +442,7 @@ export interface RootRouteChildren {
   OrchestratorRoute: typeof OrchestratorRoute
   PricingRoute: typeof PricingRoute
   ProfileRoute: typeof ProfileRoute
+  ReferralsRoute: typeof ReferralsRoute
   RegenerativeRoute: typeof RegenerativeRoute
   RiskRoute: typeof RiskRoute
   SubscriptionRoute: typeof SubscriptionRoute
@@ -488,6 +501,13 @@ declare module '@tanstack/react-router' {
       path: '/regenerative'
       fullPath: '/regenerative'
       preLoaderRoute: typeof RegenerativeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/referrals': {
+      id: '/referrals'
+      path: '/referrals'
+      fullPath: '/referrals'
+      preLoaderRoute: typeof ReferralsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -694,6 +714,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrchestratorRoute: OrchestratorRoute,
   PricingRoute: PricingRoute,
   ProfileRoute: ProfileRoute,
+  ReferralsRoute: ReferralsRoute,
   RegenerativeRoute: RegenerativeRoute,
   RiskRoute: RiskRoute,
   SubscriptionRoute: SubscriptionRoute,
@@ -712,13 +733,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
