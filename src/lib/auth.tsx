@@ -39,14 +39,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfile((data as Profile) ?? null);
   }
 
+  async function tryAttachReferral() {
+    try {
+      if (typeof window === "undefined") return;
+      const urlCode = new URL(window.location.href).searchParams.get("ref");
+      if (urlCode) localStorage.setItem("atlas.ref", urlCode.toUpperCase());
+      const code = localStorage.getItem("atlas.ref");
+      if (!code) return;
+      const { attachReferralCode } = await import("@/lib/referrals.functions");
+      const res = await attachReferralCode({ data: { code } });
+      if (res.ok || res.reason === "self_referral") {
+        localStorage.removeItem("atlas.ref");
+      }
+    } catch { /* non-fatal */ }
+  }
+
   useEffect(() => {
+    // Capture ?ref= from initial URL even before sign-in
+    if (typeof window !== "undefined") {
+      const urlCode = new URL(window.location.href).searchParams.get("ref");
+      if (urlCode) localStorage.setItem("atlas.ref", urlCode.toUpperCase());
+    }
+
     // Sync listener first
     const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
       setSession(sess);
       setUser(sess?.user ?? null);
       if (sess?.user) {
         // defer to avoid deadlocks
-        setTimeout(() => loadProfile(sess.user.id), 0);
+        setTimeout(() => {
+          loadProfile(sess.user.id);
+          tryAttachReferral();
+        }, 0);
       } else {
         setProfile(null);
       }
@@ -57,7 +81,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
       setUser(data.session?.user ?? null);
-      if (data.session?.user) loadProfile(data.session.user.id);
+      if (data.session?.user) {
+        loadProfile(data.session.user.id);
+        tryAttachReferral();
+      }
       setLoading(false);
     });
 
