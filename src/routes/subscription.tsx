@@ -58,13 +58,21 @@ const PLAN_META: Record<SubscriptionPlan, { name: string; tagline: string; featu
 
 const PLAN_ORDER: SubscriptionPlan[] = ["free", "launch", "growth", "scale", "enterprise"];
 
+type Timeline = Awaited<ReturnType<typeof listBillingEvents>>;
+type TimelineRange = "7d" | "30d" | "90d" | "365d" | "all";
+
 function SubscriptionPage() {
   const { user } = useAuth();
   const [sub, setSub] = useState<Sub | null>(null);
   const [busy, setBusy] = useState<SubscriptionPlan | null>(null);
+  const [timeline, setTimeline] = useState<Timeline | null>(null);
+  const [range, setRange] = useState<TimelineRange>("90d");
+  const [typeFilter, setTypeFilter] = useState<string[]>([]);
+  const [tlLoading, setTlLoading] = useState(false);
 
   const fetchSub = useServerFn(getSubscription);
   const changePlan = useServerFn(changeSubscriptionPlan);
+  const fetchTimeline = useServerFn(listBillingEvents);
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -76,7 +84,19 @@ function SubscriptionPage() {
     }
   }, [user, fetchSub]);
 
+  const loadTimeline = useCallback(async () => {
+    if (!user) return;
+    setTlLoading(true);
+    try {
+      const t = await fetchTimeline({ data: { range, types: typeFilter.length ? typeFilter : undefined } });
+      setTimeline(t);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to load timeline");
+    } finally { setTlLoading(false); }
+  }, [user, fetchTimeline, range, typeFilter]);
+
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { loadTimeline(); }, [loadTimeline]);
 
   async function selectPlan(plan: SubscriptionPlan) {
     if (plan === sub?.plan) return;
@@ -85,6 +105,7 @@ function SubscriptionPage() {
       await changePlan({ data: { plan } });
       toast.success(`Switched to ${PLAN_META[plan].name}`);
       load();
+      loadTimeline();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to change plan");
     } finally { setBusy(null); }
