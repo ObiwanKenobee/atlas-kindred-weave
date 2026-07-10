@@ -233,7 +233,7 @@ function ReferralsPage() {
               <div className="p-6 text-center text-sm text-muted-foreground">No referrals yet. Share your link to get started.</div>
             ) : (
               <div className="divide-y divide-border/40">
-                {overview.recentReferrals.map((r) => (
+                {overview.recentReferrals.map((r: Overview["recentReferrals"][number]) => (
                   <div key={r.id} className="flex items-center justify-between p-4">
                     <div>
                       <div className="text-sm font-medium">{r.name}</div>
@@ -297,7 +297,7 @@ function ReferralsPage() {
             <div className="p-6 text-center text-sm text-muted-foreground">No rewards yet.</div>
           ) : (
             <div className="divide-y divide-border/40">
-              {overview.recentRewards.map((r) => (
+              {overview.recentRewards.map((r: Overview["recentRewards"][number]) => (
                 <div key={r.id} className="flex items-center justify-between p-4">
                   <div>
                     <div className="text-sm font-medium capitalize">{r.kind.replace(/_/g, " ")}</div>
