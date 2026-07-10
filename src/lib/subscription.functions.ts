@@ -99,3 +99,65 @@ export const changeSubscriptionPlan = createServerFn({ method: "POST" })
 
     return { plan: data.plan, priceMonthly: PLAN_PRICES[data.plan] };
   });
+
+export const listBillingEvents = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        range: z.enum(["7d", "30d", "90d", "365d", "all"]).default("90d"),
+        types: z.array(z.string().min(1).max(64)).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { userId } = context;
+    const nowMs = Date.now();
+    const rangeMs: Record<string, number | null> = {
+      "7d": 7 * 864e5,
+      "30d": 30 * 864e5,
+      "90d": 90 * 864e5,
+      "365d": 365 * 864e5,
+      all: null,
+    };
+    const since = rangeMs[data.range];
+
+    let q = supabaseAdmin
+      .from("subscription_events")
+      .select("id, plan, event_type, amount_cents, currency, created_at, metadata")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(200);
+
+    if (since !== null) {
+      q = q.gte("created_at", new Date(nowMs - since).toISOString());
+    }
+    if (data.types && data.types.length > 0) {
+      q = q.in("event_type", data.types);
+    }
+
+    const { data: events } = await q;
+
+    // distinct event types (for filter chips) — separate cheap query, ignores filters
+    const { data: allTypes } = await supabaseAdmin
+      .from("subscription_events")
+      .select("event_type")
+      .eq("user_id", userId)
+      .limit(500);
+    const types = Array.from(
+      new Set((allTypes ?? []).map((r: any) => String(r.event_type))),
+    ).sort();
+
+    return {
+      events: (events ?? []).map((e: any) => ({
+        id: e.id as string,
+        plan: e.plan as string,
+        eventType: e.event_type as string,
+        amountCents: (e.amount_cents as number | null) ?? 0,
+        currency: (e.currency as string | null) ?? "USD",
+        createdAt: e.created_at as string,
+        note: ((e.metadata as any)?.note as string | undefined) ?? null,
+      })),
+      availableTypes: types,
+    };
+  });
