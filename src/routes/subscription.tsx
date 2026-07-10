@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import {
-  getSubscription, changeSubscriptionPlan, PLAN_PRICES,
+  getSubscription, changeSubscriptionPlan, listBillingEvents, PLAN_PRICES,
   type SubscriptionPlan,
 } from "@/lib/subscription.functions";
 import { Card } from "@/components/ui/card";
