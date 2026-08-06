@@ -325,7 +325,7 @@ function SubscriptionPage() {
                   onClick={() => selectPlan(p)}
                 >
                   {busy === p && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
-                  {active ? "Current" : "Switch"}
+                  {active ? "Current" : PLAN_PRICES[p] > 0 ? "Pay with Paystack" : "Switch"}
                 </Button>
               </Card>
             );
@@ -414,7 +414,7 @@ function SubscriptionPage() {
           )}
         </Card>
         <p className="mt-3 text-xs text-muted-foreground">
-          Sourced from internal plan-change events. Real Stripe subscription data and renewal dates activate automatically once Stripe checkout is connected.
+          Sourced from Paystack charge, subscription, and invoice webhooks plus internal plan-change events.
         </p>
       </div>
     </div>
