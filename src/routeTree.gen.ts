@@ -35,6 +35,7 @@ import { Route as AuditRouteImport } from './routes/audit'
 import { Route as ApprovalsRouteImport } from './routes/approvals'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings.notifications'
+import { Route as BillingCallbackRouteImport } from './routes/billing.callback'
 import { Route as ApiVaultFileRouteImport } from './routes/api/vault-file'
 import { Route as ApiSessionRouteImport } from './routes/api/session'
 import { Route as ApiEmbedRouteImport } from './routes/api/embed'
@@ -174,6 +175,11 @@ const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
   path: '/settings/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BillingCallbackRoute = BillingCallbackRouteImport.update({
+  id: '/billing/callback',
+  path: '/billing/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiVaultFileRoute = ApiVaultFileRouteImport.update({
   id: '/api/vault-file',
   path: '/api/vault-file',
@@ -249,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/api/embed': typeof ApiEmbedRoute
   '/api/session': typeof ApiSessionRoute
   '/api/vault-file': typeof ApiVaultFileRoute
+  '/billing/callback': typeof BillingCallbackRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
 }
@@ -285,6 +292,7 @@ export interface FileRoutesByTo {
   '/api/embed': typeof ApiEmbedRoute
   '/api/session': typeof ApiSessionRoute
   '/api/vault-file': typeof ApiVaultFileRoute
+  '/billing/callback': typeof BillingCallbackRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
 }
@@ -322,6 +330,7 @@ export interface FileRoutesById {
   '/api/embed': typeof ApiEmbedRoute
   '/api/session': typeof ApiSessionRoute
   '/api/vault-file': typeof ApiVaultFileRoute
+  '/billing/callback': typeof BillingCallbackRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
 }
@@ -360,6 +369,7 @@ export interface FileRouteTypes {
     | '/api/embed'
     | '/api/session'
     | '/api/vault-file'
+    | '/billing/callback'
     | '/settings/notifications'
     | '/api/public/paystack-webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -396,6 +406,7 @@ export interface FileRouteTypes {
     | '/api/embed'
     | '/api/session'
     | '/api/vault-file'
+    | '/billing/callback'
     | '/settings/notifications'
     | '/api/public/paystack-webhook'
   id:
@@ -432,6 +443,7 @@ export interface FileRouteTypes {
     | '/api/embed'
     | '/api/session'
     | '/api/vault-file'
+    | '/billing/callback'
     | '/settings/notifications'
     | '/api/public/paystack-webhook'
   fileRoutesById: FileRoutesById
@@ -469,6 +481,7 @@ export interface RootRouteChildren {
   ApiEmbedRoute: typeof ApiEmbedRoute
   ApiSessionRoute: typeof ApiSessionRoute
   ApiVaultFileRoute: typeof ApiVaultFileRoute
+  BillingCallbackRoute: typeof BillingCallbackRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
 }
@@ -657,6 +670,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/billing/callback': {
+      id: '/billing/callback'
+      path: '/billing/callback'
+      fullPath: '/billing/callback'
+      preLoaderRoute: typeof BillingCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/vault-file': {
       id: '/api/vault-file'
       path: '/api/vault-file'
@@ -749,6 +769,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiEmbedRoute: ApiEmbedRoute,
   ApiSessionRoute: ApiSessionRoute,
   ApiVaultFileRoute: ApiVaultFileRoute,
+  BillingCallbackRoute: BillingCallbackRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
 }
