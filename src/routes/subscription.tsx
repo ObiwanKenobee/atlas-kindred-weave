@@ -67,11 +67,16 @@ const PLAN_ORDER: SubscriptionPlan[] = ["free", "launch", "growth", "scale", "en
 type Timeline = Awaited<ReturnType<typeof listBillingEvents>>;
 type TimelineRange = "7d" | "30d" | "90d" | "365d" | "all";
 
+type Payments = Awaited<ReturnType<typeof listPaymentTransactions>>;
+
 function SubscriptionPage() {
-  const { user } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
+  const ent = useEntitlements();
   const [sub, setSub] = useState<Sub | null>(null);
   const [busy, setBusy] = useState<SubscriptionPlan | null>(null);
+  const [cancelling, setCancelling] = useState(false);
   const [timeline, setTimeline] = useState<Timeline | null>(null);
+  const [payments, setPayments] = useState<Payments>([]);
   const [range, setRange] = useState<TimelineRange>("90d");
   const [typeFilter, setTypeFilter] = useState<string[]>([]);
   const [tlLoading, setTlLoading] = useState(false);
@@ -79,16 +84,20 @@ function SubscriptionPage() {
   const fetchSub = useServerFn(getSubscription);
   const changePlan = useServerFn(changeSubscriptionPlan);
   const fetchTimeline = useServerFn(listBillingEvents);
+  const checkout = useServerFn(startPaystackCheckout);
+  const cancelSub = useServerFn(cancelPaystackSubscription);
+  const fetchPayments = useServerFn(listPaymentTransactions);
 
   const load = useCallback(async () => {
     if (!user) return;
     try {
-      const s = await fetchSub({ data: {} });
+      const [s, p] = await Promise.all([fetchSub({ data: {} }), fetchPayments({ data: {} })]);
       setSub(s);
+      setPayments(p);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to load subscription");
     }
-  }, [user, fetchSub]);
+  }, [user, fetchSub, fetchPayments]);
 
   const loadTimeline = useCallback(async () => {
     if (!user) return;
@@ -108,14 +117,39 @@ function SubscriptionPage() {
     if (plan === sub?.plan) return;
     setBusy(plan);
     try {
-      await changePlan({ data: { plan } });
-      toast.success(`Switched to ${PLAN_META[plan].name}`);
+      if (plan === "free" || plan === "enterprise") {
+        await changePlan({ data: { plan } });
+        toast.success(`Switched to ${PLAN_META[plan].name}`);
+        await refreshProfile();
+        load();
+        loadTimeline();
+        setBusy(null);
+        return;
+      }
+      const res = await checkout({
+        data: { plan, callbackUrl: `${window.location.origin}/billing/callback` },
+      });
+      toast.success("Redirecting to Paystack…");
+      window.location.href = res.authorizationUrl;
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to change plan");
+      setBusy(null);
+    }
+  }
+
+  async function handleCancel() {
+    setCancelling(true);
+    try {
+      await cancelSub({ data: {} });
+      toast.success("Subscription cancelled. Access continues until the period ends.");
+      await refreshProfile();
       load();
       loadTimeline();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to change plan");
-    } finally { setBusy(null); }
+      toast.error(e instanceof Error ? e.message : "Failed to cancel subscription");
+    } finally { setCancelling(false); }
   }
+
 
   if (!user) {
     return (
