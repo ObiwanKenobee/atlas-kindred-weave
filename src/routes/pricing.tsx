@@ -392,19 +392,33 @@ function TierCard({ tier, currency }: { tier: Tier; currency: Currency }) {
         </div>
         <Button
           className={tier.highlight ? "bg-gradient-gold text-gold-foreground shadow-glow hover:opacity-90" : ""}
-          variant={tier.highlight ? "default" : "outline"}
-          disabled={busy}
+          variant={tier.highlight ? "default" : isCurrent ? "secondary" : "outline"}
+          disabled={busy || isCurrent}
           onClick={user ? handleSelectPlan : undefined}
           asChild={!user}
         >
           {user ? (
-            <span>{busy ? "Updating…" : tier.priceUSD === 0 ? tier.cta : `${tier.cta} ${priceStr}`}</span>
+            <span>
+              {isCurrent
+                ? "Current plan"
+                : busy
+                  ? "Opening checkout…"
+                  : tier.priceUSD === 0
+                    ? tier.cta
+                    : `${tier.cta} ${priceStr}`}
+            </span>
           ) : (
             <Link to={tier.priceUSD === 0 ? "/" : "/login"}>
               {tier.priceUSD === 0 ? tier.cta : `${tier.cta} ${priceStr}`}
             </Link>
           )}
         </Button>
+        {user && tier.priceUSD > 0 && (
+          <p className="text-[10px] text-muted-foreground text-center">
+            Billed monthly via Paystack in KES · card, M-Pesa, and bank transfer
+          </p>
+        )}
+
       </CardContent>
     </Card>
   );
