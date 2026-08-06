@@ -236,21 +236,66 @@ function SubscriptionPage() {
             </div>
           ))}
         </div>
+        {isPaid && (
+          <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-border/50 pt-4">
+            <div className="text-xs text-muted-foreground">
+              Charged {billedMinor > 0 ? `${billingCurrency} ${(billedMinor / 100).toLocaleString()}` : `${billingCurrency}`} monthly via Paystack.
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={cancelling || ent.status === "cancelled"}
+              onClick={handleCancel}
+            >
+              {cancelling && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+              {ent.status === "cancelled" ? "Cancellation scheduled" : "Cancel subscription"}
+            </Button>
+          </div>
+        )}
       </Card>
 
-      {/* Payments-not-connected banner */}
-      <Card className="glyph-border mt-4 border-gold/30 bg-gold/5 p-4">
-        <div className="flex items-start gap-3">
-          <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-gold" />
-          <div className="text-sm">
-            <div className="font-medium text-gold">Payments integration pending</div>
-            <p className="mt-1 text-muted-foreground">
-              Plan changes are recorded for feature entitlement, but no card is charged yet.
-              Enabling Lovable's built-in Stripe will wire real checkout, automatic renewals, and refunds — ask in chat to enable it.
-            </p>
-          </div>
+      {/* Unlocked capabilities */}
+      <Card className="glyph-border mt-4 p-5">
+        <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-gold/80">
+          <ShieldCheck className="h-3 w-3" /> Unlocked capabilities
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {unlocked.map((f) => (
+            <Badge key={f} variant="outline" className="border-sage/50 text-sage">
+              {FEATURE_LABELS[f]}
+            </Badge>
+          ))}
         </div>
       </Card>
+
+      {/* Paystack payment history */}
+      <Card className="glyph-border mt-4">
+        <div className="flex items-center gap-2 border-b border-border/40 p-4 text-[10px] uppercase tracking-widest text-gold/80">
+          <Receipt className="h-3 w-3" /> Paystack payments
+        </div>
+        {payments.length === 0 ? (
+          <div className="p-6 text-center text-sm text-muted-foreground">No Paystack payments yet.</div>
+        ) : (
+          <div className="divide-y divide-border/40">
+            {payments.map((p) => (
+              <div key={p.id} className="flex items-center justify-between p-4">
+                <div>
+                  <div className="text-sm font-medium capitalize">
+                    {p.plan} · <span className={p.status === "success" ? "text-sage" : "text-muted-foreground"}>{p.status}</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {p.reference}{p.channel ? ` · ${p.channel}` : ""} · {new Date(p.createdAt).toLocaleString()}
+                  </div>
+                </div>
+                <div className="font-display text-lg">
+                  {p.currency} {(p.amountMinor / 100).toLocaleString()}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+
 
       {/* Plan grid */}
       <div className="mt-8">
