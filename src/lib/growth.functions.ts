@@ -28,7 +28,7 @@ export type CampaignOutput = z.infer<typeof CampaignOutputSchema>;
 export const generateCampaign = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => CampaignInput.parse(d))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     await requireFeature(context.userId, "growth_campaigns");
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("LOVABLE_API_KEY not configured");
