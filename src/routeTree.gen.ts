@@ -42,6 +42,7 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiCfoToolsRouteImport } from './routes/api/cfo-tools'
 import { Route as AnalyticsFundingRouteImport } from './routes/analytics.funding'
 import { Route as AdminRolesRouteImport } from './routes/admin.roles'
+import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
 
 const VerificationRoute = VerificationRouteImport.update({
   id: '/verification',
@@ -208,6 +209,12 @@ const AdminRolesRoute = AdminRolesRouteImport.update({
   path: '/admin/roles',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPaystackWebhookRoute =
+  ApiPublicPaystackWebhookRouteImport.update({
+    id: '/api/public/paystack-webhook',
+    path: '/api/public/paystack-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -243,6 +250,7 @@ export interface FileRoutesByFullPath {
   '/api/session': typeof ApiSessionRoute
   '/api/vault-file': typeof ApiVaultFileRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
+  '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -278,6 +286,7 @@ export interface FileRoutesByTo {
   '/api/session': typeof ApiSessionRoute
   '/api/vault-file': typeof ApiVaultFileRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
+  '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -314,6 +323,7 @@ export interface FileRoutesById {
   '/api/session': typeof ApiSessionRoute
   '/api/vault-file': typeof ApiVaultFileRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
+  '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -351,6 +361,7 @@ export interface FileRouteTypes {
     | '/api/session'
     | '/api/vault-file'
     | '/settings/notifications'
+    | '/api/public/paystack-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -386,6 +397,7 @@ export interface FileRouteTypes {
     | '/api/session'
     | '/api/vault-file'
     | '/settings/notifications'
+    | '/api/public/paystack-webhook'
   id:
     | '__root__'
     | '/'
@@ -421,6 +433,7 @@ export interface FileRouteTypes {
     | '/api/session'
     | '/api/vault-file'
     | '/settings/notifications'
+    | '/api/public/paystack-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -457,6 +470,7 @@ export interface RootRouteChildren {
   ApiSessionRoute: typeof ApiSessionRoute
   ApiVaultFileRoute: typeof ApiVaultFileRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
+  ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -692,6 +706,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRolesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/paystack-webhook': {
+      id: '/api/public/paystack-webhook'
+      path: '/api/public/paystack-webhook'
+      fullPath: '/api/public/paystack-webhook'
+      preLoaderRoute: typeof ApiPublicPaystackWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -729,17 +750,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSessionRoute: ApiSessionRoute,
   ApiVaultFileRoute: ApiVaultFileRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
+  ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
