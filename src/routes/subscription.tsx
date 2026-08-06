@@ -171,11 +171,19 @@ function SubscriptionPage() {
   }
 
   const lastChange = sub.recentEvents.find((e) => e.event_type === "plan_changed");
-  const renewalAt = lastChange
-    ? addDays(new Date(lastChange.created_at as string), 30)
-    : addDays(new Date(), 30);
+  const periodEnd = profile?.subscription_current_period_end
+    ? new Date(profile.subscription_current_period_end)
+    : null;
+  const renewalAt = periodEnd
+    ?? (lastChange
+      ? addDays(new Date(lastChange.created_at as string), 30)
+      : addDays(new Date(), 30));
   const isPaid = sub.priceMonthly > 0;
   const currentMeta = PLAN_META[sub.plan];
+  const unlocked = featuresFor(sub.plan as PlanId);
+  const billingCurrency = profile?.subscription_currency ?? "KES";
+  const billedMinor = profile?.subscription_amount_minor ?? 0;
+
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">
