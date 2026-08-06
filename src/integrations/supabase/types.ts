@@ -801,6 +801,57 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_transactions: {
+        Row: {
+          amount_minor: number
+          authorization_url: string | null
+          channel: string | null
+          created_at: string
+          currency: string
+          id: string
+          plan: string
+          plan_code: string | null
+          provider: string
+          raw: Json
+          reference: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_minor?: number
+          authorization_url?: string | null
+          channel?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          plan: string
+          plan_code?: string | null
+          provider?: string
+          raw?: Json
+          reference: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_minor?: number
+          authorization_url?: string | null
+          channel?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          plan?: string
+          plan_code?: string | null
+          provider?: string
+          raw?: Json
+          reference?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -808,7 +859,14 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          paystack_customer_code: string | null
+          paystack_email_token: string | null
+          paystack_plan_code: string | null
+          paystack_subscription_code: string | null
           region: string | null
+          subscription_amount_minor: number
+          subscription_currency: string
+          subscription_current_period_end: string | null
           subscription_plan: string
           subscription_status: string
           trust_score: number
@@ -822,7 +880,14 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          paystack_customer_code?: string | null
+          paystack_email_token?: string | null
+          paystack_plan_code?: string | null
+          paystack_subscription_code?: string | null
           region?: string | null
+          subscription_amount_minor?: number
+          subscription_currency?: string
+          subscription_current_period_end?: string | null
           subscription_plan?: string
           subscription_status?: string
           trust_score?: number
@@ -836,7 +901,14 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          paystack_customer_code?: string | null
+          paystack_email_token?: string | null
+          paystack_plan_code?: string | null
+          paystack_subscription_code?: string | null
           region?: string | null
+          subscription_amount_minor?: number
+          subscription_currency?: string
+          subscription_current_period_end?: string | null
           subscription_plan?: string
           subscription_status?: string
           trust_score?: number
