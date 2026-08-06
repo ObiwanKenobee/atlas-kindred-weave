@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCw, Leaf, Users, TrendingUp, Globe2, ShieldCheck, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { PlanGate } from "@/components/PlanGate";
 
 const m = SANCTUM_MODULES.find((x) => x.slug === "impact")!;
 
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/impact")({
       { name: "description", content: m.purpose },
     ],
   }),
-  component: ImpactPage,
+  component: GatedImpactPage,
 });
 
 // ── Server fn ─────────────────────────────────────────────────────────────────
@@ -361,5 +362,14 @@ function ImpactPage() {
         </div>
       )}
     </div>
+  );
+}
+
+
+function GatedImpactPage() {
+  return (
+    <PlanGate feature="impact_reporting">
+      <ImpactPage />
+    </PlanGate>
   );
 }

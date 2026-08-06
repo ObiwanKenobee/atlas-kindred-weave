@@ -20,10 +20,11 @@ import {
   PieChart, Pie, Cell, LineChart, Line, Legend,
 } from "recharts";
 import { format, subDays, startOfDay } from "date-fns";
+import { PlanGate } from "@/components/PlanGate";
 
 export const Route = createFileRoute("/analytics/funding")({
   head: () => ({ meta: [{ title: "Funding analytics — Atlas Sanctum" }] }),
-  component: FundingAnalytics,
+  component: GatedFundingAnalytics,
 });
 
 type Row = {
@@ -464,4 +465,13 @@ function exportPdfSnapshot(d: PdfInput) {
   doc.save(`funding-snapshot-${d.range}-${stamp()}.pdf`);
   toast.success("PDF exported");
   void per;
+}
+
+
+function GatedFundingAnalytics() {
+  return (
+    <PlanGate feature="advanced_analytics">
+      <FundingAnalytics />
+    </PlanGate>
+  );
 }

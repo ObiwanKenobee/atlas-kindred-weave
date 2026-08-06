@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Sparkles, Copy, CheckCheck, Mail, MessageSquare, Smartphone } from "lucide-react";
 import { toast } from "sonner";
+import { PlanGate } from "@/components/PlanGate";
 
 const m = SANCTUM_MODULES.find((x) => x.slug === "growth")!;
 
@@ -22,7 +23,7 @@ export const Route = createFileRoute("/growth")({
       { name: "description", content: m.purpose },
     ],
   }),
-  component: GrowthPage,
+  component: GatedGrowthPage,
 });
 
 type Channel = "email" | "whatsapp" | "sms";
@@ -261,5 +262,14 @@ function GrowthPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+
+function GatedGrowthPage() {
+  return (
+    <PlanGate feature="growth_campaigns">
+      <GrowthPage />
+    </PlanGate>
   );
 }
