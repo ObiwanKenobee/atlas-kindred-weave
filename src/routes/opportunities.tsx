@@ -17,6 +17,7 @@ import {
   CheckCircle2, Circle, Zap, FileText, BarChart3, ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
+import { PlanGate } from "@/components/PlanGate";
 
 export const Route = createFileRoute("/opportunities")({
   head: () => ({
@@ -25,8 +26,16 @@ export const Route = createFileRoute("/opportunities")({
       { name: "description", content: "AI-matched grants, investors, accelerators, and funding programs for your business." },
     ],
   }),
-  component: OpportunitiesPage,
+  component: GatedOpportunitiesPage,
 });
+
+function GatedOpportunitiesPage() {
+  return (
+    <PlanGate feature="funding_match">
+      <OpportunitiesPage />
+    </PlanGate>
+  );
+}
 
 const TYPE_COLORS: Record<string, string> = {
   grant: "border-sage/60 text-sage",

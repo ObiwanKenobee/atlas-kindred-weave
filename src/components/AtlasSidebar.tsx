@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, ScrollText, Settings, ShieldCheck, BarChart3, Sparkles, PhoneCall, BookOpen, Activity, Search, Users, UserCircle, Gavel, Crown, Gift } from "lucide-react";
+import { Bell, ScrollText, Settings, ShieldCheck, BarChart3, Sparkles, PhoneCall, BookOpen, Activity, Search, Users, UserCircle, Gavel, Crown, Gift, Lock } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton,
@@ -7,6 +7,22 @@ import {
 } from "@/components/ui/sidebar";
 import { SANCTUM_MODULES, ORCHESTRATOR, HOME } from "@/lib/modules";
 import { useNotifications, useIsAdmin } from "@/lib/notifications";
+import { useEntitlements } from "@/lib/use-entitlements";
+import type { FeatureKey } from "@/lib/entitlements";
+
+// Map engine slugs to their required feature key
+const ENGINE_FEATURE: Record<string, FeatureKey> = {
+  cfo: "cfo",
+  vault: "vault",
+  orchestrator: "orchestrator",
+  "business-os": "business_os",
+  growth: "growth_campaigns",
+  impact: "impact_reporting",
+  regenerative: "rve_mint",
+  treasury: "treasury_reports",
+  "economic-graph": "advanced_analytics",
+  opportunities: "funding_match",
+};
 
 export function AtlasSidebar() {
   const { state } = useSidebar();
@@ -14,6 +30,7 @@ export function AtlasSidebar() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   const isActive = (p: string) => pathname === p;
   const isAdmin = useIsAdmin();
+  const ent = useEntitlements();
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
@@ -174,21 +191,26 @@ export function AtlasSidebar() {
           <SidebarGroupLabel>Engines</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {SANCTUM_MODULES.map((m) => (
-                <SidebarMenuItem key={m.slug}>
-                  <SidebarMenuButton asChild isActive={isActive(m.path)}>
-                    <Link to={m.path}>
-                      <m.icon className="h-4 w-4" />
-                      {!collapsed && (
-                        <span className="flex items-center gap-2">
-                          <span className="font-display text-[10px] text-gold/70 w-6">{m.glyph}</span>
-                          <span>{m.name}</span>
-                        </span>
-                      )}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {SANCTUM_MODULES.map((m) => {
+                const featureKey = ENGINE_FEATURE[m.slug];
+                const locked = featureKey ? !ent.can(featureKey) : false;
+                return (
+                  <SidebarMenuItem key={m.slug}>
+                    <SidebarMenuButton asChild isActive={isActive(m.path)}>
+                      <Link to={m.path}>
+                        <m.icon className={`h-4 w-4 ${locked ? "text-muted-foreground" : ""}`} />
+                        {!collapsed && (
+                          <span className="flex items-center gap-2 flex-1">
+                            <span className="font-display text-[10px] text-gold/70 w-6">{m.glyph}</span>
+                            <span className={locked ? "text-muted-foreground" : ""}>{m.name}</span>
+                            {locked && <Lock className="ml-auto h-3 w-3 text-gold/50 shrink-0" />}
+                          </span>
+                        )}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

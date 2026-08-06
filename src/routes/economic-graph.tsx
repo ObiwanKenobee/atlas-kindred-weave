@@ -5,6 +5,7 @@ import { SANCTUM_MODULES } from "@/lib/modules";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
+import { PlanGate } from "@/components/PlanGate";
 
 const m = SANCTUM_MODULES.find((x) => x.slug === "economic-graph")!;
 
@@ -15,8 +16,16 @@ export const Route = createFileRoute("/economic-graph")({
       { name: "description", content: m.purpose },
     ],
   }),
-  component: EconomicGraphPage,
+  component: GatedEconomicGraphPage,
 });
+
+function GatedEconomicGraphPage() {
+  return (
+    <PlanGate feature="advanced_analytics">
+      <EconomicGraphPage />
+    </PlanGate>
+  );
+}
 
 type NodeKind = "business" | "investor" | "supplier" | "community" | "partnership";
 type Node = {

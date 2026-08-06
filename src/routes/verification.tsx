@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { BadgeCheck, Loader2, Paperclip, ShieldAlert, ShieldCheck, Sparkles, X } from "lucide-react";
 import { toast } from "sonner";
+import { PlanGate } from "@/components/PlanGate";
 
 const m = SANCTUM_MODULES.find((x) => x.slug === "verification")!;
 
@@ -25,8 +26,16 @@ export const Route = createFileRoute("/verification")({
       { name: "description", content: m.purpose },
     ],
   }),
-  component: VerificationPage,
+  component: GatedVerificationPage,
 });
+
+function GatedVerificationPage() {
+  return (
+    <PlanGate feature="verification_basic">
+      <VerificationPage />
+    </PlanGate>
+  );
+}
 
 type ProofKind = "receipt" | "inventory" | "identity" | "location" | "delivery" | "business_premise" | "other";
 

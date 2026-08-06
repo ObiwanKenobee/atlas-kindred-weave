@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Loader2, ShieldCheck, Sparkles, TrendingUp, Gavel } from "lucide-react";
 import { toast } from "sonner";
+import { PlanGate } from "@/components/PlanGate";
 
 const m = SANCTUM_MODULES.find((x) => x.slug === "risk")!;
 
@@ -20,8 +21,16 @@ export const Route = createFileRoute("/risk")({
       { name: "description", content: m.purpose },
     ],
   }),
-  component: RiskPage,
+  component: GatedRiskPage,
 });
+
+function GatedRiskPage() {
+  return (
+    <PlanGate feature="trust_score">
+      <RiskPage />
+    </PlanGate>
+  );
+}
 
 const RISK_COLORS: Record<RiskOutput["risk_level"], string> = {
   very_low: "text-sage border-sage/60",

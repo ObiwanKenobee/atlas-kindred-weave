@@ -37,6 +37,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
+import { useEntitlements } from "@/lib/use-entitlements";
+import { Link } from "@tanstack/react-router";
 
 const m = SANCTUM_MODULES.find((x) => x.slug === "regenerative")!;
 
@@ -116,7 +118,7 @@ function RegenerativePage() {
           <Button variant="outline" onClick={load} disabled={refreshing}>
             <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} /> Refresh
           </Button>
-          {user && <MintDialog onCreated={load} />}
+          {user && <MintGate onCreated={load} />}
         </div>
       </header>
 
@@ -292,6 +294,18 @@ function AssetCard({ asset, onChanged, viewerId }: { asset: ImpactAsset; onChang
         )}
       </div>
     </Card>
+  );
+}
+
+function MintGate({ onCreated }: { onCreated: () => void }) {
+  const ent = useEntitlements();
+  if (ent.can("rve_mint")) return <MintDialog onCreated={onCreated} />;
+  return (
+    <Button variant="outline" asChild className="border-gold/40 text-gold">
+      <Link to="/pricing">
+        <PlusCircle className="h-4 w-4 mr-1.5" /> Mint outcome — {ent.requiredPlanLabel("rve_mint")}+
+      </Link>
+    </Button>
   );
 }
 
