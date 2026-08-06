@@ -6,15 +6,21 @@ import {
   getSubscription, changeSubscriptionPlan, listBillingEvents, PLAN_PRICES,
   type SubscriptionPlan,
 } from "@/lib/subscription.functions";
+import {
+  startPaystackCheckout, cancelPaystackSubscription, listPaymentTransactions,
+} from "@/lib/paystack.functions";
+import { useEntitlements } from "@/lib/use-entitlements";
+import { featuresFor, FEATURE_LABELS, type PlanId } from "@/lib/entitlements";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Loader2, Crown, Check, ArrowUpRight, CalendarClock, CreditCard,
-  Sparkles, Info,
+  Sparkles, ShieldCheck, Receipt,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow, addDays } from "date-fns";
+
 
 export const Route = createFileRoute("/subscription")({
   head: () => ({
