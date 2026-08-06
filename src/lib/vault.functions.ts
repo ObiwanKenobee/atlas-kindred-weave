@@ -5,6 +5,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 import { recordAgentEvent } from "@/lib/observability.server";
+import { requireFeature, requireVaultCapacity } from "@/lib/entitlements.server";
 
 async function embedText(text: string): Promise<number[]> {
   const key = process.env.LOVABLE_API_KEY;
@@ -50,6 +51,7 @@ export const extractDocumentContent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => ExtractInput.parse(d))
   .handler(async ({ data, context }) => {
+    await requireFeature(context.userId, "vault");
     const { userId } = context;
     const t0 = Date.now();
     const key = process.env.LOVABLE_API_KEY;
@@ -138,6 +140,7 @@ export const ingestDocument = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => IngestInput.parse(d))
   .handler(async ({ data, context }) => {
+    await requireVaultCapacity(context.userId);
     const { userId } = context;
     const t0 = Date.now();
     const chunks = chunkText(data.content);
@@ -197,6 +200,7 @@ export const searchVault = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => SearchInput.parse(d))
   .handler(async ({ data, context }) => {
+    await requireFeature(context.userId, "vault");
     const { userId } = context;
     const embedding = await embedText(data.query);
 
@@ -220,6 +224,7 @@ export const queryVault = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => QueryInput.parse(d))
   .handler(async ({ data, context }) => {
+    await requireFeature(context.userId, "vault");
     const { userId } = context;
     const t0 = Date.now();
     const embedding = await embedText(data.question);

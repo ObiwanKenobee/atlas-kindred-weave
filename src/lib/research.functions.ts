@@ -5,6 +5,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 import { recordAgentEvent } from "@/lib/observability.server";
+import { requireFeature } from "@/lib/entitlements.server";
 
 const OpportunitySchema = z.object({
   opportunities: z
@@ -39,6 +40,7 @@ export const findFundingOpportunities = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => ResearchInput.parse(d))
   .handler(async ({ data, context }) => {
+    await requireFeature(context.userId, "funding_match");
     const { userId } = context;
 
     const [{ data: profile }, { data: funding }, { data: verEvents }, { data: vaultDocs }] =
@@ -149,6 +151,7 @@ export const generateTreasuryReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({}).parse(d))
   .handler(async ({ context }) => {
+    await requireFeature(context.userId, "treasury_reports");
     const { userId } = context;
 
     const [{ data: profile }, { data: funding }, { data: vaultDocs }] = await Promise.all([

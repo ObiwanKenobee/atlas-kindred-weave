@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { recordAgentEvent } from "@/lib/observability.server";
+import { requireFeature } from "@/lib/entitlements.server";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -152,6 +153,7 @@ export const mintAsset = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => MintInput.parse(d))
   .handler(async ({ data, context }) => {
+    await requireFeature(context.userId, "rve_mint");
     const { userId } = context;
 
     const { data: asset, error } = await supabaseAdmin
