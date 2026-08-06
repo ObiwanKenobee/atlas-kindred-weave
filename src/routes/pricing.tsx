@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/lib/auth";
 import { changeSubscriptionPlan } from "@/lib/subscription.functions";
+import { startPaystackCheckout } from "@/lib/paystack.functions";
+import { useEntitlements } from "@/lib/use-entitlements";
 import { toast } from "sonner";
 import {
   Check, Sparkles, Rocket, TrendingUp, Building2, Coins, ShieldCheck,
