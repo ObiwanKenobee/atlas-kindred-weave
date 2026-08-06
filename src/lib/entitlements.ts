@@ -35,6 +35,9 @@ export type FeatureKey =
   | "verification_basic"
   | "cfo"
   | "advisor"
+  | "cashflow_insights"
+  | "revenue_tracking"
+  | "funding_eligibility"
   | "funding_match"
   | "vault"
   | "orchestrator"
@@ -55,6 +58,9 @@ export const FEATURE_MIN_PLAN: Record<FeatureKey, PlanId> = {
   verification_basic: "free",
   cfo: "launch",
   advisor: "launch",
+  cashflow_insights: "launch",
+  revenue_tracking: "launch",
+  funding_eligibility: "launch",
   funding_match: "launch",
   vault: "launch",
   orchestrator: "growth",
@@ -75,6 +81,9 @@ export const FEATURE_LABELS: Record<FeatureKey, string> = {
   verification_basic: "Basic AI assessment",
   cfo: "Atlas AI CFO",
   advisor: "AI advisor",
+  cashflow_insights: "Cashflow insights",
+  revenue_tracking: "Revenue tracking",
+  funding_eligibility: "Funding eligibility",
   funding_match: "Funding matching",
   vault: "Knowledge Vault",
   orchestrator: "Atlas Orchestrator",

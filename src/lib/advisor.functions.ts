@@ -24,7 +24,7 @@ export const askAdvisor = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => AdvisorInput.parse(d))
   .handler(async ({ data, context }) => {
-    await requireFeature(context.userId, "cfo");
+    await requireFeature(context.userId, "advisor");
     const { userId } = context;
 
     const [{ data: profile }, { data: funding }, { data: verEvents }, { data: riskScore }] =

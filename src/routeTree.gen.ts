@@ -33,6 +33,9 @@ import { Route as CfoRouteImport } from './routes/cfo'
 import { Route as BusinessOsRouteImport } from './routes/business-os'
 import { Route as AuditRouteImport } from './routes/audit'
 import { Route as ApprovalsRouteImport } from './routes/approvals'
+import { Route as EligibilityRouteImport } from './routes/eligibility'
+import { Route as RevenueRouteImport } from './routes/revenue'
+import { Route as CashflowRouteImport } from './routes/cashflow'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings.notifications'
 import { Route as BillingCallbackRouteImport } from './routes/billing.callback'
@@ -165,6 +168,21 @@ const ApprovalsRoute = ApprovalsRouteImport.update({
   path: '/approvals',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EligibilityRoute = EligibilityRouteImport.update({
+  id: '/eligibility',
+  path: '/eligibility',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RevenueRoute = RevenueRouteImport.update({
+  id: '/revenue',
+  path: '/revenue',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CashflowRoute = CashflowRouteImport.update({
+  id: '/cashflow',
+  path: '/cashflow',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -225,6 +243,9 @@ const ApiPublicPaystackWebhookRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
+  '/cashflow': typeof CashflowRoute
+  '/revenue': typeof RevenueRoute
+  '/eligibility': typeof EligibilityRoute
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
   '/cfo': typeof CfoRoute
@@ -262,6 +283,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
+  '/cashflow': typeof CashflowRoute
+  '/revenue': typeof RevenueRoute
+  '/eligibility': typeof EligibilityRoute
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
   '/cfo': typeof CfoRoute
@@ -300,6 +324,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
+  '/cashflow': typeof CashflowRoute
+  '/revenue': typeof RevenueRoute
+  '/eligibility': typeof EligibilityRoute
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
   '/cfo': typeof CfoRoute
@@ -339,6 +366,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/approvals'
+    | '/cashflow'
+    | '/revenue'
+    | '/eligibility'
     | '/audit'
     | '/business-os'
     | '/cfo'
@@ -376,6 +406,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/approvals'
+    | '/cashflow'
+    | '/revenue'
+    | '/eligibility'
     | '/audit'
     | '/business-os'
     | '/cfo'
@@ -413,6 +446,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/approvals'
+    | '/cashflow'
+    | '/revenue'
+    | '/eligibility'
     | '/audit'
     | '/business-os'
     | '/cfo'
@@ -451,6 +487,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApprovalsRoute: typeof ApprovalsRoute
+  CashflowRoute: typeof CashflowRoute
+  RevenueRoute: typeof RevenueRoute
+  EligibilityRoute: typeof EligibilityRoute
   AuditRoute: typeof AuditRoute
   BusinessOsRoute: typeof BusinessOsRoute
   CfoRoute: typeof CfoRoute
@@ -656,6 +695,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApprovalsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cashflow': {
+      id: '/cashflow'
+      path: '/cashflow'
+      fullPath: '/cashflow'
+      preLoaderRoute: typeof CashflowRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/revenue': {
+      id: '/revenue'
+      path: '/revenue'
+      fullPath: '/revenue'
+      preLoaderRoute: typeof RevenueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eligibility': {
+      id: '/eligibility'
+      path: '/eligibility'
+      fullPath: '/eligibility'
+      preLoaderRoute: typeof EligibilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -739,6 +799,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApprovalsRoute: ApprovalsRoute,
+  CashflowRoute: CashflowRoute,
+  RevenueRoute: RevenueRoute,
+  EligibilityRoute: EligibilityRoute,
   AuditRoute: AuditRoute,
   BusinessOsRoute: BusinessOsRoute,
   CfoRoute: CfoRoute,
