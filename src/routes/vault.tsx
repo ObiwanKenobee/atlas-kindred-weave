@@ -15,6 +15,7 @@ import {
   Sparkles, BookOpen, ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
+import { PlanGate } from "@/components/PlanGate";
 
 export const Route = createFileRoute("/vault")({
   head: () => ({
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/vault")({
       { name: "description", content: "Your business intelligence vault. Upload documents, images, and transcripts. Ask questions grounded in your evidence." },
     ],
   }),
-  component: VaultPage,
+  component: GatedVaultPage,
 });
 
 type DocKind = "business_plan" | "receipt" | "invoice" | "inventory" | "tax" | "funding" | "audio_transcript" | "general";
@@ -438,4 +439,13 @@ function DocIcon({ type }: { type: string }) {
   if (type === "audio") return <Mic className="h-5 w-5 text-gold/70 shrink-0" />;
   if (type === "pdf") return <FileText className="h-5 w-5 text-gold/70 shrink-0" />;
   return <File className="h-5 w-5 text-gold/70 shrink-0" />;
+}
+
+
+function GatedVaultPage() {
+  return (
+    <PlanGate feature="vault">
+      <VaultPage />
+    </PlanGate>
+  );
 }

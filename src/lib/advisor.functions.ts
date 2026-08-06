@@ -4,6 +4,7 @@ import { generateObject } from "ai";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
+import { requireFeature } from "@/lib/entitlements.server";
 
 const AdvisorInput = z.object({
   question: z.string().min(5).max(1000),
@@ -23,6 +24,7 @@ export const askAdvisor = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => AdvisorInput.parse(d))
   .handler(async ({ data, context }) => {
+    await requireFeature(context.userId, "cfo");
     const { userId } = context;
 
     const [{ data: profile }, { data: funding }, { data: verEvents }, { data: riskScore }] =

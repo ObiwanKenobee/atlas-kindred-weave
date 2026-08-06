@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { runOrchestratorWorkflow, type OrchestratorResult, type WorkflowStep } from "@/lib/orchestrator.functions";
+import { PlanGate } from "@/components/PlanGate";
 
 export const Route = createFileRoute("/orchestrator")({
   head: () => ({
@@ -20,7 +21,7 @@ export const Route = createFileRoute("/orchestrator")({
       { name: "description", content: "Coordinate every engine and agent. Audit every decision." },
     ],
   }),
-  component: OrchestratorPage,
+  component: GatedOrchestratorPage,
 });
 
 const SUGGESTIONS = [
@@ -316,5 +317,14 @@ function OrchestratorPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+
+function GatedOrchestratorPage() {
+  return (
+    <PlanGate feature="orchestrator">
+      <OrchestratorPage />
+    </PlanGate>
   );
 }

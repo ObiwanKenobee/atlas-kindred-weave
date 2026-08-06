@@ -6,15 +6,21 @@ import {
   getSubscription, changeSubscriptionPlan, listBillingEvents, PLAN_PRICES,
   type SubscriptionPlan,
 } from "@/lib/subscription.functions";
+import {
+  startPaystackCheckout, cancelPaystackSubscription, listPaymentTransactions,
+} from "@/lib/paystack.functions";
+import { useEntitlements } from "@/lib/use-entitlements";
+import { featuresFor, FEATURE_LABELS, type PlanId } from "@/lib/entitlements";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Loader2, Crown, Check, ArrowUpRight, CalendarClock, CreditCard,
-  Sparkles, Info,
+  Sparkles, ShieldCheck, Receipt,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow, addDays } from "date-fns";
+
 
 export const Route = createFileRoute("/subscription")({
   head: () => ({
@@ -61,11 +67,16 @@ const PLAN_ORDER: SubscriptionPlan[] = ["free", "launch", "growth", "scale", "en
 type Timeline = Awaited<ReturnType<typeof listBillingEvents>>;
 type TimelineRange = "7d" | "30d" | "90d" | "365d" | "all";
 
+type Payments = Awaited<ReturnType<typeof listPaymentTransactions>>;
+
 function SubscriptionPage() {
-  const { user } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
+  const ent = useEntitlements();
   const [sub, setSub] = useState<Sub | null>(null);
   const [busy, setBusy] = useState<SubscriptionPlan | null>(null);
+  const [cancelling, setCancelling] = useState(false);
   const [timeline, setTimeline] = useState<Timeline | null>(null);
+  const [payments, setPayments] = useState<Payments>([]);
   const [range, setRange] = useState<TimelineRange>("90d");
   const [typeFilter, setTypeFilter] = useState<string[]>([]);
   const [tlLoading, setTlLoading] = useState(false);
@@ -73,16 +84,20 @@ function SubscriptionPage() {
   const fetchSub = useServerFn(getSubscription);
   const changePlan = useServerFn(changeSubscriptionPlan);
   const fetchTimeline = useServerFn(listBillingEvents);
+  const checkout = useServerFn(startPaystackCheckout);
+  const cancelSub = useServerFn(cancelPaystackSubscription);
+  const fetchPayments = useServerFn(listPaymentTransactions);
 
   const load = useCallback(async () => {
     if (!user) return;
     try {
-      const s = await fetchSub({ data: {} });
+      const [s, p] = await Promise.all([fetchSub({ data: {} }), fetchPayments({ data: {} })]);
       setSub(s);
+      setPayments(p);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to load subscription");
     }
-  }, [user, fetchSub]);
+  }, [user, fetchSub, fetchPayments]);
 
   const loadTimeline = useCallback(async () => {
     if (!user) return;
@@ -102,14 +117,39 @@ function SubscriptionPage() {
     if (plan === sub?.plan) return;
     setBusy(plan);
     try {
-      await changePlan({ data: { plan } });
-      toast.success(`Switched to ${PLAN_META[plan].name}`);
+      if (plan === "free" || plan === "enterprise") {
+        await changePlan({ data: { plan } });
+        toast.success(`Switched to ${PLAN_META[plan].name}`);
+        await refreshProfile();
+        load();
+        loadTimeline();
+        setBusy(null);
+        return;
+      }
+      const res = await checkout({
+        data: { plan, callbackUrl: `${window.location.origin}/billing/callback` },
+      });
+      toast.success("Redirecting to Paystack…");
+      window.location.href = res.authorizationUrl;
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to change plan");
+      setBusy(null);
+    }
+  }
+
+  async function handleCancel() {
+    setCancelling(true);
+    try {
+      await cancelSub({ data: {} });
+      toast.success("Subscription cancelled. Access continues until the period ends.");
+      await refreshProfile();
       load();
       loadTimeline();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to change plan");
-    } finally { setBusy(null); }
+      toast.error(e instanceof Error ? e.message : "Failed to cancel subscription");
+    } finally { setCancelling(false); }
   }
+
 
   if (!user) {
     return (
@@ -131,11 +171,19 @@ function SubscriptionPage() {
   }
 
   const lastChange = sub.recentEvents.find((e) => e.event_type === "plan_changed");
-  const renewalAt = lastChange
-    ? addDays(new Date(lastChange.created_at as string), 30)
-    : addDays(new Date(), 30);
+  const periodEnd = profile?.subscription_current_period_end
+    ? new Date(profile.subscription_current_period_end)
+    : null;
+  const renewalAt = periodEnd
+    ?? (lastChange
+      ? addDays(new Date(lastChange.created_at as string), 30)
+      : addDays(new Date(), 30));
   const isPaid = sub.priceMonthly > 0;
   const currentMeta = PLAN_META[sub.plan];
+  const unlocked = featuresFor(sub.plan as PlanId);
+  const billingCurrency = profile?.subscription_currency ?? "KES";
+  const billedMinor = profile?.subscription_amount_minor ?? 0;
+
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">
@@ -188,21 +236,66 @@ function SubscriptionPage() {
             </div>
           ))}
         </div>
+        {isPaid && (
+          <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-border/50 pt-4">
+            <div className="text-xs text-muted-foreground">
+              Charged {billedMinor > 0 ? `${billingCurrency} ${(billedMinor / 100).toLocaleString()}` : `${billingCurrency}`} monthly via Paystack.
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={cancelling || ent.status === "cancelled"}
+              onClick={handleCancel}
+            >
+              {cancelling && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+              {ent.status === "cancelled" ? "Cancellation scheduled" : "Cancel subscription"}
+            </Button>
+          </div>
+        )}
       </Card>
 
-      {/* Payments-not-connected banner */}
-      <Card className="glyph-border mt-4 border-gold/30 bg-gold/5 p-4">
-        <div className="flex items-start gap-3">
-          <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-gold" />
-          <div className="text-sm">
-            <div className="font-medium text-gold">Payments integration pending</div>
-            <p className="mt-1 text-muted-foreground">
-              Plan changes are recorded for feature entitlement, but no card is charged yet.
-              Enabling Lovable's built-in Stripe will wire real checkout, automatic renewals, and refunds — ask in chat to enable it.
-            </p>
-          </div>
+      {/* Unlocked capabilities */}
+      <Card className="glyph-border mt-4 p-5">
+        <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-gold/80">
+          <ShieldCheck className="h-3 w-3" /> Unlocked capabilities
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {unlocked.map((f) => (
+            <Badge key={f} variant="outline" className="border-sage/50 text-sage">
+              {FEATURE_LABELS[f]}
+            </Badge>
+          ))}
         </div>
       </Card>
+
+      {/* Paystack payment history */}
+      <Card className="glyph-border mt-4">
+        <div className="flex items-center gap-2 border-b border-border/40 p-4 text-[10px] uppercase tracking-widest text-gold/80">
+          <Receipt className="h-3 w-3" /> Paystack payments
+        </div>
+        {payments.length === 0 ? (
+          <div className="p-6 text-center text-sm text-muted-foreground">No Paystack payments yet.</div>
+        ) : (
+          <div className="divide-y divide-border/40">
+            {payments.map((p) => (
+              <div key={p.id} className="flex items-center justify-between p-4">
+                <div>
+                  <div className="text-sm font-medium capitalize">
+                    {p.plan} · <span className={p.status === "success" ? "text-sage" : "text-muted-foreground"}>{p.status}</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {p.reference}{p.channel ? ` · ${p.channel}` : ""} · {new Date(p.createdAt).toLocaleString()}
+                  </div>
+                </div>
+                <div className="font-display text-lg">
+                  {p.currency} {(p.amountMinor / 100).toLocaleString()}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+
 
       {/* Plan grid */}
       <div className="mt-8">
@@ -232,7 +325,7 @@ function SubscriptionPage() {
                   onClick={() => selectPlan(p)}
                 >
                   {busy === p && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
-                  {active ? "Current" : "Switch"}
+                  {active ? "Current" : PLAN_PRICES[p] > 0 ? "Pay with Paystack" : "Switch"}
                 </Button>
               </Card>
             );
@@ -321,7 +414,7 @@ function SubscriptionPage() {
           )}
         </Card>
         <p className="mt-3 text-xs text-muted-foreground">
-          Sourced from internal plan-change events. Real Stripe subscription data and renewal dates activate automatically once Stripe checkout is connected.
+          Sourced from Paystack charge, subscription, and invoice webhooks plus internal plan-change events.
         </p>
       </div>
     </div>

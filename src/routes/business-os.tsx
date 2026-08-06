@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Brain, Send, Loader2, ChevronRight, AlertTriangle, Lightbulb, CheckSquare } from "lucide-react";
 import { toast } from "sonner";
+import { PlanGate } from "@/components/PlanGate";
 
 const m = SANCTUM_MODULES.find((x) => x.slug === "business-os")!;
 
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/business-os")({
       { name: "description", content: m.purpose },
     ],
   }),
-  component: BusinessOSPage,
+  component: GatedBusinessOSPage,
 });
 
 const STARTER_QUESTIONS = [
@@ -198,5 +199,14 @@ function BusinessOSPage() {
         </Button>
       </form>
     </div>
+  );
+}
+
+
+function GatedBusinessOSPage() {
+  return (
+    <PlanGate feature="business_os">
+      <BusinessOSPage />
+    </PlanGate>
   );
 }

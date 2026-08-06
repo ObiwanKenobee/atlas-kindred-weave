@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCw, TrendingDown, TrendingUp, Vault } from "lucide-react";
 import { toast } from "sonner";
+import { PlanGate } from "@/components/PlanGate";
 
 const m = SANCTUM_MODULES.find((x) => x.slug === "treasury")!;
 
@@ -79,7 +80,7 @@ export const Route = createFileRoute("/treasury")({
       { name: "description", content: m.purpose },
     ],
   }),
-  component: TreasuryPage,
+  component: GatedTreasuryPage,
 });
 
 function fmt(n: number) {
@@ -274,5 +275,14 @@ function HealthLine({
         />
       </div>
     </div>
+  );
+}
+
+
+function GatedTreasuryPage() {
+  return (
+    <PlanGate feature="treasury_reports">
+      <TreasuryPage />
+    </PlanGate>
   );
 }

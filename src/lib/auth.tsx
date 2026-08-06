@@ -13,7 +13,13 @@ export type Profile = {
   region: string | null;
   trust_score: number;
   verified: boolean;
+  subscription_plan?: string | null;
+  subscription_status?: string | null;
+  subscription_current_period_end?: string | null;
+  subscription_currency?: string | null;
+  subscription_amount_minor?: number | null;
 };
+
 
 type AuthState = {
   user: User | null;

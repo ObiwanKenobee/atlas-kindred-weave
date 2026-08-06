@@ -5,6 +5,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 import { recordAgentEvent, recordInteractionStep } from "@/lib/observability.server";
+import { requireFeature } from "@/lib/entitlements.server";
 
 const WorkflowInput = z.object({ requestId: z.string().uuid() });
 
@@ -52,6 +53,7 @@ export const runOrchestratorWorkflow = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => WorkflowInput.parse(d))
   .handler(async ({ data, context }): Promise<OrchestratorResult> => {
+    await requireFeature(context.userId, "orchestrator");
     const { userId } = context;
     const steps: WorkflowStep[] = [];
 

@@ -11,6 +11,7 @@ import {
   TrendingUp, ShieldCheck, Coins, BarChart3, AlertCircle,
 } from "lucide-react";
 import { toast } from "sonner";
+import { PlanGate } from "@/components/PlanGate";
 
 export const Route = createFileRoute("/cfo")({
   head: () => ({
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/cfo")({
       { name: "description", content: "Your AI Chief Financial Officer. Talk to Atlas CFO to get funding guidance, business coaching, and treasury insights." },
     ],
   }),
-  component: CfoPage,
+  component: GatedCfoPage,
 });
 
 // ─── ElevenLabs Web SDK types (loaded via CDN script) ────────────────────────
@@ -382,5 +383,14 @@ function CfoPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+
+function GatedCfoPage() {
+  return (
+    <PlanGate feature="cfo">
+      <CfoPage />
+    </PlanGate>
   );
 }

@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/lib/auth";
 import { changeSubscriptionPlan } from "@/lib/subscription.functions";
+import { startPaystackCheckout } from "@/lib/paystack.functions";
+import { useEntitlements } from "@/lib/use-entitlements";
 import { toast } from "sonner";
 import {
   Check, Sparkles, Rocket, TrendingUp, Building2, Coins, ShieldCheck,
@@ -324,23 +326,38 @@ function CurrencySelector({ value, onChange }: { value: Currency; onChange: (c: 
 
 function TierCard({ tier, currency }: { tier: Tier; currency: Currency }) {
   const { user } = useAuth();
+  const ent = useEntitlements();
   const selectPlan = useServerFn(changeSubscriptionPlan);
+  const checkout = useServerFn(startPaystackCheckout);
   const [busy, setBusy] = useState(false);
   const Icon = tier.icon;
   const priceStr = tier.priceUSD === 0 ? `${CURRENCY_META[currency].symbol}0` : formatPrice(tier.priceUSD, currency);
+  const isCurrent = user ? ent.plan === tier.slug : false;
 
   async function handleSelectPlan() {
     if (!user) return;
     setBusy(true);
     try {
-      await selectPlan({ data: { plan: tier.slug as "free" | "launch" | "growth" | "scale" } });
-      toast.success(`Plan updated to ${tier.name}. Payment processing coming soon.`);
+      if (tier.priceUSD === 0) {
+        await selectPlan({ data: { plan: "free" } });
+        toast.success("Moved to Atlas Free.");
+        setBusy(false);
+        return;
+      }
+      const res = await checkout({
+        data: {
+          plan: tier.slug as "launch" | "growth" | "scale",
+          callbackUrl: `${window.location.origin}/billing/callback`,
+        },
+      });
+      toast.success("Redirecting to Paystack…");
+      window.location.href = res.authorizationUrl;
     } catch (e: unknown) {
-      toast.error(e instanceof Error ? e.message : "Could not update plan.");
-    } finally {
+      toast.error(e instanceof Error ? e.message : "Could not start checkout.");
       setBusy(false);
     }
   }
+
 
   return (
     <Card className={`relative flex flex-col ${tier.highlight ? "border-gold/60 shadow-glow" : ""}`}>
@@ -375,19 +392,33 @@ function TierCard({ tier, currency }: { tier: Tier; currency: Currency }) {
         </div>
         <Button
           className={tier.highlight ? "bg-gradient-gold text-gold-foreground shadow-glow hover:opacity-90" : ""}
-          variant={tier.highlight ? "default" : "outline"}
-          disabled={busy}
+          variant={tier.highlight ? "default" : isCurrent ? "secondary" : "outline"}
+          disabled={busy || isCurrent}
           onClick={user ? handleSelectPlan : undefined}
           asChild={!user}
         >
           {user ? (
-            <span>{busy ? "Updating…" : tier.priceUSD === 0 ? tier.cta : `${tier.cta} ${priceStr}`}</span>
+            <span>
+              {isCurrent
+                ? "Current plan"
+                : busy
+                  ? "Opening checkout…"
+                  : tier.priceUSD === 0
+                    ? tier.cta
+                    : `${tier.cta} ${priceStr}`}
+            </span>
           ) : (
             <Link to={tier.priceUSD === 0 ? "/" : "/login"}>
               {tier.priceUSD === 0 ? tier.cta : `${tier.cta} ${priceStr}`}
             </Link>
           )}
         </Button>
+        {user && tier.priceUSD > 0 && (
+          <p className="text-[10px] text-muted-foreground text-center">
+            Billed monthly via Paystack in KES · card, M-Pesa, and bank transfer
+          </p>
+        )}
+
       </CardContent>
     </Card>
   );
