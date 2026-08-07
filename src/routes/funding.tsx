@@ -189,7 +189,7 @@ function FundingPage() {
 
       <div className="mt-8 grid gap-6 lg:grid-cols-5">
         <Card className="glyph-border p-6 lg:col-span-2">
-          <div className="text-xs uppercase tracking-widest text-gold">Submit a pitch</div>
+          <h2 className="text-xs uppercase tracking-widest text-gold">Submit a pitch</h2>
           <form onSubmit={submit} className="mt-4 space-y-3">
             <Input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
             <div className="grid grid-cols-3 gap-2">
@@ -228,9 +228,9 @@ function FundingPage() {
         </Card>
 
         <div className="space-y-3 lg:col-span-3">
-          <div className="text-xs uppercase tracking-widest text-gold">
+          <h2 className="text-xs uppercase tracking-widest text-gold">
             {isReviewer ? "Review queue" : "Your funding requests"}
-          </div>
+          </h2>
           {requests.length === 0 && (
             <p className="text-sm text-muted-foreground">No requests yet.</p>
           )}
