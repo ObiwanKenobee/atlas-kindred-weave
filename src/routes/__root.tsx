@@ -49,11 +49,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Atlas Sanctum — Regenerative Finance OS" },
       { name: "description", content: "An AI-operated economic civilization expanding prosperity, trust, and opportunity." },
       { name: "author", content: "Atlas Sanctum" },
-      { property: "og:title", content: "Atlas Sanctum" },
-      { property: "og:description", content: "An AI-operated economic civilization." },
+      { property: "og:title", content: "Atlas Sanctum — AI-Operated Regenerative Finance OS" },
+      { property: "og:description", content: "An AI-operated economic civilization expanding prosperity, trust, and opportunity through evidence-grounded finance." },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Atlas Sanctum" },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "google-site-verification", content: "vT6mxJ_Ko8YZYEYimh8u30st6TcAQQ4LTB80cDqbJAE" },
-
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -61,7 +62,30 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600&display=swap" },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              name: "Atlas Sanctum",
+              url: "https://atlas-kindred-weave.lovable.app",
+              description:
+                "An AI-operated regenerative finance operating system that grounds funding decisions in multimodal evidence.",
+            },
+            {
+              "@type": "WebSite",
+              name: "Atlas Sanctum",
+              url: "https://atlas-kindred-weave.lovable.app",
+            },
+          ],
+        }),
+      },
+    ],
   }),
+
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
