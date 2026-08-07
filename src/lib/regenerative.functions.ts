@@ -323,7 +323,6 @@ export const getAssetBids = createServerFn({ method: "POST" })
 // ── Marketplace stats ─────────────────────────────────────────────────────────
 
 export const getMarketplaceStats = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({}).parse(d))
   .handler(async () => {
     const [{ data: statsRow }, { data: txRows }] = await Promise.all([
