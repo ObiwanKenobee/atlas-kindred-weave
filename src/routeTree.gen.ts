@@ -9,158 +9,48 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as VerificationRouteImport } from './routes/verification'
-import { Route as VaultRouteImport } from './routes/vault'
-import { Route as TreasuryRouteImport } from './routes/treasury'
-import { Route as SubscriptionRouteImport } from './routes/subscription'
-import { Route as RiskRouteImport } from './routes/risk'
-import { Route as RegenerativeRouteImport } from './routes/regenerative'
-import { Route as ReferralsRouteImport } from './routes/referrals'
-import { Route as ProfileRouteImport } from './routes/profile'
-import { Route as PricingRouteImport } from './routes/pricing'
-import { Route as OrchestratorRouteImport } from './routes/orchestrator'
-import { Route as OpportunitiesRouteImport } from './routes/opportunities'
-import { Route as ObservabilityRouteImport } from './routes/observability'
-import { Route as NotificationsRouteImport } from './routes/notifications'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as ImpactRouteImport } from './routes/impact'
-import { Route as IdentityRouteImport } from './routes/identity'
-import { Route as GrowthRouteImport } from './routes/growth'
-import { Route as FundingRouteImport } from './routes/funding'
-import { Route as EconomicGraphRouteImport } from './routes/economic-graph'
-import { Route as CommunityRouteImport } from './routes/community'
-import { Route as CfoRouteImport } from './routes/cfo'
-import { Route as BusinessOsRouteImport } from './routes/business-os'
-import { Route as AuditRouteImport } from './routes/audit'
-import { Route as ApprovalsRouteImport } from './routes/approvals'
-import { Route as EligibilityRouteImport } from './routes/eligibility'
-import { Route as RevenueRouteImport } from './routes/revenue'
-import { Route as CashflowRouteImport } from './routes/cashflow'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SettingsNotificationsRouteImport } from './routes/settings.notifications'
-import { Route as BillingCallbackRouteImport } from './routes/billing.callback'
-import { Route as ApiVaultFileRouteImport } from './routes/api/vault-file'
-import { Route as ApiSessionRouteImport } from './routes/api/session'
-import { Route as ApiEmbedRouteImport } from './routes/api/embed'
-import { Route as ApiChatRouteImport } from './routes/api/chat'
-import { Route as ApiCfoToolsRouteImport } from './routes/api/cfo-tools'
-import { Route as AnalyticsFundingRouteImport } from './routes/analytics.funding'
+import { Route as ApprovalsRouteImport } from './routes/approvals'
+import { Route as AuditRouteImport } from './routes/audit'
+import { Route as BusinessOsRouteImport } from './routes/business-os'
+import { Route as CashflowRouteImport } from './routes/cashflow'
+import { Route as CfoRouteImport } from './routes/cfo'
+import { Route as CommunityRouteImport } from './routes/community'
+import { Route as EconomicGraphRouteImport } from './routes/economic-graph'
+import { Route as EligibilityRouteImport } from './routes/eligibility'
+import { Route as FundingRouteImport } from './routes/funding'
+import { Route as GrowthRouteImport } from './routes/growth'
+import { Route as IdentityRouteImport } from './routes/identity'
+import { Route as ImpactRouteImport } from './routes/impact'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as ObservabilityRouteImport } from './routes/observability'
+import { Route as OpportunitiesRouteImport } from './routes/opportunities'
+import { Route as OrchestratorRouteImport } from './routes/orchestrator'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as ReferralsRouteImport } from './routes/referrals'
+import { Route as RegenerativeRouteImport } from './routes/regenerative'
+import { Route as RevenueRouteImport } from './routes/revenue'
+import { Route as RiskRouteImport } from './routes/risk'
+import { Route as SubscriptionRouteImport } from './routes/subscription'
+import { Route as TreasuryRouteImport } from './routes/treasury'
+import { Route as VaultRouteImport } from './routes/vault'
+import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as AdminRolesRouteImport } from './routes/admin.roles'
+import { Route as AnalyticsFundingRouteImport } from './routes/analytics.funding'
+import { Route as ApiCfoToolsRouteImport } from './routes/api/cfo-tools'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiEmbedRouteImport } from './routes/api/embed'
+import { Route as ApiSessionRouteImport } from './routes/api/session'
+import { Route as ApiVaultFileRouteImport } from './routes/api/vault-file'
+import { Route as BillingCallbackRouteImport } from './routes/billing.callback'
+import { Route as SettingsNotificationsRouteImport } from './routes/settings.notifications'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
 
-const VerificationRoute = VerificationRouteImport.update({
-  id: '/verification',
-  path: '/verification',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VaultRoute = VaultRouteImport.update({
-  id: '/vault',
-  path: '/vault',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TreasuryRoute = TreasuryRouteImport.update({
-  id: '/treasury',
-  path: '/treasury',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SubscriptionRoute = SubscriptionRouteImport.update({
-  id: '/subscription',
-  path: '/subscription',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RiskRoute = RiskRouteImport.update({
-  id: '/risk',
-  path: '/risk',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RegenerativeRoute = RegenerativeRouteImport.update({
-  id: '/regenerative',
-  path: '/regenerative',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReferralsRoute = ReferralsRouteImport.update({
-  id: '/referrals',
-  path: '/referrals',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PricingRoute = PricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OrchestratorRoute = OrchestratorRouteImport.update({
-  id: '/orchestrator',
-  path: '/orchestrator',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OpportunitiesRoute = OpportunitiesRouteImport.update({
-  id: '/opportunities',
-  path: '/opportunities',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ObservabilityRoute = ObservabilityRouteImport.update({
-  id: '/observability',
-  path: '/observability',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NotificationsRoute = NotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ImpactRoute = ImpactRouteImport.update({
-  id: '/impact',
-  path: '/impact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IdentityRoute = IdentityRouteImport.update({
-  id: '/identity',
-  path: '/identity',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GrowthRoute = GrowthRouteImport.update({
-  id: '/growth',
-  path: '/growth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FundingRoute = FundingRouteImport.update({
-  id: '/funding',
-  path: '/funding',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EconomicGraphRoute = EconomicGraphRouteImport.update({
-  id: '/economic-graph',
-  path: '/economic-graph',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CommunityRoute = CommunityRouteImport.update({
-  id: '/community',
-  path: '/community',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CfoRoute = CfoRouteImport.update({
-  id: '/cfo',
-  path: '/cfo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BusinessOsRoute = BusinessOsRouteImport.update({
-  id: '/business-os',
-  path: '/business-os',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuditRoute = AuditRouteImport.update({
-  id: '/audit',
-  path: '/audit',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApprovalsRoute = ApprovalsRouteImport.update({
@@ -168,14 +58,14 @@ const ApprovalsRoute = ApprovalsRouteImport.update({
   path: '/approvals',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EligibilityRoute = EligibilityRouteImport.update({
-  id: '/eligibility',
-  path: '/eligibility',
+const AuditRoute = AuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RevenueRoute = RevenueRouteImport.update({
-  id: '/revenue',
-  path: '/revenue',
+const BusinessOsRoute = BusinessOsRouteImport.update({
+  id: '/business-os',
+  path: '/business-os',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CashflowRoute = CashflowRouteImport.update({
@@ -183,44 +73,124 @@ const CashflowRoute = CashflowRouteImport.update({
   path: '/cashflow',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const CfoRoute = CfoRouteImport.update({
+  id: '/cfo',
+  path: '/cfo',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
-  id: '/settings/notifications',
-  path: '/settings/notifications',
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BillingCallbackRoute = BillingCallbackRouteImport.update({
-  id: '/billing/callback',
-  path: '/billing/callback',
+const EconomicGraphRoute = EconomicGraphRouteImport.update({
+  id: '/economic-graph',
+  path: '/economic-graph',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiVaultFileRoute = ApiVaultFileRouteImport.update({
-  id: '/api/vault-file',
-  path: '/api/vault-file',
+const EligibilityRoute = EligibilityRouteImport.update({
+  id: '/eligibility',
+  path: '/eligibility',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiSessionRoute = ApiSessionRouteImport.update({
-  id: '/api/session',
-  path: '/api/session',
+const FundingRoute = FundingRouteImport.update({
+  id: '/funding',
+  path: '/funding',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiEmbedRoute = ApiEmbedRouteImport.update({
-  id: '/api/embed',
-  path: '/api/embed',
+const GrowthRoute = GrowthRouteImport.update({
+  id: '/growth',
+  path: '/growth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiChatRoute = ApiChatRouteImport.update({
-  id: '/api/chat',
-  path: '/api/chat',
+const IdentityRoute = IdentityRouteImport.update({
+  id: '/identity',
+  path: '/identity',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiCfoToolsRoute = ApiCfoToolsRouteImport.update({
-  id: '/api/cfo-tools',
-  path: '/api/cfo-tools',
+const ImpactRoute = ImpactRouteImport.update({
+  id: '/impact',
+  path: '/impact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ObservabilityRoute = ObservabilityRouteImport.update({
+  id: '/observability',
+  path: '/observability',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpportunitiesRoute = OpportunitiesRouteImport.update({
+  id: '/opportunities',
+  path: '/opportunities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrchestratorRoute = OrchestratorRouteImport.update({
+  id: '/orchestrator',
+  path: '/orchestrator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReferralsRoute = ReferralsRouteImport.update({
+  id: '/referrals',
+  path: '/referrals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegenerativeRoute = RegenerativeRouteImport.update({
+  id: '/regenerative',
+  path: '/regenerative',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RevenueRoute = RevenueRouteImport.update({
+  id: '/revenue',
+  path: '/revenue',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RiskRoute = RiskRouteImport.update({
+  id: '/risk',
+  path: '/risk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubscriptionRoute = SubscriptionRouteImport.update({
+  id: '/subscription',
+  path: '/subscription',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TreasuryRoute = TreasuryRouteImport.update({
+  id: '/treasury',
+  path: '/treasury',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VaultRoute = VaultRouteImport.update({
+  id: '/vault',
+  path: '/vault',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificationRoute = VerificationRouteImport.update({
+  id: '/verification',
+  path: '/verification',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRolesRoute = AdminRolesRouteImport.update({
+  id: '/admin/roles',
+  path: '/admin/roles',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnalyticsFundingRoute = AnalyticsFundingRouteImport.update({
@@ -228,9 +198,39 @@ const AnalyticsFundingRoute = AnalyticsFundingRouteImport.update({
   path: '/analytics/funding',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRolesRoute = AdminRolesRouteImport.update({
-  id: '/admin/roles',
-  path: '/admin/roles',
+const ApiCfoToolsRoute = ApiCfoToolsRouteImport.update({
+  id: '/api/cfo-tools',
+  path: '/api/cfo-tools',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEmbedRoute = ApiEmbedRouteImport.update({
+  id: '/api/embed',
+  path: '/api/embed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSessionRoute = ApiSessionRouteImport.update({
+  id: '/api/session',
+  path: '/api/session',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVaultFileRoute = ApiVaultFileRouteImport.update({
+  id: '/api/vault-file',
+  path: '/api/vault-file',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BillingCallbackRoute = BillingCallbackRouteImport.update({
+  id: '/billing/callback',
+  path: '/billing/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
+  id: '/settings/notifications',
+  path: '/settings/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicPaystackWebhookRoute =
@@ -243,14 +243,13 @@ const ApiPublicPaystackWebhookRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
-  '/cashflow': typeof CashflowRoute
-  '/revenue': typeof RevenueRoute
-  '/eligibility': typeof EligibilityRoute
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
+  '/cashflow': typeof CashflowRoute
   '/cfo': typeof CfoRoute
   '/community': typeof CommunityRoute
   '/economic-graph': typeof EconomicGraphRoute
+  '/eligibility': typeof EligibilityRoute
   '/funding': typeof FundingRoute
   '/growth': typeof GrowthRoute
   '/identity': typeof IdentityRoute
@@ -264,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/referrals': typeof ReferralsRoute
   '/regenerative': typeof RegenerativeRoute
+  '/revenue': typeof RevenueRoute
   '/risk': typeof RiskRoute
   '/subscription': typeof SubscriptionRoute
   '/treasury': typeof TreasuryRoute
@@ -283,14 +283,13 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
-  '/cashflow': typeof CashflowRoute
-  '/revenue': typeof RevenueRoute
-  '/eligibility': typeof EligibilityRoute
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
+  '/cashflow': typeof CashflowRoute
   '/cfo': typeof CfoRoute
   '/community': typeof CommunityRoute
   '/economic-graph': typeof EconomicGraphRoute
+  '/eligibility': typeof EligibilityRoute
   '/funding': typeof FundingRoute
   '/growth': typeof GrowthRoute
   '/identity': typeof IdentityRoute
@@ -304,6 +303,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/referrals': typeof ReferralsRoute
   '/regenerative': typeof RegenerativeRoute
+  '/revenue': typeof RevenueRoute
   '/risk': typeof RiskRoute
   '/subscription': typeof SubscriptionRoute
   '/treasury': typeof TreasuryRoute
@@ -324,14 +324,13 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
-  '/cashflow': typeof CashflowRoute
-  '/revenue': typeof RevenueRoute
-  '/eligibility': typeof EligibilityRoute
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
+  '/cashflow': typeof CashflowRoute
   '/cfo': typeof CfoRoute
   '/community': typeof CommunityRoute
   '/economic-graph': typeof EconomicGraphRoute
+  '/eligibility': typeof EligibilityRoute
   '/funding': typeof FundingRoute
   '/growth': typeof GrowthRoute
   '/identity': typeof IdentityRoute
@@ -345,6 +344,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/referrals': typeof ReferralsRoute
   '/regenerative': typeof RegenerativeRoute
+  '/revenue': typeof RevenueRoute
   '/risk': typeof RiskRoute
   '/subscription': typeof SubscriptionRoute
   '/treasury': typeof TreasuryRoute
@@ -366,14 +366,13 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/approvals'
-    | '/cashflow'
-    | '/revenue'
-    | '/eligibility'
     | '/audit'
     | '/business-os'
+    | '/cashflow'
     | '/cfo'
     | '/community'
     | '/economic-graph'
+    | '/eligibility'
     | '/funding'
     | '/growth'
     | '/identity'
@@ -387,6 +386,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/referrals'
     | '/regenerative'
+    | '/revenue'
     | '/risk'
     | '/subscription'
     | '/treasury'
@@ -406,14 +406,13 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/approvals'
-    | '/cashflow'
-    | '/revenue'
-    | '/eligibility'
     | '/audit'
     | '/business-os'
+    | '/cashflow'
     | '/cfo'
     | '/community'
     | '/economic-graph'
+    | '/eligibility'
     | '/funding'
     | '/growth'
     | '/identity'
@@ -427,6 +426,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/referrals'
     | '/regenerative'
+    | '/revenue'
     | '/risk'
     | '/subscription'
     | '/treasury'
@@ -446,14 +446,13 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/approvals'
-    | '/cashflow'
-    | '/revenue'
-    | '/eligibility'
     | '/audit'
     | '/business-os'
+    | '/cashflow'
     | '/cfo'
     | '/community'
     | '/economic-graph'
+    | '/eligibility'
     | '/funding'
     | '/growth'
     | '/identity'
@@ -467,6 +466,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/referrals'
     | '/regenerative'
+    | '/revenue'
     | '/risk'
     | '/subscription'
     | '/treasury'
@@ -487,14 +487,13 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApprovalsRoute: typeof ApprovalsRoute
-  CashflowRoute: typeof CashflowRoute
-  RevenueRoute: typeof RevenueRoute
-  EligibilityRoute: typeof EligibilityRoute
   AuditRoute: typeof AuditRoute
   BusinessOsRoute: typeof BusinessOsRoute
+  CashflowRoute: typeof CashflowRoute
   CfoRoute: typeof CfoRoute
   CommunityRoute: typeof CommunityRoute
   EconomicGraphRoute: typeof EconomicGraphRoute
+  EligibilityRoute: typeof EligibilityRoute
   FundingRoute: typeof FundingRoute
   GrowthRoute: typeof GrowthRoute
   IdentityRoute: typeof IdentityRoute
@@ -508,6 +507,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   ReferralsRoute: typeof ReferralsRoute
   RegenerativeRoute: typeof RegenerativeRoute
+  RevenueRoute: typeof RevenueRoute
   RiskRoute: typeof RiskRoute
   SubscriptionRoute: typeof SubscriptionRoute
   TreasuryRoute: typeof TreasuryRoute
@@ -527,165 +527,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/verification': {
-      id: '/verification'
-      path: '/verification'
-      fullPath: '/verification'
-      preLoaderRoute: typeof VerificationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/vault': {
-      id: '/vault'
-      path: '/vault'
-      fullPath: '/vault'
-      preLoaderRoute: typeof VaultRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/treasury': {
-      id: '/treasury'
-      path: '/treasury'
-      fullPath: '/treasury'
-      preLoaderRoute: typeof TreasuryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/subscription': {
-      id: '/subscription'
-      path: '/subscription'
-      fullPath: '/subscription'
-      preLoaderRoute: typeof SubscriptionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/risk': {
-      id: '/risk'
-      path: '/risk'
-      fullPath: '/risk'
-      preLoaderRoute: typeof RiskRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/regenerative': {
-      id: '/regenerative'
-      path: '/regenerative'
-      fullPath: '/regenerative'
-      preLoaderRoute: typeof RegenerativeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/referrals': {
-      id: '/referrals'
-      path: '/referrals'
-      fullPath: '/referrals'
-      preLoaderRoute: typeof ReferralsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pricing': {
-      id: '/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PricingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/orchestrator': {
-      id: '/orchestrator'
-      path: '/orchestrator'
-      fullPath: '/orchestrator'
-      preLoaderRoute: typeof OrchestratorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/opportunities': {
-      id: '/opportunities'
-      path: '/opportunities'
-      fullPath: '/opportunities'
-      preLoaderRoute: typeof OpportunitiesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/observability': {
-      id: '/observability'
-      path: '/observability'
-      fullPath: '/observability'
-      preLoaderRoute: typeof ObservabilityRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notifications': {
-      id: '/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof NotificationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/impact': {
-      id: '/impact'
-      path: '/impact'
-      fullPath: '/impact'
-      preLoaderRoute: typeof ImpactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/identity': {
-      id: '/identity'
-      path: '/identity'
-      fullPath: '/identity'
-      preLoaderRoute: typeof IdentityRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/growth': {
-      id: '/growth'
-      path: '/growth'
-      fullPath: '/growth'
-      preLoaderRoute: typeof GrowthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/funding': {
-      id: '/funding'
-      path: '/funding'
-      fullPath: '/funding'
-      preLoaderRoute: typeof FundingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/economic-graph': {
-      id: '/economic-graph'
-      path: '/economic-graph'
-      fullPath: '/economic-graph'
-      preLoaderRoute: typeof EconomicGraphRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/community': {
-      id: '/community'
-      path: '/community'
-      fullPath: '/community'
-      preLoaderRoute: typeof CommunityRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cfo': {
-      id: '/cfo'
-      path: '/cfo'
-      fullPath: '/cfo'
-      preLoaderRoute: typeof CfoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/business-os': {
-      id: '/business-os'
-      path: '/business-os'
-      fullPath: '/business-os'
-      preLoaderRoute: typeof BusinessOsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/audit': {
-      id: '/audit'
-      path: '/audit'
-      fullPath: '/audit'
-      preLoaderRoute: typeof AuditRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/approvals': {
@@ -695,6 +541,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApprovalsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/audit': {
+      id: '/audit'
+      path: '/audit'
+      fullPath: '/audit'
+      preLoaderRoute: typeof AuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/business-os': {
+      id: '/business-os'
+      path: '/business-os'
+      fullPath: '/business-os'
+      preLoaderRoute: typeof BusinessOsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cashflow': {
       id: '/cashflow'
       path: '/cashflow'
@@ -702,11 +562,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CashflowRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/revenue': {
-      id: '/revenue'
-      path: '/revenue'
-      fullPath: '/revenue'
-      preLoaderRoute: typeof RevenueRouteImport
+    '/cfo': {
+      id: '/cfo'
+      path: '/cfo'
+      fullPath: '/cfo'
+      preLoaderRoute: typeof CfoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/economic-graph': {
+      id: '/economic-graph'
+      path: '/economic-graph'
+      fullPath: '/economic-graph'
+      preLoaderRoute: typeof EconomicGraphRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/eligibility': {
@@ -716,60 +590,144 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EligibilityRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/funding': {
+      id: '/funding'
+      path: '/funding'
+      fullPath: '/funding'
+      preLoaderRoute: typeof FundingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/settings/notifications': {
-      id: '/settings/notifications'
-      path: '/settings/notifications'
-      fullPath: '/settings/notifications'
-      preLoaderRoute: typeof SettingsNotificationsRouteImport
+    '/growth': {
+      id: '/growth'
+      path: '/growth'
+      fullPath: '/growth'
+      preLoaderRoute: typeof GrowthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/billing/callback': {
-      id: '/billing/callback'
-      path: '/billing/callback'
-      fullPath: '/billing/callback'
-      preLoaderRoute: typeof BillingCallbackRouteImport
+    '/identity': {
+      id: '/identity'
+      path: '/identity'
+      fullPath: '/identity'
+      preLoaderRoute: typeof IdentityRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/vault-file': {
-      id: '/api/vault-file'
-      path: '/api/vault-file'
-      fullPath: '/api/vault-file'
-      preLoaderRoute: typeof ApiVaultFileRouteImport
+    '/impact': {
+      id: '/impact'
+      path: '/impact'
+      fullPath: '/impact'
+      preLoaderRoute: typeof ImpactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/session': {
-      id: '/api/session'
-      path: '/api/session'
-      fullPath: '/api/session'
-      preLoaderRoute: typeof ApiSessionRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/embed': {
-      id: '/api/embed'
-      path: '/api/embed'
-      fullPath: '/api/embed'
-      preLoaderRoute: typeof ApiEmbedRouteImport
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/chat': {
-      id: '/api/chat'
-      path: '/api/chat'
-      fullPath: '/api/chat'
-      preLoaderRoute: typeof ApiChatRouteImport
+    '/observability': {
+      id: '/observability'
+      path: '/observability'
+      fullPath: '/observability'
+      preLoaderRoute: typeof ObservabilityRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/cfo-tools': {
-      id: '/api/cfo-tools'
-      path: '/api/cfo-tools'
-      fullPath: '/api/cfo-tools'
-      preLoaderRoute: typeof ApiCfoToolsRouteImport
+    '/opportunities': {
+      id: '/opportunities'
+      path: '/opportunities'
+      fullPath: '/opportunities'
+      preLoaderRoute: typeof OpportunitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orchestrator': {
+      id: '/orchestrator'
+      path: '/orchestrator'
+      fullPath: '/orchestrator'
+      preLoaderRoute: typeof OrchestratorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/referrals': {
+      id: '/referrals'
+      path: '/referrals'
+      fullPath: '/referrals'
+      preLoaderRoute: typeof ReferralsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/regenerative': {
+      id: '/regenerative'
+      path: '/regenerative'
+      fullPath: '/regenerative'
+      preLoaderRoute: typeof RegenerativeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/revenue': {
+      id: '/revenue'
+      path: '/revenue'
+      fullPath: '/revenue'
+      preLoaderRoute: typeof RevenueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/risk': {
+      id: '/risk'
+      path: '/risk'
+      fullPath: '/risk'
+      preLoaderRoute: typeof RiskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/subscription': {
+      id: '/subscription'
+      path: '/subscription'
+      fullPath: '/subscription'
+      preLoaderRoute: typeof SubscriptionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/treasury': {
+      id: '/treasury'
+      path: '/treasury'
+      fullPath: '/treasury'
+      preLoaderRoute: typeof TreasuryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vault': {
+      id: '/vault'
+      path: '/vault'
+      fullPath: '/vault'
+      preLoaderRoute: typeof VaultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification': {
+      id: '/verification'
+      path: '/verification'
+      fullPath: '/verification'
+      preLoaderRoute: typeof VerificationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/roles': {
+      id: '/admin/roles'
+      path: '/admin/roles'
+      fullPath: '/admin/roles'
+      preLoaderRoute: typeof AdminRolesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/analytics/funding': {
@@ -779,11 +737,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnalyticsFundingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/roles': {
-      id: '/admin/roles'
-      path: '/admin/roles'
-      fullPath: '/admin/roles'
-      preLoaderRoute: typeof AdminRolesRouteImport
+    '/api/cfo-tools': {
+      id: '/api/cfo-tools'
+      path: '/api/cfo-tools'
+      fullPath: '/api/cfo-tools'
+      preLoaderRoute: typeof ApiCfoToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/embed': {
+      id: '/api/embed'
+      path: '/api/embed'
+      fullPath: '/api/embed'
+      preLoaderRoute: typeof ApiEmbedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/session': {
+      id: '/api/session'
+      path: '/api/session'
+      fullPath: '/api/session'
+      preLoaderRoute: typeof ApiSessionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/vault-file': {
+      id: '/api/vault-file'
+      path: '/api/vault-file'
+      fullPath: '/api/vault-file'
+      preLoaderRoute: typeof ApiVaultFileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/billing/callback': {
+      id: '/billing/callback'
+      path: '/billing/callback'
+      fullPath: '/billing/callback'
+      preLoaderRoute: typeof BillingCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/notifications': {
+      id: '/settings/notifications'
+      path: '/settings/notifications'
+      fullPath: '/settings/notifications'
+      preLoaderRoute: typeof SettingsNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/paystack-webhook': {
@@ -799,14 +799,13 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApprovalsRoute: ApprovalsRoute,
-  CashflowRoute: CashflowRoute,
-  RevenueRoute: RevenueRoute,
-  EligibilityRoute: EligibilityRoute,
   AuditRoute: AuditRoute,
   BusinessOsRoute: BusinessOsRoute,
+  CashflowRoute: CashflowRoute,
   CfoRoute: CfoRoute,
   CommunityRoute: CommunityRoute,
   EconomicGraphRoute: EconomicGraphRoute,
+  EligibilityRoute: EligibilityRoute,
   FundingRoute: FundingRoute,
   GrowthRoute: GrowthRoute,
   IdentityRoute: IdentityRoute,
@@ -820,6 +819,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   ReferralsRoute: ReferralsRoute,
   RegenerativeRoute: RegenerativeRoute,
+  RevenueRoute: RevenueRoute,
   RiskRoute: RiskRoute,
   SubscriptionRoute: SubscriptionRoute,
   TreasuryRoute: TreasuryRoute,
@@ -839,13 +839,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
