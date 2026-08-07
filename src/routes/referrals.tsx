@@ -24,6 +24,8 @@ export const Route = createFileRoute("/referrals")({
     meta: [
       { title: "Referrals — Atlas Sanctum" },
       { name: "description", content: "Invite entrepreneurs to Atlas Sanctum and earn rewards for every signup." },
+      { property: "og:title", content: "Referrals — Atlas Sanctum" },
+      { property: "og:description", content: "Invite entrepreneurs to Atlas Sanctum and earn rewards for every signup." },
     ],
   }),
   component: ReferralsPage,
@@ -142,6 +144,7 @@ function ReferralsPage() {
       </div>
 
       {/* Stat row */}
+      <h2 className="sr-only">Referral performance</h2>
       <div className="mt-6 grid gap-3 sm:grid-cols-3">
         <Card className="glyph-border p-4">
           <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-gold/80">
@@ -166,6 +169,7 @@ function ReferralsPage() {
       </div>
 
       {/* Link + share */}
+      <h2 className="sr-only">Your invite link</h2>
       <Card className="glyph-border mt-6 p-6">
         <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-gold/80">
           <Link2 className="h-3 w-3" /> Your invite link

@@ -21,6 +21,8 @@ export const Route = createFileRoute("/growth")({
     meta: [
       { title: `${m.name} — Atlas Sanctum` },
       { name: "description", content: m.purpose },
+      { property: "og:title", content: `${m.name} — Atlas Sanctum` },
+      { property: "og:description", content: m.purpose },
     ],
   }),
   component: GatedGrowthPage,

@@ -18,6 +18,8 @@ export const Route = createFileRoute("/revenue")({
     meta: [
       { title: "Revenue Tracking — Atlas Sanctum" },
       { name: "description", content: "Track and forecast your business revenue with AI." },
+      { property: "og:title", content: "Revenue Tracking — Atlas Sanctum" },
+      { property: "og:description", content: "Track and forecast your business revenue with AI." },
     ],
   }),
   component: GatedRevenuePage,

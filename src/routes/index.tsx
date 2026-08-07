@@ -8,6 +8,8 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Atlas Sanctum — AI-Operated Regenerative Finance" },
       { name: "description", content: "An AI-operated financial intelligence system that grounds every funding decision in multimodal evidence." },
+      { property: "og:title", content: "Atlas Sanctum — AI-Operated Regenerative Finance" },
+      { property: "og:description", content: "An AI-operated financial intelligence system that grounds every funding decision in multimodal evidence." },
     ],
   }),
   component: Index,
@@ -38,6 +40,9 @@ function Index() {
           <div className="text-xs uppercase tracking-[0.4em] text-gold/80">AI-Operated Regenerative Finance OS</div>
           <h1 className="mt-4 font-display text-5xl leading-tight text-foreground md:text-6xl">
             Atlas <span className="text-gold">Sanctum</span>
+            <span className="mt-2 block font-display text-2xl text-muted-foreground md:text-3xl">
+              AI-Operated Regenerative Finance
+            </span>
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
             An AI financial intelligence system that grounds every funding decision in multimodal evidence — voice, documents, images, and business records.

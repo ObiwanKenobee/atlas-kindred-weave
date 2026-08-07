@@ -17,6 +17,8 @@ export const Route = createFileRoute("/profile")({
     meta: [
       { title: "Your Identity — Atlas Sanctum" },
       { name: "description", content: "Your Atlas reputation, trust score, and verification history." },
+      { property: "og:title", content: "Your Identity — Atlas Sanctum" },
+      { property: "og:description", content: "Your Atlas reputation, trust score, and verification history." },
     ],
   }),
   component: ProfilePage,

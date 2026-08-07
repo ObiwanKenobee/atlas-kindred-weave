@@ -18,6 +18,8 @@ export const Route = createFileRoute("/cashflow")({
     meta: [
       { title: "Cashflow Insights — Atlas Sanctum" },
       { name: "description", content: "AI-powered cashflow analysis for your business." },
+      { property: "og:title", content: "Cashflow Insights — Atlas Sanctum" },
+      { property: "og:description", content: "AI-powered cashflow analysis for your business." },
     ],
   }),
   component: GatedCashflowPage,

@@ -24,6 +24,8 @@ export const Route = createFileRoute("/opportunities")({
     meta: [
       { title: "Opportunity Hub — Atlas Sanctum" },
       { name: "description", content: "AI-matched grants, investors, accelerators, and funding programs for your business." },
+      { property: "og:title", content: "Opportunity Hub — Atlas Sanctum" },
+      { property: "og:description", content: "AI-matched grants, investors, accelerators, and funding programs for your business." },
     ],
   }),
   component: GatedOpportunitiesPage,

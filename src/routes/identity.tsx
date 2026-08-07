@@ -21,6 +21,8 @@ export const Route = createFileRoute("/identity")({
     meta: [
       { title: `${m.name} — Atlas Sanctum` },
       { name: "description", content: m.purpose },
+      { property: "og:title", content: `${m.name} — Atlas Sanctum` },
+      { property: "og:description", content: m.purpose },
     ],
   }),
   component: IdentityPage,
@@ -215,6 +217,7 @@ function IdentityPage() {
         <div className="mt-8 space-y-6">
 
           {/* Trust Score Passport */}
+          <h2 className="sr-only">Atlas Trust Passport</h2>
           <Card className="glyph-border p-6">
             <div className="text-xs uppercase tracking-widest text-gold mb-4">Atlas Reputation Passport</div>
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-8">
@@ -291,6 +294,7 @@ function IdentityPage() {
           </div>
 
           {/* Risk signals */}
+          <h2 className="sr-only">Risk signals</h2>
           {risk && risk.signals && (
             <Card className="glyph-border p-6">
               <div className="text-xs uppercase tracking-widest text-gold mb-4">Behavioral Signals</div>
@@ -327,6 +331,7 @@ function IdentityPage() {
           )}
 
           {/* Verification history */}
+          <h2 className="sr-only">Verification history</h2>
           <div>
             <div className="flex items-center justify-between mb-3">
               <div className="text-xs uppercase tracking-widest text-gold flex items-center gap-2">
@@ -367,6 +372,7 @@ function IdentityPage() {
           </div>
 
           {/* Funding history */}
+          <h2 className="sr-only">Funding history</h2>
           <div>
             <div className="flex items-center justify-between mb-3">
               <div className="text-xs uppercase tracking-widest text-gold flex items-center gap-2">

@@ -29,6 +29,8 @@ export const Route = createFileRoute("/community")({
     meta: [
       { title: "Community — Atlas Sanctum" },
       { name: "description", content: "Connect with entrepreneurs, share milestones, ask questions, and discover opportunities across the Sanctum community." },
+      { property: "og:title", content: "Community — Atlas Sanctum" },
+      { property: "og:description", content: "Connect with entrepreneurs, share milestones, ask questions, and discover opportunities across the Sanctum community." },
     ],
   }),
   component: CommunityPage,
@@ -319,6 +321,7 @@ function CommunityPage() {
       </div>
 
       {/* Stats row */}
+      <h2 className="sr-only">Community activity</h2>
       <div className="mt-6 flex flex-wrap gap-4">
         {stats.map((s) => (
           <div key={s.label} className="flex items-center gap-2 rounded-md border border-border/40 bg-secondary/20 px-3 py-2 text-sm">

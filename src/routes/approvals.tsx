@@ -28,6 +28,8 @@ export const Route = createFileRoute("/approvals")({
     meta: [
       { title: "Approval Queue — Atlas Sanctum" },
       { name: "description", content: "Human-in-the-loop reviews for risk overrides and vault releases." },
+      { property: "og:title", content: "Approval Queue — Atlas Sanctum" },
+      { property: "og:description", content: "Human-in-the-loop reviews for risk overrides and vault releases." },
     ],
   }),
   component: ApprovalsPage,

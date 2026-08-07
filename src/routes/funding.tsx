@@ -24,6 +24,20 @@ export const Route = createFileRoute("/funding")({
     meta: [
       { title: `${m.name} — Atlas Sanctum` },
       { name: "description", content: m.purpose },
+      { property: "og:title", content: `${m.name} — Atlas Sanctum` },
+      { property: "og:description", content: m.purpose },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: 'Atlas Funding Engine',
+          description: 'AI-generated Funding Decision Reports with recommended terms, evidence grounding, and human review.',
+          provider: { "@type": "Organization", name: "Atlas Sanctum" },
+        }),
+      },
     ],
   }),
   component: FundingPage,
@@ -187,7 +201,7 @@ function FundingPage() {
 
       <div className="mt-8 grid gap-6 lg:grid-cols-5">
         <Card className="glyph-border p-6 lg:col-span-2">
-          <div className="text-xs uppercase tracking-widest text-gold">Submit a pitch</div>
+          <h2 className="text-xs uppercase tracking-widest text-gold">Submit a pitch</h2>
           <form onSubmit={submit} className="mt-4 space-y-3">
             <Input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
             <div className="grid grid-cols-3 gap-2">
@@ -212,7 +226,7 @@ function FundingPage() {
                 {files.map((f, i) => (
                   <li key={i} className="flex items-center justify-between gap-2 rounded bg-secondary/40 px-2 py-1">
                     <span className="truncate">{f.name}</span>
-                    <button type="button" onClick={() => setFiles(files.filter((_, j) => j !== i))}>
+                    <button type="button" aria-label={`Remove attachment ${f.name}`} onClick={() => setFiles(files.filter((_, j) => j !== i))}>
                       <X className="h-3 w-3" />
                     </button>
                   </li>
@@ -226,9 +240,9 @@ function FundingPage() {
         </Card>
 
         <div className="space-y-3 lg:col-span-3">
-          <div className="text-xs uppercase tracking-widest text-gold">
+          <h2 className="text-xs uppercase tracking-widest text-gold">
             {isReviewer ? "Review queue" : "Your funding requests"}
-          </div>
+          </h2>
           {requests.length === 0 && (
             <p className="text-sm text-muted-foreground">No requests yet.</p>
           )}
@@ -374,7 +388,7 @@ function DecisionPanel({
           <Button variant="outline" size="sm" onClick={exportPdf} disabled={exporting}>
             {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Download className="h-4 w-4" /> Export PDF</>}
           </Button>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
+          <button onClick={onClose} aria-label="Close decision report" className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
         </div>
       </div>
 

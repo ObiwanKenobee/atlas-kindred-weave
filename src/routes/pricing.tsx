@@ -21,6 +21,8 @@ export const Route = createFileRoute("/pricing")({
     meta: [
       { title: "Pricing — Atlas Sanctum" },
       { name: "description", content: "Transparent pricing for Atlas Sanctum. Pay in KES, NGN, GHS, UGX, ZAR or USD via M-Pesa, Flutterwave, MTN MoMo, Airtel, card, or bank transfer." },
+      { property: "og:title", content: "Pricing — Atlas Sanctum" },
+      { property: "og:description", content: "Transparent pricing for Atlas Sanctum. Pay in KES, NGN, GHS, UGX, ZAR or USD via M-Pesa, Flutterwave, MTN MoMo, Airtel, card, or bank transfer." },
     ],
   }),
   component: PricingPage,
