@@ -18,6 +18,8 @@ export const Route = createFileRoute("/cfo")({
     meta: [
       { title: "Atlas CFO — Atlas Sanctum" },
       { name: "description", content: "Your AI Chief Financial Officer. Talk to Atlas CFO to get funding guidance, business coaching, and treasury insights." },
+      { property: "og:title", content: "Atlas CFO — Atlas Sanctum" },
+      { property: "og:description", content: "Your AI Chief Financial Officer. Talk to Atlas CFO to get funding guidance, business coaching, and treasury insights." },
     ],
   }),
   component: GatedCfoPage,

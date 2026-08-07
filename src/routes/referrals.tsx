@@ -24,6 +24,8 @@ export const Route = createFileRoute("/referrals")({
     meta: [
       { title: "Referrals — Atlas Sanctum" },
       { name: "description", content: "Invite entrepreneurs to Atlas Sanctum and earn rewards for every signup." },
+      { property: "og:title", content: "Referrals — Atlas Sanctum" },
+      { property: "og:description", content: "Invite entrepreneurs to Atlas Sanctum and earn rewards for every signup." },
     ],
   }),
   component: ReferralsPage,

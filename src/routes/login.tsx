@@ -14,6 +14,8 @@ export const Route = createFileRoute("/login")({
     meta: [
       { title: "Enter the Sanctum — Atlas Sanctum" },
       { name: "description", content: "Sign in to your Atlas Sanctum identity." },
+      { property: "og:title", content: "Enter the Sanctum — Atlas Sanctum" },
+      { property: "og:description", content: "Sign in to your Atlas Sanctum identity." },
     ],
   }),
   component: LoginPage,

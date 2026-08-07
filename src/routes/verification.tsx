@@ -24,6 +24,8 @@ export const Route = createFileRoute("/verification")({
     meta: [
       { title: `${m.name} — Atlas Sanctum` },
       { name: "description", content: m.purpose },
+      { property: "og:title", content: `${m.name} — Atlas Sanctum` },
+      { property: "og:description", content: m.purpose },
     ],
   }),
   component: GatedVerificationPage,
@@ -144,7 +146,7 @@ function VerificationPage() {
             {file && (
               <div className="flex items-center justify-between rounded bg-secondary/40 px-3 py-1.5 text-xs">
                 <span className="truncate">{file.name}</span>
-                <button type="button" onClick={() => setFile(null)}><X className="h-3.5 w-3.5" /></button>
+                <button type="button" aria-label="Remove selected file" onClick={() => setFile(null)}><X className="h-3.5 w-3.5" /></button>
               </div>
             )}
 

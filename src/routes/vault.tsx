@@ -22,6 +22,8 @@ export const Route = createFileRoute("/vault")({
     meta: [
       { title: "Knowledge Vault — Atlas Sanctum" },
       { name: "description", content: "Your business intelligence vault. Upload documents, images, and transcripts. Ask questions grounded in your evidence." },
+      { property: "og:title", content: "Knowledge Vault — Atlas Sanctum" },
+      { property: "og:description", content: "Your business intelligence vault. Upload documents, images, and transcripts. Ask questions grounded in your evidence." },
     ],
   }),
   component: GatedVaultPage,
@@ -409,6 +411,7 @@ function VaultPage() {
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <button
+                        aria-label={`View ${doc.file_name}`}
                         onClick={() => handleViewFile(doc.storage_path)}
                         className="text-muted-foreground hover:text-gold"
                         title="View file"
@@ -416,6 +419,7 @@ function VaultPage() {
                         <ExternalLink className="h-3.5 w-3.5" />
                       </button>
                       <button
+                        aria-label={`Remove ${doc.file_name} from vault`}
                         onClick={() => handleDelete(doc.storage_path, doc.file_name)}
                         className="text-muted-foreground hover:text-destructive"
                         title="Remove from vault"

@@ -19,6 +19,8 @@ export const Route = createFileRoute("/orchestrator")({
     meta: [
       { title: "Atlas Orchestrator — Atlas Sanctum" },
       { name: "description", content: "Coordinate every engine and agent. Audit every decision." },
+      { property: "og:title", content: "Atlas Orchestrator — Atlas Sanctum" },
+      { property: "og:description", content: "Coordinate every engine and agent. Audit every decision." },
     ],
   }),
   component: GatedOrchestratorPage,

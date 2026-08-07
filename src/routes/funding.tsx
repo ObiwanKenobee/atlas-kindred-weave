@@ -24,6 +24,8 @@ export const Route = createFileRoute("/funding")({
     meta: [
       { title: `${m.name} — Atlas Sanctum` },
       { name: "description", content: m.purpose },
+      { property: "og:title", content: `${m.name} — Atlas Sanctum` },
+      { property: "og:description", content: m.purpose },
     ],
   }),
   component: FundingPage,
@@ -212,7 +214,7 @@ function FundingPage() {
                 {files.map((f, i) => (
                   <li key={i} className="flex items-center justify-between gap-2 rounded bg-secondary/40 px-2 py-1">
                     <span className="truncate">{f.name}</span>
-                    <button type="button" onClick={() => setFiles(files.filter((_, j) => j !== i))}>
+                    <button type="button" aria-label={`Remove attachment ${f.name}`} onClick={() => setFiles(files.filter((_, j) => j !== i))}>
                       <X className="h-3 w-3" />
                     </button>
                   </li>
@@ -374,7 +376,7 @@ function DecisionPanel({
           <Button variant="outline" size="sm" onClick={exportPdf} disabled={exporting}>
             {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Download className="h-4 w-4" /> Export PDF</>}
           </Button>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
+          <button onClick={onClose} aria-label="Close decision report" className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
         </div>
       </div>
 

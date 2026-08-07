@@ -17,6 +17,8 @@ export const Route = createFileRoute("/observability")({
     meta: [
       { title: "Observability — Atlas Sanctum" },
       { name: "description", content: "Production metrics: AI latency, token usage, funding funnel, session activity." },
+      { property: "og:title", content: "Observability — Atlas Sanctum" },
+      { property: "og:description", content: "Production metrics: AI latency, token usage, funding funnel, session activity." },
     ],
   }),
   component: ObservabilityPage,

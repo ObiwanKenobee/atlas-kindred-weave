@@ -29,6 +29,8 @@ export const Route = createFileRoute("/community")({
     meta: [
       { title: "Community — Atlas Sanctum" },
       { name: "description", content: "Connect with entrepreneurs, share milestones, ask questions, and discover opportunities across the Sanctum community." },
+      { property: "og:title", content: "Community — Atlas Sanctum" },
+      { property: "og:description", content: "Connect with entrepreneurs, share milestones, ask questions, and discover opportunities across the Sanctum community." },
     ],
   }),
   component: CommunityPage,

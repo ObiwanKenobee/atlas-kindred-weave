@@ -18,6 +18,8 @@ export const Route = createFileRoute("/eligibility")({
     meta: [
       { title: "Funding Eligibility — Atlas Sanctum" },
       { name: "description", content: "Check your funding eligibility and readiness score." },
+      { property: "og:title", content: "Funding Eligibility — Atlas Sanctum" },
+      { property: "og:description", content: "Check your funding eligibility and readiness score." },
     ],
   }),
   component: GatedEligibilityPage,

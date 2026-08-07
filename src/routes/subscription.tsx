@@ -27,6 +27,8 @@ export const Route = createFileRoute("/subscription")({
     meta: [
       { title: "Subscription — Atlas Sanctum" },
       { name: "description", content: "Manage your Sanctum plan, billing status, and renewal." },
+      { property: "og:title", content: "Subscription — Atlas Sanctum" },
+      { property: "og:description", content: "Manage your Sanctum plan, billing status, and renewal." },
     ],
   }),
   component: SubscriptionPage,

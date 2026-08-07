@@ -8,6 +8,8 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Atlas Sanctum — AI-Operated Regenerative Finance" },
       { name: "description", content: "An AI-operated financial intelligence system that grounds every funding decision in multimodal evidence." },
+      { property: "og:title", content: "Atlas Sanctum — AI-Operated Regenerative Finance" },
+      { property: "og:description", content: "An AI-operated financial intelligence system that grounds every funding decision in multimodal evidence." },
     ],
   }),
   component: Index,
