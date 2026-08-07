@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, ScrollText, Settings, ShieldCheck, BarChart3, Sparkles, PhoneCall, BookOpen, Activity, Search, Users, UserCircle, Gavel, Crown, Gift, Lock } from "lucide-react";
+import { Bell, ScrollText, Settings, ShieldCheck, BarChart3, Sparkles, PhoneCall, BookOpen, Activity, Search, Users, UserCircle, Gavel, Crown, Gift, Lock, TrendingUp, DollarSign, BadgeCheck } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton,
@@ -63,24 +63,78 @@ export function AtlasSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive("/opportunities")}>
                   <Link to="/opportunities">
-                    <Search className="h-4 w-4 text-gold" />
-                    {!collapsed && <span>Opportunity Hub</span>}
+                    <Search className={`h-4 w-4 ${!ent.can("funding_match") ? "text-muted-foreground" : "text-gold"}`} />
+                    {!collapsed && (
+                      <span className="flex items-center gap-2 flex-1">
+                        <span className={!ent.can("funding_match") ? "text-muted-foreground" : ""}>Opportunity Hub</span>
+                        {!ent.can("funding_match") && <Lock className="ml-auto h-3 w-3 text-gold/50 shrink-0" />}
+                      </span>
+                    )}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive("/cfo")}>
                   <Link to="/cfo">
-                    <PhoneCall className="h-4 w-4 text-gold" />
-                    {!collapsed && <span>Atlas CFO</span>}
+                    <PhoneCall className={`h-4 w-4 ${!ent.can("cfo") ? "text-muted-foreground" : "text-gold"}`} />
+                    {!collapsed && (
+                      <span className="flex items-center gap-2 flex-1">
+                        <span className={!ent.can("cfo") ? "text-muted-foreground" : ""}>Atlas CFO</span>
+                        {!ent.can("cfo") && <Lock className="ml-auto h-3 w-3 text-gold/50 shrink-0" />}
+                      </span>
+                    )}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive("/vault")}>
                   <Link to="/vault">
-                    <BookOpen className="h-4 w-4 text-gold" />
-                    {!collapsed && <span>Knowledge Vault</span>}
+                    <BookOpen className={`h-4 w-4 ${!ent.can("vault") ? "text-muted-foreground" : "text-gold"}`} />
+                    {!collapsed && (
+                      <span className="flex items-center gap-2 flex-1">
+                        <span>Knowledge Vault</span>
+                        {!ent.can("vault") && <Lock className="ml-auto h-3 w-3 text-gold/50 shrink-0" />}
+                      </span>
+                    )}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/cashflow")}>
+                  <Link to="/cashflow">
+                    <TrendingUp className={`h-4 w-4 ${!ent.can("cashflow_insights") ? "text-muted-foreground" : "text-gold"}`} />
+                    {!collapsed && (
+                      <span className="flex items-center gap-2 flex-1">
+                        <span className={!ent.can("cashflow_insights") ? "text-muted-foreground" : ""}>Cashflow Insights</span>
+                        {!ent.can("cashflow_insights") && <Lock className="ml-auto h-3 w-3 text-gold/50 shrink-0" />}
+                      </span>
+                    )}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/revenue")}>
+                  <Link to="/revenue">
+                    <DollarSign className={`h-4 w-4 ${!ent.can("revenue_tracking") ? "text-muted-foreground" : "text-gold"}`} />
+                    {!collapsed && (
+                      <span className="flex items-center gap-2 flex-1">
+                        <span className={!ent.can("revenue_tracking") ? "text-muted-foreground" : ""}>Revenue Tracking</span>
+                        {!ent.can("revenue_tracking") && <Lock className="ml-auto h-3 w-3 text-gold/50 shrink-0" />}
+                      </span>
+                    )}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/eligibility")}>
+                  <Link to="/eligibility">
+                    <BadgeCheck className={`h-4 w-4 ${!ent.can("funding_eligibility") ? "text-muted-foreground" : "text-gold"}`} />
+                    {!collapsed && (
+                      <span className="flex items-center gap-2 flex-1">
+                        <span className={!ent.can("funding_eligibility") ? "text-muted-foreground" : ""}>Funding Eligibility</span>
+                        {!ent.can("funding_eligibility") && <Lock className="ml-auto h-3 w-3 text-gold/50 shrink-0" />}
+                      </span>
+                    )}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

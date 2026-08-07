@@ -245,7 +245,7 @@ const TIERS: Tier[] = [
     tagline: "A part-time business coach in your pocket.",
     icon: Rocket,
     target: ["Solo entrepreneurs", "Micro-businesses"],
-    features: ["Everything in Free", "AI Business Advisor", "Cashflow insights", "Revenue tracking", "Basic funding eligibility"],
+    features: ["Everything in Free", "AI Business Advisor", "Cashflow insights", "Revenue tracking", "Funding eligibility checker", "Funding matching", "Knowledge Vault (10 docs)"],
     cta: "Launch for",
   },
   {
@@ -257,7 +257,7 @@ const TIERS: Tier[] = [
     icon: TrendingUp,
     highlight: true,
     target: ["Growing SMEs — $500–$5,000/mo"],
-    features: ["AI CFO", "Funding recommendations", "Forecasting", "Expense analysis", "Inventory insights", "Verification tools"],
+    features: ["Everything in Launch", "Atlas AI CFO (voice)", "Unlimited Knowledge Vault", "AI Business OS agents", "Growth campaign studio", "Impact reporting", "Impact asset minting", "Multi-user (5 seats)"],
     cta: "Choose Growth",
   },
   {
@@ -268,7 +268,7 @@ const TIERS: Tier[] = [
     tagline: "A full AI executive team.",
     icon: Building2,
     target: ["Businesses at $5,000+/mo"],
-    features: ["AI CEO, CFO, Sales Director", "Treasury dashboard", "Team management", "Funding marketplace", "Priority support"],
+    features: ["Everything in Growth", "Atlas Orchestrator", "Treasury reports", "Advanced analytics", "Economic Graph access", "Multi-user (25 seats)", "White-label options", "Priority support"],
     cta: "Scale up",
   },
 ];
