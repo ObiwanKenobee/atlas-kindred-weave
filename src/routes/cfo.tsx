@@ -21,6 +21,18 @@ export const Route = createFileRoute("/cfo")({
       { property: "og:title", content: "Atlas CFO — Atlas Sanctum" },
       { property: "og:description", content: "Your AI Chief Financial Officer. Talk to Atlas CFO to get funding guidance, business coaching, and treasury insights." },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: 'Atlas CFO',
+          description: 'A conversational AI CFO that analyses your business evidence and advises on cash flow, funding readiness, and growth.',
+          provider: { "@type": "Organization", name: "Atlas Sanctum" },
+        }),
+      },
+    ],
   }),
   component: GatedCfoPage,
 });

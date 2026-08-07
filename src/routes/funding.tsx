@@ -27,6 +27,18 @@ export const Route = createFileRoute("/funding")({
       { property: "og:title", content: `${m.name} — Atlas Sanctum` },
       { property: "og:description", content: m.purpose },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: 'Atlas Funding Engine',
+          description: 'AI-generated Funding Decision Reports with recommended terms, evidence grounding, and human review.',
+          provider: { "@type": "Organization", name: "Atlas Sanctum" },
+        }),
+      },
+    ],
   }),
   component: FundingPage,
 });
