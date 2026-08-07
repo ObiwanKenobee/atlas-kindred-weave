@@ -14,6 +14,7 @@ import { Route as VaultRouteImport } from './routes/vault'
 import { Route as TreasuryRouteImport } from './routes/treasury'
 import { Route as SubscriptionRouteImport } from './routes/subscription'
 import { Route as RiskRouteImport } from './routes/risk'
+import { Route as RevenueRouteImport } from './routes/revenue'
 import { Route as RegenerativeRouteImport } from './routes/regenerative'
 import { Route as ReferralsRouteImport } from './routes/referrals'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -27,15 +28,14 @@ import { Route as ImpactRouteImport } from './routes/impact'
 import { Route as IdentityRouteImport } from './routes/identity'
 import { Route as GrowthRouteImport } from './routes/growth'
 import { Route as FundingRouteImport } from './routes/funding'
+import { Route as EligibilityRouteImport } from './routes/eligibility'
 import { Route as EconomicGraphRouteImport } from './routes/economic-graph'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as CfoRouteImport } from './routes/cfo'
+import { Route as CashflowRouteImport } from './routes/cashflow'
 import { Route as BusinessOsRouteImport } from './routes/business-os'
 import { Route as AuditRouteImport } from './routes/audit'
 import { Route as ApprovalsRouteImport } from './routes/approvals'
-import { Route as EligibilityRouteImport } from './routes/eligibility'
-import { Route as RevenueRouteImport } from './routes/revenue'
-import { Route as CashflowRouteImport } from './routes/cashflow'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings.notifications'
 import { Route as BillingCallbackRouteImport } from './routes/billing.callback'
@@ -71,6 +71,11 @@ const SubscriptionRoute = SubscriptionRouteImport.update({
 const RiskRoute = RiskRouteImport.update({
   id: '/risk',
   path: '/risk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RevenueRoute = RevenueRouteImport.update({
+  id: '/revenue',
+  path: '/revenue',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegenerativeRoute = RegenerativeRouteImport.update({
@@ -138,6 +143,11 @@ const FundingRoute = FundingRouteImport.update({
   path: '/funding',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EligibilityRoute = EligibilityRouteImport.update({
+  id: '/eligibility',
+  path: '/eligibility',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EconomicGraphRoute = EconomicGraphRouteImport.update({
   id: '/economic-graph',
   path: '/economic-graph',
@@ -153,6 +163,11 @@ const CfoRoute = CfoRouteImport.update({
   path: '/cfo',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CashflowRoute = CashflowRouteImport.update({
+  id: '/cashflow',
+  path: '/cashflow',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BusinessOsRoute = BusinessOsRouteImport.update({
   id: '/business-os',
   path: '/business-os',
@@ -166,21 +181,6 @@ const AuditRoute = AuditRouteImport.update({
 const ApprovalsRoute = ApprovalsRouteImport.update({
   id: '/approvals',
   path: '/approvals',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EligibilityRoute = EligibilityRouteImport.update({
-  id: '/eligibility',
-  path: '/eligibility',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RevenueRoute = RevenueRouteImport.update({
-  id: '/revenue',
-  path: '/revenue',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CashflowRoute = CashflowRouteImport.update({
-  id: '/cashflow',
-  path: '/cashflow',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -243,14 +243,13 @@ const ApiPublicPaystackWebhookRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
-  '/cashflow': typeof CashflowRoute
-  '/revenue': typeof RevenueRoute
-  '/eligibility': typeof EligibilityRoute
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
+  '/cashflow': typeof CashflowRoute
   '/cfo': typeof CfoRoute
   '/community': typeof CommunityRoute
   '/economic-graph': typeof EconomicGraphRoute
+  '/eligibility': typeof EligibilityRoute
   '/funding': typeof FundingRoute
   '/growth': typeof GrowthRoute
   '/identity': typeof IdentityRoute
@@ -264,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/referrals': typeof ReferralsRoute
   '/regenerative': typeof RegenerativeRoute
+  '/revenue': typeof RevenueRoute
   '/risk': typeof RiskRoute
   '/subscription': typeof SubscriptionRoute
   '/treasury': typeof TreasuryRoute
@@ -283,14 +283,13 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
-  '/cashflow': typeof CashflowRoute
-  '/revenue': typeof RevenueRoute
-  '/eligibility': typeof EligibilityRoute
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
+  '/cashflow': typeof CashflowRoute
   '/cfo': typeof CfoRoute
   '/community': typeof CommunityRoute
   '/economic-graph': typeof EconomicGraphRoute
+  '/eligibility': typeof EligibilityRoute
   '/funding': typeof FundingRoute
   '/growth': typeof GrowthRoute
   '/identity': typeof IdentityRoute
@@ -304,6 +303,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/referrals': typeof ReferralsRoute
   '/regenerative': typeof RegenerativeRoute
+  '/revenue': typeof RevenueRoute
   '/risk': typeof RiskRoute
   '/subscription': typeof SubscriptionRoute
   '/treasury': typeof TreasuryRoute
@@ -324,14 +324,13 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
-  '/cashflow': typeof CashflowRoute
-  '/revenue': typeof RevenueRoute
-  '/eligibility': typeof EligibilityRoute
   '/audit': typeof AuditRoute
   '/business-os': typeof BusinessOsRoute
+  '/cashflow': typeof CashflowRoute
   '/cfo': typeof CfoRoute
   '/community': typeof CommunityRoute
   '/economic-graph': typeof EconomicGraphRoute
+  '/eligibility': typeof EligibilityRoute
   '/funding': typeof FundingRoute
   '/growth': typeof GrowthRoute
   '/identity': typeof IdentityRoute
@@ -345,6 +344,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/referrals': typeof ReferralsRoute
   '/regenerative': typeof RegenerativeRoute
+  '/revenue': typeof RevenueRoute
   '/risk': typeof RiskRoute
   '/subscription': typeof SubscriptionRoute
   '/treasury': typeof TreasuryRoute
@@ -366,14 +366,13 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/approvals'
-    | '/cashflow'
-    | '/revenue'
-    | '/eligibility'
     | '/audit'
     | '/business-os'
+    | '/cashflow'
     | '/cfo'
     | '/community'
     | '/economic-graph'
+    | '/eligibility'
     | '/funding'
     | '/growth'
     | '/identity'
@@ -387,6 +386,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/referrals'
     | '/regenerative'
+    | '/revenue'
     | '/risk'
     | '/subscription'
     | '/treasury'
@@ -406,14 +406,13 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/approvals'
-    | '/cashflow'
-    | '/revenue'
-    | '/eligibility'
     | '/audit'
     | '/business-os'
+    | '/cashflow'
     | '/cfo'
     | '/community'
     | '/economic-graph'
+    | '/eligibility'
     | '/funding'
     | '/growth'
     | '/identity'
@@ -427,6 +426,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/referrals'
     | '/regenerative'
+    | '/revenue'
     | '/risk'
     | '/subscription'
     | '/treasury'
@@ -446,14 +446,13 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/approvals'
-    | '/cashflow'
-    | '/revenue'
-    | '/eligibility'
     | '/audit'
     | '/business-os'
+    | '/cashflow'
     | '/cfo'
     | '/community'
     | '/economic-graph'
+    | '/eligibility'
     | '/funding'
     | '/growth'
     | '/identity'
@@ -467,6 +466,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/referrals'
     | '/regenerative'
+    | '/revenue'
     | '/risk'
     | '/subscription'
     | '/treasury'
@@ -487,14 +487,13 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApprovalsRoute: typeof ApprovalsRoute
-  CashflowRoute: typeof CashflowRoute
-  RevenueRoute: typeof RevenueRoute
-  EligibilityRoute: typeof EligibilityRoute
   AuditRoute: typeof AuditRoute
   BusinessOsRoute: typeof BusinessOsRoute
+  CashflowRoute: typeof CashflowRoute
   CfoRoute: typeof CfoRoute
   CommunityRoute: typeof CommunityRoute
   EconomicGraphRoute: typeof EconomicGraphRoute
+  EligibilityRoute: typeof EligibilityRoute
   FundingRoute: typeof FundingRoute
   GrowthRoute: typeof GrowthRoute
   IdentityRoute: typeof IdentityRoute
@@ -508,6 +507,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   ReferralsRoute: typeof ReferralsRoute
   RegenerativeRoute: typeof RegenerativeRoute
+  RevenueRoute: typeof RevenueRoute
   RiskRoute: typeof RiskRoute
   SubscriptionRoute: typeof SubscriptionRoute
   TreasuryRoute: typeof TreasuryRoute
@@ -560,6 +560,13 @@ declare module '@tanstack/react-router' {
       path: '/risk'
       fullPath: '/risk'
       preLoaderRoute: typeof RiskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/revenue': {
+      id: '/revenue'
+      path: '/revenue'
+      fullPath: '/revenue'
+      preLoaderRoute: typeof RevenueRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/regenerative': {
@@ -653,6 +660,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FundingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/eligibility': {
+      id: '/eligibility'
+      path: '/eligibility'
+      fullPath: '/eligibility'
+      preLoaderRoute: typeof EligibilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/economic-graph': {
       id: '/economic-graph'
       path: '/economic-graph'
@@ -674,6 +688,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CfoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cashflow': {
+      id: '/cashflow'
+      path: '/cashflow'
+      fullPath: '/cashflow'
+      preLoaderRoute: typeof CashflowRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/business-os': {
       id: '/business-os'
       path: '/business-os'
@@ -693,27 +714,6 @@ declare module '@tanstack/react-router' {
       path: '/approvals'
       fullPath: '/approvals'
       preLoaderRoute: typeof ApprovalsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cashflow': {
-      id: '/cashflow'
-      path: '/cashflow'
-      fullPath: '/cashflow'
-      preLoaderRoute: typeof CashflowRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/revenue': {
-      id: '/revenue'
-      path: '/revenue'
-      fullPath: '/revenue'
-      preLoaderRoute: typeof RevenueRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/eligibility': {
-      id: '/eligibility'
-      path: '/eligibility'
-      fullPath: '/eligibility'
-      preLoaderRoute: typeof EligibilityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -799,14 +799,13 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApprovalsRoute: ApprovalsRoute,
-  CashflowRoute: CashflowRoute,
-  RevenueRoute: RevenueRoute,
-  EligibilityRoute: EligibilityRoute,
   AuditRoute: AuditRoute,
   BusinessOsRoute: BusinessOsRoute,
+  CashflowRoute: CashflowRoute,
   CfoRoute: CfoRoute,
   CommunityRoute: CommunityRoute,
   EconomicGraphRoute: EconomicGraphRoute,
+  EligibilityRoute: EligibilityRoute,
   FundingRoute: FundingRoute,
   GrowthRoute: GrowthRoute,
   IdentityRoute: IdentityRoute,
@@ -820,6 +819,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   ReferralsRoute: ReferralsRoute,
   RegenerativeRoute: RegenerativeRoute,
+  RevenueRoute: RevenueRoute,
   RiskRoute: RiskRoute,
   SubscriptionRoute: SubscriptionRoute,
   TreasuryRoute: TreasuryRoute,
