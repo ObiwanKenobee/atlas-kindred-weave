@@ -52,6 +52,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Atlas Sanctum" },
       { property: "og:description", content: "An AI-operated economic civilization." },
       { property: "og:type", content: "website" },
+      { name: "google-site-verification", content: "vT6mxJ_Ko8YZYEYimh8u30st6TcAQQ4LTB80cDqbJAE" },
+
     ],
     links: [
       { rel: "stylesheet", href: appCss },

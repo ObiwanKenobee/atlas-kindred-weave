@@ -33,6 +33,7 @@ import { Route as ReferralsRouteImport } from './routes/referrals'
 import { Route as RegenerativeRouteImport } from './routes/regenerative'
 import { Route as RevenueRouteImport } from './routes/revenue'
 import { Route as RiskRouteImport } from './routes/risk'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SubscriptionRouteImport } from './routes/subscription'
 import { Route as TreasuryRouteImport } from './routes/treasury'
 import { Route as VaultRouteImport } from './routes/vault'
@@ -168,6 +169,11 @@ const RiskRoute = RiskRouteImport.update({
   path: '/risk',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SubscriptionRoute = SubscriptionRouteImport.update({
   id: '/subscription',
   path: '/subscription',
@@ -265,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/regenerative': typeof RegenerativeRoute
   '/revenue': typeof RevenueRoute
   '/risk': typeof RiskRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/subscription': typeof SubscriptionRoute
   '/treasury': typeof TreasuryRoute
   '/vault': typeof VaultRoute
@@ -305,6 +312,7 @@ export interface FileRoutesByTo {
   '/regenerative': typeof RegenerativeRoute
   '/revenue': typeof RevenueRoute
   '/risk': typeof RiskRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/subscription': typeof SubscriptionRoute
   '/treasury': typeof TreasuryRoute
   '/vault': typeof VaultRoute
@@ -346,6 +354,7 @@ export interface FileRoutesById {
   '/regenerative': typeof RegenerativeRoute
   '/revenue': typeof RevenueRoute
   '/risk': typeof RiskRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/subscription': typeof SubscriptionRoute
   '/treasury': typeof TreasuryRoute
   '/vault': typeof VaultRoute
@@ -388,6 +397,7 @@ export interface FileRouteTypes {
     | '/regenerative'
     | '/revenue'
     | '/risk'
+    | '/sitemap.xml'
     | '/subscription'
     | '/treasury'
     | '/vault'
@@ -428,6 +438,7 @@ export interface FileRouteTypes {
     | '/regenerative'
     | '/revenue'
     | '/risk'
+    | '/sitemap.xml'
     | '/subscription'
     | '/treasury'
     | '/vault'
@@ -468,6 +479,7 @@ export interface FileRouteTypes {
     | '/regenerative'
     | '/revenue'
     | '/risk'
+    | '/sitemap.xml'
     | '/subscription'
     | '/treasury'
     | '/vault'
@@ -509,6 +521,7 @@ export interface RootRouteChildren {
   RegenerativeRoute: typeof RegenerativeRoute
   RevenueRoute: typeof RevenueRoute
   RiskRoute: typeof RiskRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SubscriptionRoute: typeof SubscriptionRoute
   TreasuryRoute: typeof TreasuryRoute
   VaultRoute: typeof VaultRoute
@@ -695,6 +708,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RiskRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/subscription': {
       id: '/subscription'
       path: '/subscription'
@@ -821,6 +841,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegenerativeRoute: RegenerativeRoute,
   RevenueRoute: RevenueRoute,
   RiskRoute: RiskRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SubscriptionRoute: SubscriptionRoute,
   TreasuryRoute: TreasuryRoute,
   VaultRoute: VaultRoute,
@@ -839,13 +860,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
