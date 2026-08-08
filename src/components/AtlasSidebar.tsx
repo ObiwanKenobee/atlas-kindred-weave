@@ -212,6 +212,14 @@ export function AtlasSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/business")}>
+                  <Link to="/business">
+                    <Building2 className="h-4 w-4" />
+                    {!collapsed && <span>My Business</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive("/profile")}>
                   <Link to="/profile">
                     <UserCircle className="h-4 w-4" />
