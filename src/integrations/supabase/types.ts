@@ -247,6 +247,66 @@ export type Database = {
         }
         Relationships: []
       }
+      businesses: {
+        Row: {
+          business_type: string | null
+          country: string | null
+          created_at: string
+          description: string | null
+          funding_currency: string | null
+          funding_purpose: string | null
+          funding_requirement_minor: number | null
+          id: string
+          industry: string | null
+          name: string
+          onboarding_complete: boolean
+          primary_objective: string | null
+          revenue_range: string | null
+          stage: string | null
+          team_size: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_type?: string | null
+          country?: string | null
+          created_at?: string
+          description?: string | null
+          funding_currency?: string | null
+          funding_purpose?: string | null
+          funding_requirement_minor?: number | null
+          id?: string
+          industry?: string | null
+          name: string
+          onboarding_complete?: boolean
+          primary_objective?: string | null
+          revenue_range?: string | null
+          stage?: string | null
+          team_size?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_type?: string | null
+          country?: string | null
+          created_at?: string
+          description?: string | null
+          funding_currency?: string | null
+          funding_purpose?: string | null
+          funding_requirement_minor?: number | null
+          id?: string
+          industry?: string | null
+          name?: string
+          onboarding_complete?: boolean
+          primary_objective?: string | null
+          revenue_range?: string | null
+          stage?: string | null
+          team_size?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_conversations: {
         Row: {
           created_at: string
@@ -498,6 +558,7 @@ export type Database = {
         Row: {
           amount_requested: number
           attachments: Json
+          business_id: string | null
           created_at: string
           currency: string
           current_version: number
@@ -519,6 +580,7 @@ export type Database = {
         Insert: {
           amount_requested?: number
           attachments?: Json
+          business_id?: string | null
           created_at?: string
           currency?: string
           current_version?: number
@@ -540,6 +602,7 @@ export type Database = {
         Update: {
           amount_requested?: number
           attachments?: Json
+          business_id?: string | null
           created_at?: string
           currency?: string
           current_version?: number
@@ -559,6 +622,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "funding_requests_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "funding_requests_final_version_id_fkey"
             columns: ["final_version_id"]
