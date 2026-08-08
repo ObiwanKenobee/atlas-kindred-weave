@@ -87,7 +87,9 @@ export const Route = createFileRoute("/api/chat")({
             ? await retrieveVaultContext(userId, lastUserText, key)
             : "";
 
-        const system = vaultContext ? SYSTEM + vaultContext : SYSTEM;
+        const businessContext = userId ? await buildBusinessContext(userId) : "";
+
+        const system = SYSTEM + businessContext + vaultContext;
 
         const result = streamText({
           model: gateway("google/gemini-3-flash-preview"),
