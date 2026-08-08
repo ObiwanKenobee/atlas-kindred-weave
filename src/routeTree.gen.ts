@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApprovalsRouteImport } from './routes/approvals'
 import { Route as AuditRouteImport } from './routes/audit'
+import { Route as BusinessRouteImport } from './routes/business'
 import { Route as BusinessOsRouteImport } from './routes/business-os'
 import { Route as CashflowRouteImport } from './routes/cashflow'
 import { Route as CfoRouteImport } from './routes/cfo'
@@ -62,6 +63,11 @@ const ApprovalsRoute = ApprovalsRouteImport.update({
 const AuditRoute = AuditRouteImport.update({
   id: '/audit',
   path: '/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BusinessRoute = BusinessRouteImport.update({
+  id: '/business',
+  path: '/business',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BusinessOsRoute = BusinessOsRouteImport.update({
@@ -250,6 +256,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
   '/audit': typeof AuditRoute
+  '/business': typeof BusinessRoute
   '/business-os': typeof BusinessOsRoute
   '/cashflow': typeof CashflowRoute
   '/cfo': typeof CfoRoute
@@ -291,6 +298,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
   '/audit': typeof AuditRoute
+  '/business': typeof BusinessRoute
   '/business-os': typeof BusinessOsRoute
   '/cashflow': typeof CashflowRoute
   '/cfo': typeof CfoRoute
@@ -333,6 +341,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
   '/audit': typeof AuditRoute
+  '/business': typeof BusinessRoute
   '/business-os': typeof BusinessOsRoute
   '/cashflow': typeof CashflowRoute
   '/cfo': typeof CfoRoute
@@ -376,6 +385,7 @@ export interface FileRouteTypes {
     | '/'
     | '/approvals'
     | '/audit'
+    | '/business'
     | '/business-os'
     | '/cashflow'
     | '/cfo'
@@ -417,6 +427,7 @@ export interface FileRouteTypes {
     | '/'
     | '/approvals'
     | '/audit'
+    | '/business'
     | '/business-os'
     | '/cashflow'
     | '/cfo'
@@ -458,6 +469,7 @@ export interface FileRouteTypes {
     | '/'
     | '/approvals'
     | '/audit'
+    | '/business'
     | '/business-os'
     | '/cashflow'
     | '/cfo'
@@ -500,6 +512,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApprovalsRoute: typeof ApprovalsRoute
   AuditRoute: typeof AuditRoute
+  BusinessRoute: typeof BusinessRoute
   BusinessOsRoute: typeof BusinessOsRoute
   CashflowRoute: typeof CashflowRoute
   CfoRoute: typeof CfoRoute
@@ -559,6 +572,13 @@ declare module '@tanstack/react-router' {
       path: '/audit'
       fullPath: '/audit'
       preLoaderRoute: typeof AuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/business': {
+      id: '/business'
+      path: '/business'
+      fullPath: '/business'
+      preLoaderRoute: typeof BusinessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/business-os': {
@@ -820,6 +840,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApprovalsRoute: ApprovalsRoute,
   AuditRoute: AuditRoute,
+  BusinessRoute: BusinessRoute,
   BusinessOsRoute: BusinessOsRoute,
   CashflowRoute: CashflowRoute,
   CfoRoute: CfoRoute,

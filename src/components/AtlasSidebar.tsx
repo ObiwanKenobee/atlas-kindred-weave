@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, ScrollText, Settings, ShieldCheck, BarChart3, Sparkles, PhoneCall, BookOpen, Activity, Search, Users, UserCircle, Gavel, Crown, Gift, Lock, TrendingUp, DollarSign, BadgeCheck } from "lucide-react";
+import { Bell, ScrollText, Settings, ShieldCheck, BarChart3, Sparkles, PhoneCall, BookOpen, Activity, Search, Users, UserCircle, Gavel, Crown, Gift, Lock, TrendingUp, DollarSign, BadgeCheck, Building2 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton,
@@ -208,6 +208,14 @@ export function AtlasSidebar() {
                   <Link to="/community">
                     <Users className="h-4 w-4 text-gold" />
                     {!collapsed && <span>Community</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/business")}>
+                  <Link to="/business">
+                    <Building2 className="h-4 w-4" />
+                    {!collapsed && <span>My Business</span>}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

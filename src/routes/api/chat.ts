@@ -3,6 +3,7 @@ import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { enforceRateLimit, RateLimitError } from "@/lib/rate-limit.server";
+import { buildBusinessContext } from "@/lib/business.server";
 
 const SYSTEM = `You are the Atlas Orchestrator — the central intelligence of Atlas Sanctum, an AI-operated regenerative finance civilization.
 
@@ -87,7 +88,9 @@ export const Route = createFileRoute("/api/chat")({
             ? await retrieveVaultContext(userId, lastUserText, key)
             : "";
 
-        const system = vaultContext ? SYSTEM + vaultContext : SYSTEM;
+        const businessContext = userId ? await buildBusinessContext(userId) : "";
+
+        const system = SYSTEM + businessContext + vaultContext;
 
         const result = streamText({
           model: gateway("google/gemini-3-flash-preview"),
