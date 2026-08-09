@@ -7,6 +7,7 @@ import { recordAgentEvent } from "@/lib/observability.server";
 import { verifyEphemeralToken } from "@/lib/ephemeral-session.server";
 import { enforceRateLimit, RateLimitError } from "@/lib/rate-limit.server";
 import { z } from "zod";
+import { runAtlasTool, isAtlasTool } from "@/lib/agent-tools.server";
 
 type ToolCall = {
   tool_name: string;
@@ -286,6 +287,14 @@ async function dispatch(toolName: string, params: Record<string, unknown>, userI
     }
 
     default:
+      // Shared registry: the voice channel calls the same tools as the text channel.
+      if (isAtlasTool(toolName)) {
+        return runAtlasTool(toolName, params, {
+          userId,
+          sessionId: `cfo-voice-${userId}`,
+          channel: "voice",
+        });
+      }
       return { error: `Unknown tool: ${toolName}` };
   }
 }

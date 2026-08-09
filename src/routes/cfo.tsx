@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { PlanGate } from "@/components/PlanGate";
+import { CfoChat } from "@/components/CfoChat";
 
 export const Route = createFileRoute("/cfo")({
   head: () => ({
@@ -345,8 +346,10 @@ function CfoPage() {
           </Card>
         </div>
 
-        {/* Right: Transcript */}
-        <div className="lg:col-span-3">
+        {/* Right: Text channel + voice transcript */}
+        <div className="lg:col-span-3 space-y-6">
+          <CfoChat />
+
           <div className="text-xs uppercase tracking-widest text-gold mb-3">Conversation</div>
           <div
             ref={transcriptRef}
