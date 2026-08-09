@@ -48,6 +48,7 @@ import { Route as ApiSessionRouteImport } from './routes/api/session'
 import { Route as ApiVaultFileRouteImport } from './routes/api/vault-file'
 import { Route as BillingCallbackRouteImport } from './routes/billing.callback'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings.notifications'
+import { Route as ApiCfoChatRouteImport } from './routes/api/cfo/chat'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
 
 const IndexRoute = IndexRouteImport.update({
@@ -245,6 +246,11 @@ const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
   path: '/settings/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCfoChatRoute = ApiCfoChatRouteImport.update({
+  id: '/api/cfo/chat',
+  path: '/api/cfo/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPaystackWebhookRoute =
   ApiPublicPaystackWebhookRouteImport.update({
     id: '/api/public/paystack-webhook',
@@ -292,6 +298,7 @@ export interface FileRoutesByFullPath {
   '/api/vault-file': typeof ApiVaultFileRoute
   '/billing/callback': typeof BillingCallbackRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
+  '/api/cfo/chat': typeof ApiCfoChatRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -334,6 +341,7 @@ export interface FileRoutesByTo {
   '/api/vault-file': typeof ApiVaultFileRoute
   '/billing/callback': typeof BillingCallbackRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
+  '/api/cfo/chat': typeof ApiCfoChatRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRoutesById {
@@ -377,6 +385,7 @@ export interface FileRoutesById {
   '/api/vault-file': typeof ApiVaultFileRoute
   '/billing/callback': typeof BillingCallbackRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
+  '/api/cfo/chat': typeof ApiCfoChatRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRouteTypes {
@@ -421,6 +430,7 @@ export interface FileRouteTypes {
     | '/api/vault-file'
     | '/billing/callback'
     | '/settings/notifications'
+    | '/api/cfo/chat'
     | '/api/public/paystack-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -463,6 +473,7 @@ export interface FileRouteTypes {
     | '/api/vault-file'
     | '/billing/callback'
     | '/settings/notifications'
+    | '/api/cfo/chat'
     | '/api/public/paystack-webhook'
   id:
     | '__root__'
@@ -505,6 +516,7 @@ export interface FileRouteTypes {
     | '/api/vault-file'
     | '/billing/callback'
     | '/settings/notifications'
+    | '/api/cfo/chat'
     | '/api/public/paystack-webhook'
   fileRoutesById: FileRoutesById
 }
@@ -548,6 +560,7 @@ export interface RootRouteChildren {
   ApiVaultFileRoute: typeof ApiVaultFileRoute
   BillingCallbackRoute: typeof BillingCallbackRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
+  ApiCfoChatRoute: typeof ApiCfoChatRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
 }
 
@@ -826,6 +839,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/cfo/chat': {
+      id: '/api/cfo/chat'
+      path: '/api/cfo/chat'
+      fullPath: '/api/cfo/chat'
+      preLoaderRoute: typeof ApiCfoChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/paystack-webhook': {
       id: '/api/public/paystack-webhook'
       path: '/api/public/paystack-webhook'
@@ -876,18 +896,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiVaultFileRoute: ApiVaultFileRoute,
   BillingCallbackRoute: BillingCallbackRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
+  ApiCfoChatRoute: ApiCfoChatRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
