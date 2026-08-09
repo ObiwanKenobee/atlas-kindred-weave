@@ -32,13 +32,10 @@ export const getCommunityFeed = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const limit = data.limit ?? 20;
 
-    // Fetch posts joined with profiles
+    // Fetch posts, then profiles separately (no FK between the two tables)
     const query = supabaseAdmin
       .from("community_posts")
-      .select(`
-        id, user_id, content, category, likes, replies, created_at,
-        profiles!inner(display_name, trust_score, verified, region)
-      `)
+      .select("id, user_id, content, category, likes, replies, created_at")
       .order("created_at", { ascending: false })
       .limit(limit);
 
@@ -49,8 +46,29 @@ export const getCommunityFeed = createServerFn({ method: "GET" })
     const { data: rows, error } = await query;
     if (error) throw new Error(error.message);
 
+    const userIds = [...new Set((rows ?? []).map((r) => r.user_id))];
+    const profileMap = new Map<
+      string,
+      { display_name: string | null; trust_score: number; verified: boolean; region: string | null }
+    >();
+
+    if (userIds.length > 0) {
+      const { data: profiles } = await supabaseAdmin
+        .from("profiles")
+        .select("user_id, display_name, trust_score, verified, region")
+        .in("user_id", userIds);
+      for (const p of profiles ?? []) {
+        profileMap.set(p.user_id, {
+          display_name: p.display_name,
+          trust_score: Number(p.trust_score ?? 0),
+          verified: Boolean(p.verified),
+          region: p.region,
+        });
+      }
+    }
+
     return (rows ?? []).map((r) => {
-      const p = Array.isArray(r.profiles) ? r.profiles[0] : r.profiles;
+      const p = profileMap.get(r.user_id);
       return {
         id: r.id,
         user_id: r.user_id,
@@ -66,6 +84,7 @@ export const getCommunityFeed = createServerFn({ method: "GET" })
       } satisfies CommunityPost;
     });
   });
+
 
 export const createCommunityPost = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
