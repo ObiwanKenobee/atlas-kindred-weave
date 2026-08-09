@@ -11,6 +11,7 @@
 import { z } from "zod";
 import { generateObject } from "ai";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import type { Json } from "@/integrations/supabase/types";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 import { recordInteractionStep, recordAgentEvent } from "@/lib/observability.server";
 
@@ -355,7 +356,7 @@ Rules: cite only evidence actually present above. If evidence is thin, say so in
 export type AtlasToolName = keyof typeof ATLAS_TOOLS;
 
 export function isAtlasTool(name: string): name is AtlasToolName {
-  return Object.prototype.hasOwnProperty.call(ATLAS_TOOLS, name);
+  return Object.prototype.hasOwnProperty.call(ATLAS_TOOLS, name as AtlasToolName);
 }
 
 /**
@@ -408,7 +409,7 @@ export async function runAtlasTool(
         _entity_id: null as unknown as string,
         _subject: ctx.userId,
         _summary: `Atlas CFO executed ${name} (${ctx.channel})`,
-        _details: { sessionId: ctx.sessionId, output },
+        _details: { sessionId: ctx.sessionId, output } as unknown as Json,
       });
     }
 
