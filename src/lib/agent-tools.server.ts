@@ -54,6 +54,124 @@ async function loadBusiness(userId: string) {
   return data;
 }
 
+type ToolOut = Record<string, unknown>;
+
+async function businessProfileImpl(ctx: ToolContext): Promise<ToolOut> {
+  const b = await loadBusiness(ctx.userId);
+  if (!b) {
+    return {
+      found: false,
+      provenance: "USER_CONFIRMED",
+      message: "No business profile yet. Ask the user to complete onboarding at /business.",
+    };
+  }
+  return {
+    found: true,
+    provenance: "USER_CONFIRMED",
+    business: {
+      id: b.id,
+      name: b.name,
+      industry: b.industry,
+      country: b.country,
+      stage: b.stage,
+      team_size: b.team_size,
+      revenue_range: b.revenue_range,
+      primary_objective: b.primary_objective,
+      funding_requirement:
+        b.funding_requirement_minor != null ? Number(b.funding_requirement_minor) / 100 : null,
+      funding_currency: b.funding_currency,
+      funding_purpose: b.funding_purpose,
+      onboarding_complete: b.onboarding_complete,
+    },
+  };
+}
+
+async function financialSummaryImpl(ctx: ToolContext): Promise<ToolOut> {
+  const [{ data: funding }, { data: docs }, { data: payments }] = await Promise.all([
+    supabaseAdmin
+      .from("funding_requests")
+      .select("id, title, amount_requested, currency, status, human_approval, created_at")
+      .eq("user_id", ctx.userId)
+      .order("created_at", { ascending: false })
+      .limit(10),
+    supabaseAdmin
+      .from("knowledge_documents")
+      .select("doc_kind, file_name, created_at")
+      .eq("user_id", ctx.userId)
+      .eq("chunk_index", 0),
+    supabaseAdmin
+      .from("payment_transactions")
+      .select("amount_minor, currency, status, plan, created_at")
+      .eq("user_id", ctx.userId)
+      .order("created_at", { ascending: false })
+      .limit(5),
+  ]);
+
+  const requests = funding ?? [];
+  const approved = requests.filter((r) => r.human_approval === "approved");
+  const evidence = (docs ?? []).reduce<Record<string, number>>((acc, d) => {
+    acc[d.doc_kind] = (acc[d.doc_kind] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  return {
+    provenance: "EXTRACTED",
+    funding_requests: requests.length,
+    pending_review: requests.filter((r) => r.human_approval === "pending").length,
+    approved_requests: approved.length,
+    approved_capital: approved.reduce((s, r) => s + Number(r.amount_requested), 0),
+    evidence_documents: (docs ?? []).length,
+    evidence_by_kind: evidence,
+    recent_payments: (payments ?? []).map((p) => ({
+      amount: p.amount_minor / 100,
+      currency: p.currency,
+      status: p.status,
+      plan: p.plan,
+    })),
+  };
+}
+
+async function trustProfileImpl(ctx: ToolContext): Promise<ToolOut> {
+  const [{ data: profile }, { data: events }] = await Promise.all([
+    supabaseAdmin
+      .from("profiles")
+      .select("trust_score, verified, region, display_name")
+      .eq("user_id", ctx.userId)
+      .maybeSingle(),
+    supabaseAdmin.from("verification_events").select("status, kind").eq("user_id", ctx.userId),
+  ]);
+  const list = events ?? [];
+  return {
+    provenance: "VERIFIED",
+    trust_score: profile?.trust_score ?? 50,
+    verified: profile?.verified ?? false,
+    region: profile?.region ?? null,
+    display_name: profile?.display_name ?? "Entrepreneur",
+    verifications: {
+      verified: list.filter((e) => e.status === "verified").length,
+      pending: list.filter((e) => e.status === "pending").length,
+      rejected: list.filter((e) => e.status === "rejected").length,
+    },
+  };
+}
+
+async function knowledgeImpl(ctx: ToolContext, query: string, topK: number): Promise<ToolOut> {
+  const embedding = await embedText(query);
+  const { data } = await supabaseAdmin.rpc("match_documents", {
+    _user_id: ctx.userId,
+    _embedding: JSON.stringify(embedding),
+    _match_count: topK,
+    _doc_kind: null as unknown as string,
+  });
+  const rows = (data ?? []) as { file_name: string; content: string; doc_kind: string }[];
+  return {
+    provenance: "EXTRACTED",
+    source_count: rows.length,
+    sources: rows.map((r) => ({ file_name: r.file_name, doc_kind: r.doc_kind })),
+    passages: rows.map((r) => ({ file_name: r.file_name, excerpt: r.content.slice(0, 1200) })),
+  };
+}
+
 // ─── tools ────────────────────────────────────────────────────────────────────
 
 const Empty = z.object({});
