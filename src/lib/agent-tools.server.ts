@@ -181,113 +181,20 @@ export const ATLAS_TOOLS = {
     description:
       "Retrieve the entrepreneur's confirmed business profile (name, industry, country, stage, team size, revenue range, objective, funding requirement).",
     input: Empty,
-    run: async (_a, ctx) => {
-      const b = await loadBusiness(ctx.userId);
-      if (!b) {
-        return {
-          found: false,
-          provenance: "USER_CONFIRMED",
-          message: "No business profile yet. Ask the user to complete onboarding at /business.",
-        };
-      }
-      return {
-        found: true,
-        provenance: "USER_CONFIRMED",
-        business: {
-          id: b.id,
-          name: b.name,
-          industry: b.industry,
-          country: b.country,
-          stage: b.stage,
-          team_size: b.team_size,
-          revenue_range: b.revenue_range,
-          primary_objective: b.primary_objective,
-          funding_requirement:
-            b.funding_requirement_minor != null ? Number(b.funding_requirement_minor) / 100 : null,
-          funding_currency: b.funding_currency,
-          funding_purpose: b.funding_purpose,
-          onboarding_complete: b.onboarding_complete,
-        },
-      };
-    },
+    run: (_a, ctx) => businessProfileImpl(ctx),
   } satisfies ToolDef<typeof Empty>,
 
   getFinancialSummary: {
     description:
       "Summarise the business's recorded financial activity: funding requests, approved capital, payments, and the evidence held in the Knowledge Vault.",
     input: Empty,
-    run: async (_a, ctx) => {
-      const [{ data: funding }, { data: docs }, { data: payments }] = await Promise.all([
-        supabaseAdmin
-          .from("funding_requests")
-          .select("id, title, amount_requested, currency, status, human_approval, created_at")
-          .eq("user_id", ctx.userId)
-          .order("created_at", { ascending: false })
-          .limit(10),
-        supabaseAdmin
-          .from("knowledge_documents")
-          .select("doc_kind, file_name, created_at")
-          .eq("user_id", ctx.userId)
-          .eq("chunk_index", 0),
-        supabaseAdmin
-          .from("payment_transactions")
-          .select("amount_minor, currency, status, plan, created_at")
-          .eq("user_id", ctx.userId)
-          .order("created_at", { ascending: false })
-          .limit(5),
-      ]);
-
-      const requests = funding ?? [];
-      const approved = requests.filter((r) => r.human_approval === "approved");
-      const evidence = (docs ?? []).reduce<Record<string, number>>((acc, d) => {
-        acc[d.doc_kind] = (acc[d.doc_kind] ?? 0) + 1;
-        return acc;
-      }, {});
-
-      return {
-        provenance: "EXTRACTED",
-        funding_requests: requests.length,
-        pending_review: requests.filter((r) => r.human_approval === "pending").length,
-        approved_requests: approved.length,
-        approved_capital: approved.reduce((s, r) => s + Number(r.amount_requested), 0),
-        evidence_documents: (docs ?? []).length,
-        evidence_by_kind: evidence,
-        recent_payments: (payments ?? []).map((p) => ({
-          amount: p.amount_minor / 100,
-          currency: p.currency,
-          status: p.status,
-          plan: p.plan,
-        })),
-      };
-    },
+    run: (_a, ctx) => financialSummaryImpl(ctx),
   } satisfies ToolDef<typeof Empty>,
 
   getTrustProfile: {
     description: "Retrieve the Atlas trust score, verification status and verification history counts.",
     input: Empty,
-    run: async (_a, ctx) => {
-      const [{ data: profile }, { data: events }] = await Promise.all([
-        supabaseAdmin
-          .from("profiles")
-          .select("trust_score, verified, region, display_name")
-          .eq("user_id", ctx.userId)
-          .maybeSingle(),
-        supabaseAdmin.from("verification_events").select("status, kind").eq("user_id", ctx.userId),
-      ]);
-      const list = events ?? [];
-      return {
-        provenance: "VERIFIED",
-        trust_score: profile?.trust_score ?? 50,
-        verified: profile?.verified ?? false,
-        region: profile?.region ?? null,
-        display_name: profile?.display_name ?? "Entrepreneur",
-        verifications: {
-          verified: list.filter((e) => e.status === "verified").length,
-          pending: list.filter((e) => e.status === "pending").length,
-          rejected: list.filter((e) => e.status === "rejected").length,
-        },
-      };
-    },
+    run: (_a, ctx) => trustProfileImpl(ctx),
   } satisfies ToolDef<typeof Empty>,
 
   searchBusinessKnowledge: {
@@ -297,35 +204,19 @@ export const ATLAS_TOOLS = {
       query: z.string().min(3).max(500),
       topK: z.number().int().min(1).max(8).default(5),
     }),
-    run: async (args, ctx) => {
-      const embedding = await embedText(args.query);
-      const { data } = await supabaseAdmin.rpc("match_documents", {
-        _user_id: ctx.userId,
-        _embedding: JSON.stringify(embedding),
-        _match_count: args.topK,
-        _doc_kind: null as unknown as string,
-      });
-      const rows = (data ?? []) as { file_name: string; content: string; doc_kind: string }[];
-      return {
-        provenance: "EXTRACTED",
-        source_count: rows.length,
-        sources: rows.map((r) => ({ file_name: r.file_name, doc_kind: r.doc_kind })),
-        passages: rows.map((r) => ({ file_name: r.file_name, excerpt: r.content.slice(0, 1200) })),
-      };
-    },
+    run: (args, ctx) => knowledgeImpl(ctx, args.query, args.topK),
   } satisfies ToolDef<z.ZodObject<{ query: z.ZodString; topK: z.ZodDefault<z.ZodNumber> }>>,
 
   generateTreasurySummary: {
     description: "Produce a short treasury health summary grounded in recorded capital and evidence.",
     input: Empty,
-    run: async (_a, ctx) => {
-      const financial = await ATLAS_TOOLS.getFinancialSummary.run({}, ctx);
-      const trust = await ATLAS_TOOLS.getTrustProfile.run({}, ctx);
+    run: async (_a, ctx): Promise<ToolOut> => {
+      const [financial, trust] = await Promise.all([financialSummaryImpl(ctx), trustProfileImpl(ctx)]);
       const capital = Number(financial.approved_capital ?? 0);
       const docs = Number(financial.evidence_documents ?? 0);
       const score = Number(trust.trust_score ?? 50);
-
       const grade = capital > 0 && docs >= 3 && score >= 70 ? "A" : docs >= 1 && score >= 50 ? "B" : "C";
+
       return {
         provenance: "ESTIMATED",
         health_grade: grade,
@@ -333,9 +224,15 @@ export const ATLAS_TOOLS = {
         evidence_documents: docs,
         trust_score: score,
         recommendations: [
-          docs < 3 ? "Upload at least three financial documents to strengthen evidence." : "Evidence base is adequate; keep it current.",
-          score < 70 ? "Complete verifications to lift your trust score above 70." : "Maintain your verification cadence.",
-          capital === 0 ? "No approved capital recorded yet — generate a funding readiness recommendation." : "Track deployment of approved capital.",
+          docs < 3
+            ? "Upload at least three financial documents to strengthen evidence."
+            : "Evidence base is adequate; keep it current.",
+          score < 70
+            ? "Complete verifications to lift your trust score above 70."
+            : "Maintain your verification cadence.",
+          capital === 0
+            ? "No approved capital recorded yet — generate a funding readiness recommendation."
+            : "Track deployment of approved capital.",
         ],
       };
     },
@@ -348,15 +245,12 @@ export const ATLAS_TOOLS = {
       requestedAmount: z.number().positive().max(10_000_000).optional(),
       purpose: z.string().max(500).optional(),
     }),
-    run: async (args, ctx) => {
+    run: async (args, ctx): Promise<ToolOut> => {
       const [profile, financial, trust, knowledge] = await Promise.all([
-        ATLAS_TOOLS.getBusinessProfile.run({}, ctx),
-        ATLAS_TOOLS.getFinancialSummary.run({}, ctx),
-        ATLAS_TOOLS.getTrustProfile.run({}, ctx),
-        ATLAS_TOOLS.searchBusinessKnowledge.run(
-          { query: args.purpose ?? "revenue, expenses, inventory, cash flow", topK: 5 },
-          ctx,
-        ),
+        businessProfileImpl(ctx),
+        financialSummaryImpl(ctx),
+        trustProfileImpl(ctx),
+        knowledgeImpl(ctx, args.purpose ?? "revenue, expenses, inventory, cash flow", 5),
       ]);
 
       const key = process.env.LOVABLE_API_KEY;
@@ -401,7 +295,10 @@ Rules: cite only evidence actually present above. If evidence is thin, say so in
 
       return { provenance: "ESTIMATED", label: "Funding Readiness Recommendation", ...object };
     },
-  } satisfies ToolDef<z.ZodObject<{ requestedAmount: z.ZodOptional<z.ZodNumber>; purpose: z.ZodOptional<z.ZodString> }>>,
+  } satisfies ToolDef<
+    z.ZodObject<{ requestedAmount: z.ZodOptional<z.ZodNumber>; purpose: z.ZodOptional<z.ZodString> }>
+  >,
+
 
   requestHumanReview: {
     description:
