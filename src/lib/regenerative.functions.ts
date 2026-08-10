@@ -323,7 +323,7 @@ export const getAssetBids = createServerFn({ method: "POST" })
 // ── Marketplace stats ─────────────────────────────────────────────────────────
 
 export const getMarketplaceStats = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => z.object({}).parse(d))
+  .inputValidator((d: unknown) => z.object({}).parse(d ?? {}))
   .handler(async () => {
     const [{ data: statsRow }, { data: txRows }] = await Promise.all([
       supabaseAdmin.from("rve_marketplace_stats" as never).select("*").single(),
@@ -351,7 +351,7 @@ export const getMarketplaceStats = createServerFn({ method: "POST" })
 
 export const getMyAssets = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({}).parse(d))
+  .inputValidator((d: unknown) => z.object({}).parse(d ?? {}))
   .handler(async ({ context }) => {
     const { userId } = context;
 

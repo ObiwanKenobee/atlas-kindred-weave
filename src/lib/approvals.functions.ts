@@ -139,7 +139,7 @@ export const cancelApproval = createServerFn({ method: "POST" })
 
 export const listReviewers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({}).parse(d))
+  .inputValidator((d: unknown) => z.object({}).parse(d ?? {}))
   .handler(async ({ context }) => {
     const { supabase } = context;
     const { data: roles } = await supabase
