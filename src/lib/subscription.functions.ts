@@ -45,7 +45,7 @@ export async function requirePlan(userId: string, minPlan: SubscriptionPlan): Pr
 
 export const getSubscription = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({}).parse(d))
+  .inputValidator((d: unknown) => z.object({}).parse(d ?? {}))
   .handler(async ({ context }) => {
     const { userId } = context;
     const { data: profile } = await supabaseAdmin

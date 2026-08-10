@@ -74,8 +74,7 @@ export const listAssets = createServerFn({ method: "POST" })
       .select(`
         id, owner_user_id, kind, title, description, quantity, unit,
         verification_score, status, ask_price_usd, currency,
-        region, sector, sdg_tags, minted_at,
-        profiles!impact_assets_owner_user_id_fkey(display_name)
+        region, sector, sdg_tags, minted_at
       `)
       .order("minted_at", { ascending: false })
       .range(data.offset, data.offset + data.limit - 1);
@@ -97,6 +96,18 @@ export const listAssets = createServerFn({ method: "POST" })
           .eq("status", "open")
       : { data: [] };
 
+    // Manual profile join (no FK between impact_assets and profiles)
+    const ownerIds = Array.from(new Set((rows ?? []).map((r) => r.owner_user_id)));
+    const { data: profileRows } = ownerIds.length
+      ? await supabaseAdmin
+          .from("profiles")
+          .select("user_id, display_name")
+          .in("user_id", ownerIds)
+      : { data: [] };
+    const nameMap = new Map(
+      (profileRows ?? []).map((p) => [p.user_id, p.display_name as string | null]),
+    );
+
     const bidMap = new Map<string, { count: number; top: number }>();
     for (const b of bids ?? []) {
       const cur = bidMap.get(b.asset_id) ?? { count: 0, top: 0 };
@@ -106,12 +117,11 @@ export const listAssets = createServerFn({ method: "POST" })
     }
 
     const assets: ImpactAsset[] = (rows ?? []).map((r) => {
-      const profile = Array.isArray(r.profiles) ? r.profiles[0] : r.profiles;
       const bd = bidMap.get(r.id);
       return {
         id: r.id,
         owner_user_id: r.owner_user_id,
-        owner_name: (profile as { display_name: string | null } | null)?.display_name ?? null,
+        owner_name: nameMap.get(r.owner_user_id) ?? null,
         kind: r.kind as AssetKind,
         title: r.title,
         description: r.description,
@@ -129,6 +139,7 @@ export const listAssets = createServerFn({ method: "POST" })
         top_bid: bd?.top ?? null,
       };
     });
+
 
     return assets;
   });
@@ -295,22 +306,29 @@ export const getAssetBids = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { data: bids, error } = await supabaseAdmin
       .from("asset_bids")
-      .select(`
-        id, asset_id, bidder_id, bid_amount, currency, message, status, created_at,
-        profiles!asset_bids_bidder_id_fkey(display_name)
-      `)
+      .select("id, asset_id, bidder_id, bid_amount, currency, message, status, created_at")
       .eq("asset_id", data.asset_id)
       .order("bid_amount", { ascending: false });
 
     if (error) throw new Error(error.message);
 
+    const bidderIds = Array.from(new Set((bids ?? []).map((b) => b.bidder_id)));
+    const { data: profileRows } = bidderIds.length
+      ? await supabaseAdmin
+          .from("profiles")
+          .select("user_id, display_name")
+          .in("user_id", bidderIds)
+      : { data: [] };
+    const nameMap = new Map(
+      (profileRows ?? []).map((p) => [p.user_id, p.display_name as string | null]),
+    );
+
     return (bids ?? []).map((b) => {
-      const profile = Array.isArray(b.profiles) ? b.profiles[0] : b.profiles;
       return {
         id: b.id,
         asset_id: b.asset_id,
         bidder_id: b.bidder_id,
-        bidder_name: (profile as { display_name: string | null } | null)?.display_name ?? null,
+        bidder_name: nameMap.get(b.bidder_id) ?? null,
         bid_amount: Number(b.bid_amount),
         currency: b.currency,
         message: b.message,
@@ -318,12 +336,13 @@ export const getAssetBids = createServerFn({ method: "POST" })
         created_at: b.created_at,
       } as AssetBid;
     });
+
   });
 
 // ── Marketplace stats ─────────────────────────────────────────────────────────
 
 export const getMarketplaceStats = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => z.object({}).parse(d))
+  .inputValidator((d: unknown) => z.object({}).parse(d ?? {}))
   .handler(async () => {
     const [{ data: statsRow }, { data: txRows }] = await Promise.all([
       supabaseAdmin.from("rve_marketplace_stats" as never).select("*").single(),
@@ -351,7 +370,7 @@ export const getMarketplaceStats = createServerFn({ method: "POST" })
 
 export const getMyAssets = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({}).parse(d))
+  .inputValidator((d: unknown) => z.object({}).parse(d ?? {}))
   .handler(async ({ context }) => {
     const { userId } = context;
 

@@ -41,7 +41,7 @@ async function ensureCode(userId: string, displayName: string | null): Promise<s
 
 export const getMyReferralOverview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({}).parse(d))
+  .inputValidator((d: unknown) => z.object({}).parse(d ?? {}))
   .handler(async ({ context }) => {
     const { userId } = context;
     const admin = supabaseAdmin as unknown as { from: (t: string) => any };

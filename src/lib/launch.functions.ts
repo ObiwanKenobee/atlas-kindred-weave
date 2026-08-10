@@ -43,7 +43,7 @@ export type CashflowOutput = z.infer<typeof CashflowSchema>;
 
 export const getCashflowInsights = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({}).parse(d))
+  .inputValidator((d: unknown) => z.object({}).parse(d ?? {}))
   .handler(async ({ context }) => {
     await requireFeature(context.userId, "cashflow_insights");
     const { userId } = context;
@@ -129,7 +129,7 @@ export type RevenueOutput = z.infer<typeof RevenueSchema>;
 
 export const getRevenueTracking = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({}).parse(d))
+  .inputValidator((d: unknown) => z.object({}).parse(d ?? {}))
   .handler(async ({ context }) => {
     await requireFeature(context.userId, "revenue_tracking");
     const { userId } = context;
@@ -214,7 +214,7 @@ export type EligibilityOutput = z.infer<typeof EligibilitySchema>;
 
 export const getFundingEligibility = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({}).parse(d))
+  .inputValidator((d: unknown) => z.object({}).parse(d ?? {}))
   .handler(async ({ context }) => {
     await requireFeature(context.userId, "funding_eligibility");
     const { userId } = context;

@@ -149,7 +149,7 @@ export type TreasuryReportOutput = z.infer<typeof TreasuryReportSchema>;
 
 export const generateTreasuryReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({}).parse(d))
+  .inputValidator((d: unknown) => z.object({}).parse(d ?? {}))
   .handler(async ({ context }) => {
     await requireFeature(context.userId, "treasury_reports");
     const { userId } = context;
