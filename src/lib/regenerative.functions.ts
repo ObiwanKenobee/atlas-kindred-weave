@@ -306,22 +306,29 @@ export const getAssetBids = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { data: bids, error } = await supabaseAdmin
       .from("asset_bids")
-      .select(`
-        id, asset_id, bidder_id, bid_amount, currency, message, status, created_at,
-        profiles!asset_bids_bidder_id_fkey(display_name)
-      `)
+      .select("id, asset_id, bidder_id, bid_amount, currency, message, status, created_at")
       .eq("asset_id", data.asset_id)
       .order("bid_amount", { ascending: false });
 
     if (error) throw new Error(error.message);
 
+    const bidderIds = Array.from(new Set((bids ?? []).map((b) => b.bidder_id)));
+    const { data: profileRows } = bidderIds.length
+      ? await supabaseAdmin
+          .from("profiles")
+          .select("user_id, display_name")
+          .in("user_id", bidderIds)
+      : { data: [] };
+    const nameMap = new Map(
+      (profileRows ?? []).map((p) => [p.user_id, p.display_name as string | null]),
+    );
+
     return (bids ?? []).map((b) => {
-      const profile = Array.isArray(b.profiles) ? b.profiles[0] : b.profiles;
       return {
         id: b.id,
         asset_id: b.asset_id,
         bidder_id: b.bidder_id,
-        bidder_name: (profile as { display_name: string | null } | null)?.display_name ?? null,
+        bidder_name: nameMap.get(b.bidder_id) ?? null,
         bid_amount: Number(b.bid_amount),
         currency: b.currency,
         message: b.message,
@@ -329,6 +336,7 @@ export const getAssetBids = createServerFn({ method: "POST" })
         created_at: b.created_at,
       } as AssetBid;
     });
+
   });
 
 // ── Marketplace stats ─────────────────────────────────────────────────────────
