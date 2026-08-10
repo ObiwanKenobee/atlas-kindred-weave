@@ -74,8 +74,7 @@ export const listAssets = createServerFn({ method: "POST" })
       .select(`
         id, owner_user_id, kind, title, description, quantity, unit,
         verification_score, status, ask_price_usd, currency,
-        region, sector, sdg_tags, minted_at,
-        profiles!impact_assets_owner_user_id_fkey(display_name)
+        region, sector, sdg_tags, minted_at
       `)
       .order("minted_at", { ascending: false })
       .range(data.offset, data.offset + data.limit - 1);
@@ -97,6 +96,18 @@ export const listAssets = createServerFn({ method: "POST" })
           .eq("status", "open")
       : { data: [] };
 
+    // Manual profile join (no FK between impact_assets and profiles)
+    const ownerIds = Array.from(new Set((rows ?? []).map((r) => r.owner_user_id)));
+    const { data: profileRows } = ownerIds.length
+      ? await supabaseAdmin
+          .from("profiles")
+          .select("user_id, display_name")
+          .in("user_id", ownerIds)
+      : { data: [] };
+    const nameMap = new Map(
+      (profileRows ?? []).map((p) => [p.user_id, p.display_name as string | null]),
+    );
+
     const bidMap = new Map<string, { count: number; top: number }>();
     for (const b of bids ?? []) {
       const cur = bidMap.get(b.asset_id) ?? { count: 0, top: 0 };
@@ -106,12 +117,11 @@ export const listAssets = createServerFn({ method: "POST" })
     }
 
     const assets: ImpactAsset[] = (rows ?? []).map((r) => {
-      const profile = Array.isArray(r.profiles) ? r.profiles[0] : r.profiles;
       const bd = bidMap.get(r.id);
       return {
         id: r.id,
         owner_user_id: r.owner_user_id,
-        owner_name: (profile as { display_name: string | null } | null)?.display_name ?? null,
+        owner_name: nameMap.get(r.owner_user_id) ?? null,
         kind: r.kind as AssetKind,
         title: r.title,
         description: r.description,
@@ -129,6 +139,7 @@ export const listAssets = createServerFn({ method: "POST" })
         top_bid: bd?.top ?? null,
       };
     });
+
 
     return assets;
   });
