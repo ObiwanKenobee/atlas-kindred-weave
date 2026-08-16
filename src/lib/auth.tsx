@@ -68,35 +68,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     // Sync listener first
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
-      setSession(sess);
-      setUser(sess?.user ?? null);
-      if (sess?.user) {
-        // defer to avoid deadlocks
-        setTimeout(() => {
-          loadProfile(sess.user.id);
-          tryAttachReferral();
-        }, 0);
-      } else {
-        setProfile(null);
-      }
-      router.invalidate();
-      qc.invalidateQueries();
-    });
+    let unsubscribe: (() => void) | undefined;
+    try {
+      const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
+        setSession(sess);
+        setUser(sess?.user ?? null);
+        if (sess?.user) {
+          // defer to avoid deadlocks
+          setTimeout(() => {
+            loadProfile(sess.user.id);
+            tryAttachReferral();
+          }, 0);
+        } else {
+          setProfile(null);
+        }
+        router.invalidate();
+        qc.invalidateQueries();
+      });
+      unsubscribe = () => sub.subscription.unsubscribe();
 
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
-      if (data.session?.user) {
-        loadProfile(data.session.user.id);
-        tryAttachReferral();
-      }
+      supabase.auth
+        .getSession()
+        .then(({ data }) => {
+          setSession(data.session);
+          setUser(data.session?.user ?? null);
+          if (data.session?.user) {
+            loadProfile(data.session.user.id);
+            tryAttachReferral();
+          }
+        })
+        .catch((err) => console.error("[auth] getSession failed", err))
+        .finally(() => setLoading(false));
+    } catch (err) {
+      // Backend not reachable/configured — render the app signed-out instead of crashing.
+      console.error("[auth] initialization failed", err);
       setLoading(false);
-    });
+    }
 
-    return () => sub.subscription.unsubscribe();
+    return () => unsubscribe?.();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   return (
     <Ctx.Provider
