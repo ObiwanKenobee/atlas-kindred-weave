@@ -42,10 +42,27 @@ function BusinessPage() {
   const { user, loading } = useAuth();
   const load = useServerFn(getMyBusiness);
   const save = useServerFn(saveBusiness);
+  const seedDemo = useServerFn(seedDemoBusiness);
 
   const [busy, setBusy] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [seeding, setSeeding] = useState(false);
   const [b, setB] = useState<Partial<Business>>({ funding_currency: "KES" });
+
+  async function loadDemo() {
+    setSeeding(true);
+    try {
+      const res = await seedDemo({ data: undefined });
+      const fresh = await load({ data: undefined });
+      if (fresh) setB(fresh);
+      toast.success(`Demo business loaded with ${res.documents} vault documents.`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not load the demo business.");
+    } finally {
+      setSeeding(false);
+    }
+  }
+
 
   useEffect(() => {
     if (loading || !user) return;
