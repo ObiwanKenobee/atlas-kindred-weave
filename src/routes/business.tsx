@@ -8,7 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Building2, CheckCircle2 } from "lucide-react";
+import { Loader2, Building2, CheckCircle2, Sparkles } from "lucide-react";
+import { seedDemoBusiness } from "@/lib/demo.functions";
+
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/business")({
@@ -40,10 +42,27 @@ function BusinessPage() {
   const { user, loading } = useAuth();
   const load = useServerFn(getMyBusiness);
   const save = useServerFn(saveBusiness);
+  const seedDemo = useServerFn(seedDemoBusiness);
 
   const [busy, setBusy] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [seeding, setSeeding] = useState(false);
   const [b, setB] = useState<Partial<Business>>({ funding_currency: "KES" });
+
+  async function loadDemo() {
+    setSeeding(true);
+    try {
+      const res = await seedDemo({ data: undefined });
+      const fresh = await load({ data: undefined });
+      if (fresh) setB(fresh);
+      toast.success(`Demo business loaded with ${res.documents} vault documents.`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not load the demo business.");
+    } finally {
+      setSeeding(false);
+    }
+  }
+
 
   useEffect(() => {
     if (loading || !user) return;
@@ -129,7 +148,18 @@ function BusinessPage() {
             <CheckCircle2 className="h-3 w-3" /> Onboarding complete
           </Badge>
         )}
+        <div className="mt-5 flex flex-wrap items-center gap-3 rounded-lg border border-border/60 bg-card/40 p-4">
+          <Sparkles className="h-4 w-4 text-gold" />
+          <p className="flex-1 text-xs text-muted-foreground">
+            Want to walk the economic loop first? Load a demo cooperative with financials, an expansion plan,
+            and compliance records already in your vault.
+          </p>
+          <Button type="button" variant="outline" className="border-gold/40" onClick={loadDemo} disabled={seeding}>
+            {seeding ? <Loader2 className="h-4 w-4 animate-spin" /> : "Load demo business"}
+          </Button>
+        </div>
       </header>
+
 
       <Card className="glyph-border p-6">
         <form onSubmit={submit} className="grid gap-4 sm:grid-cols-2">
