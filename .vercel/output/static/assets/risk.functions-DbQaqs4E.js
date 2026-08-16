@@ -1,0 +1,1 @@
+import{c as e,a}from"./index-BhTktG5H.js";import{r}from"./auth-middleware-bjXFf5Gg.js";const f=e({method:"POST"}).middleware([r]).handler(a("472104fcaf52938f2f1f9c0d54b42011f1672fdeb98c22ab936b7d6710ad5a65"));export{f as c};
