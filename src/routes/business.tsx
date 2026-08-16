@@ -8,7 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Building2, CheckCircle2 } from "lucide-react";
+import { Loader2, Building2, CheckCircle2, Sparkles } from "lucide-react";
+import { seedDemoBusiness } from "@/lib/demo.functions";
+
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/business")({
